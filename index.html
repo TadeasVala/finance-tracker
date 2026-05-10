@@ -885,7 +885,7 @@ function renderBalances() {
     const lastNet = calcMonthNet(k, isLastMonth);
     const tEl = document.getElementById('trend-' + k);
     if (!tEl) return;
-    if (thisNet === 0 && lastNet === 0) { tEl.textContent = ''; return; }
+    if (lastNet === 0) { tEl.textContent = ''; return; }
     const arrow = thisNet >= 0 ? '↑' : '↓';
     const cls   = thisNet >= 0 ? 'up' : 'down';
     const diff  = lastNet !== 0 ? Math.abs(Math.round((thisNet - lastNet) / Math.abs(lastNet) * 100)) : null;
