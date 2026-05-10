@@ -170,6 +170,8 @@ select {
   width: 16px; height: 16px; padding: 0;
   accent-color: var(--accent); cursor: pointer;
   border-radius: 4px;
+  -webkit-appearance: checkbox; appearance: checkbox;
+  background: none; border: none; box-shadow: none;
 }
 
 .btn-add {
@@ -496,8 +498,8 @@ body.dark .tx-del:hover { background: rgba(239,83,80,0.15); }
     <div class="card card-body">
       <p class="section-label">Nová transakce</p>
       <div class="type-tabs">
-        <div class="type-tab active-prijem" id="tab-prijem" onclick="setType('prijem')">↓ Příjem</div>
-        <div class="type-tab" id="tab-vydaj"  onclick="setType('vydaj')">↑ Výdaj</div>
+        <div class="type-tab active-vydaj" id="tab-vydaj"  onclick="setType('vydaj')">↑ Výdaj</div>
+        <div class="type-tab" id="tab-prijem" onclick="setType('prijem')">↓ Příjem</div>
         <div class="type-tab" id="tab-prevod" onclick="setType('prevod')">⇄ Převod</div>
       </div>
       <!-- Wizard dots -->
@@ -528,7 +530,7 @@ body.dark .tx-del:hover { background: rgba(239,83,80,0.15); }
       <!-- Step 3: Details -->
       <div id="wstep-3" style="display:none">
         <p class="wiz-q">Detaily</p>
-        <div class="form-grid three">
+        <div class="form-grid">
           <div class="field"><label>Účet</label>
             <select id="txAccount">
               <option value="bezny">Běžný účet</option><option value="sporak">Spořící účet</option>
@@ -537,14 +539,14 @@ body.dark .tx-del:hover { background: rgba(239,83,80,0.15); }
             </select>
           </div>
           <div class="field"><label>Datum</label><input type="date" id="txDate" style="-webkit-appearance:auto;appearance:auto;" /></div>
-          <div class="field to-field" id="toAccountField" style="display:none;"><label>Na účet</label>
+          <div class="field to-field" id="toAccountField" style="display:none; grid-column:span 2;"><label>Na účet</label>
             <select id="txToAccount">
               <option value="sporak">Spořící účet</option><option value="bezny">Běžný účet</option>
               <option value="penzijko">Penzijko</option><option value="petska">Petska firemní</option>
               <option value="investice">Investice</option><option value="hotovost">Hotovost</option>
             </select>
           </div>
-          <div class="field cat-field" id="catField"><label>Kategorie</label>
+          <div class="field cat-field" id="catField" style="grid-column:span 2;"><label>Kategorie</label>
             <select id="txCategory">
               <option value="Potraviny">🛒 Potraviny</option><option value="Bydlení">🏠 Bydlení</option>
               <option value="Doprava">🚌 Doprava</option><option value="Zábava">🎉 Zábava</option>
@@ -724,7 +726,7 @@ const CAT_LIMITS = {
 };
 
 let transactions     = [];
-let currentType      = 'prijem';
+let currentType      = 'vydaj';
 let chartFilter      = 'month';
 let pieChart         = null;
 let toastTimer       = null;
