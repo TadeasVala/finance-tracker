@@ -239,7 +239,8 @@ select {
 .acct-card.bezny   { border-top-color: var(--blue); }
 .acct-card.sporak  { border-top-color: var(--green); }
 .acct-card.penzijko{ border-top-color: var(--purple); }
-.acct-card.petska  { border-top-color: var(--orange); }
+.acct-card.petska     { border-top-color: var(--orange); }
+.acct-card.investice  { border-top-color: #26c6da; }
 .acct-icon {
   width: 34px; height: 34px;
   border-radius: 9px;
@@ -250,7 +251,8 @@ select {
 .acct-card.bezny   .acct-icon { background: #e3f2fd; }
 .acct-card.sporak  .acct-icon { background: #e8f5e9; }
 .acct-card.penzijko.acct-icon { background: #f3e5f5; }
-.acct-card.petska  .acct-icon { background: #fff3e0; }
+.acct-card.petska     .acct-icon { background: #fff3e0; }
+.acct-card.investice  .acct-icon { background: #e0f7fa; }
 .acct-name { font-size: 0.63rem; font-weight: 700; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
 .acct-val  { font-size: 1.1rem; font-weight: 800; color: var(--text); }
 .acct-val.neg { color: var(--red); }
@@ -628,6 +630,7 @@ select {
           <option value="sporak">Spořící účet</option>
           <option value="penzijko">Penzijko</option>
           <option value="petska">Petska firemní</option>
+          <option value="investice">Investice</option>
         </select>
       </div>
       <div class="field to-field" id="editToAccountField" style="display:none;">
@@ -706,6 +709,7 @@ select {
             <option value="sporak">Spořící účet</option>
             <option value="penzijko">Penzijko</option>
             <option value="petska">Petska firemní</option>
+          <option value="investice">Investice</option>
           </select>
         </div>
         <div class="field to-field" id="toAccountField" style="display:none;">
@@ -715,6 +719,7 @@ select {
             <option value="bezny">Běžný účet</option>
             <option value="penzijko">Penzijko</option>
             <option value="petska">Petska firemní</option>
+          <option value="investice">Investice</option>
           </select>
         </div>
         <div class="field cat-field" id="catField">
@@ -776,6 +781,11 @@ select {
         <div class="acct-name">Petska firemní</div>
         <div class="acct-val" id="val-petska">—</div>
       </div>
+      <div class="acct-card investice">
+        <div class="acct-icon">📈</div>
+        <div class="acct-name">Investice</div>
+        <div class="acct-val" id="val-investice">—</div>
+      </div>
     </div>
 
     <div class="total-card">
@@ -802,8 +812,8 @@ const SB_URL = 'https://eaiwhttmuubzenlpsfad.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXdodHRtdXViemVubHBzZmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0MTQ5OTksImV4cCI6MjA5Mzk5MDk5OX0.wpq1aUciLu6njaIU5-bOzZ5sVhz_q6Rg4ZbnjUWnWsk';
 const db = supabase.createClient(SB_URL, SB_KEY);
 
-const DEFAULTS   = { bezny: 24069, sporak: 35327, penzijko: 13414, petska: 12245 };
-const LABELS     = { bezny: 'Běžný účet', sporak: 'Spořící účet', penzijko: 'Penzijko', petska: 'Petska firemní' };
+const DEFAULTS   = { bezny: 24069, sporak: 35327, penzijko: 13414, petska: 12245, investice: 20000 };
+const LABELS     = { bezny: 'Běžný účet', sporak: 'Spořící účet', penzijko: 'Penzijko', petska: 'Petska firemní', investice: 'Investice' };
 const CAT_COLORS = {
   'Potraviny':'#4caf50','Bydlení':'#42a5f5','Doprava':'#ff8a65',
   'Zábava':'#ab47bc','Zdraví':'#ef5350','Vzdělání':'#26c6da',
