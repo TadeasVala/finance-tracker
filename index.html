@@ -187,6 +187,19 @@ select {
 .err { font-size: 0.78rem; color: var(--red); margin-top: 8px; display: none; padding: 0.5rem 0.75rem; background: #fdecea; border-radius: 8px; font-weight: 500; }
 body.dark .err { background: rgba(239,83,80,0.15); }
 
+/* ── Wizard ── */
+.wiz-dots { display: flex; justify-content: center; gap: 8px; margin: 0.25rem 0 1.1rem; }
+.wiz-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); transition: all 0.25s; }
+.wiz-dot.active { background: var(--accent); width: 22px; border-radius: 4px; }
+.wiz-dot.done { background: var(--accent); opacity: 0.35; }
+.wiz-step { animation: wizIn 0.18s ease; }
+@keyframes wizIn { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
+.wiz-q { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); text-align: center; margin-bottom: 0.7rem; }
+#txAmount { font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 0; }
+#txName   { font-size: 1.1rem; font-weight: 600; text-align: center; margin-bottom: 0.85rem; }
+.wiz-unit { text-align: center; font-size: 0.72rem; color: var(--muted); font-weight: 700; margin: 0.3rem 0 0.85rem; letter-spacing: 0.06em; }
+.wiz-nav { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: 0.75rem; }
+
 /* ── Account cards ── */
 .accounts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .acct-card {
@@ -487,42 +500,71 @@ body.dark .tx-del:hover { background: rgba(239,83,80,0.15); }
         <div class="type-tab" id="tab-vydaj"  onclick="setType('vydaj')">↑ Výdaj</div>
         <div class="type-tab" id="tab-prevod" onclick="setType('prevod')">⇄ Převod</div>
       </div>
-      <div class="form-grid">
-        <div class="field"><label>Název</label><input type="text" id="txName" placeholder="např. Wolt plat" autocomplete="off" /></div>
-        <div class="field"><label>Částka (Kč)</label><input type="number" id="txAmount" placeholder="0" min="1" inputmode="numeric" /></div>
+      <!-- Wizard dots -->
+      <div class="wiz-dots">
+        <div class="wiz-dot active" id="wdot-1"></div>
+        <div class="wiz-dot" id="wdot-2"></div>
+        <div class="wiz-dot" id="wdot-3"></div>
       </div>
-      <div class="form-grid three">
-        <div class="field"><label>Datum</label><input type="date" id="txDate" style="-webkit-appearance:auto;appearance:auto;" /></div>
-        <div class="field"><label>Účet</label>
-          <select id="txAccount">
-            <option value="bezny">Běžný účet</option><option value="sporak">Spořící účet</option>
-            <option value="penzijko">Penzijko</option><option value="petska">Petska firemní</option>
-            <option value="investice">Investice</option><option value="hotovost">Hotovost</option>
-          </select>
-        </div>
-        <div class="field to-field" id="toAccountField" style="display:none;"><label>Na účet</label>
-          <select id="txToAccount">
-            <option value="sporak">Spořící účet</option><option value="bezny">Běžný účet</option>
-            <option value="penzijko">Penzijko</option><option value="petska">Petska firemní</option>
-            <option value="investice">Investice</option><option value="hotovost">Hotovost</option>
-          </select>
-        </div>
-        <div class="field cat-field" id="catField"><label>Kategorie</label>
-          <select id="txCategory">
-            <option value="Potraviny">🛒 Potraviny</option><option value="Bydlení">🏠 Bydlení</option>
-            <option value="Doprava">🚌 Doprava</option><option value="Zábava">🎉 Zábava</option>
-            <option value="Zdraví">💊 Zdraví</option><option value="Vzdělání">📚 Vzdělání</option>
-            <option value="HPP">💼 HPP</option><option value="Petska">🐾 Petska</option>
-            <option value="Finance">💰 Finance</option><option value="Hotovost">💵 Hotovost</option>
-            <option value="Ostatní">📦 Ostatní</option>
-          </select>
+
+      <!-- Step 1: Amount -->
+      <div id="wstep-1">
+        <p class="wiz-q">Kolik?</p>
+        <input type="number" id="txAmount" placeholder="0" min="1" inputmode="decimal" autocomplete="off" />
+        <p class="wiz-unit">Kč</p>
+        <button class="btn-add" onclick="wizNext()">Dál →</button>
+      </div>
+
+      <!-- Step 2: Name -->
+      <div id="wstep-2" style="display:none">
+        <p class="wiz-q">Co to bylo?</p>
+        <input type="text" id="txName" placeholder="např. Albert, nájem, Wolt…" autocomplete="off" />
+        <div class="wiz-nav">
+          <button class="btn-cancel" onclick="wizBack()">← Zpět</button>
+          <button class="btn-add" onclick="wizNext()">Dál →</button>
         </div>
       </div>
-      <label class="recurring-row">
-        <input type="checkbox" id="txRecurring" />
-        🔄 Opakující se (měsíčně)
-      </label>
-      <button class="btn-add" id="addBtn" onclick="addTransaction()">+ Přidat transakci</button>
+
+      <!-- Step 3: Details -->
+      <div id="wstep-3" style="display:none">
+        <p class="wiz-q">Detaily</p>
+        <div class="form-grid three">
+          <div class="field"><label>Účet</label>
+            <select id="txAccount">
+              <option value="bezny">Běžný účet</option><option value="sporak">Spořící účet</option>
+              <option value="penzijko">Penzijko</option><option value="petska">Petska firemní</option>
+              <option value="investice">Investice</option><option value="hotovost">Hotovost</option>
+            </select>
+          </div>
+          <div class="field"><label>Datum</label><input type="date" id="txDate" style="-webkit-appearance:auto;appearance:auto;" /></div>
+          <div class="field to-field" id="toAccountField" style="display:none;"><label>Na účet</label>
+            <select id="txToAccount">
+              <option value="sporak">Spořící účet</option><option value="bezny">Běžný účet</option>
+              <option value="penzijko">Penzijko</option><option value="petska">Petska firemní</option>
+              <option value="investice">Investice</option><option value="hotovost">Hotovost</option>
+            </select>
+          </div>
+          <div class="field cat-field" id="catField"><label>Kategorie</label>
+            <select id="txCategory">
+              <option value="Potraviny">🛒 Potraviny</option><option value="Bydlení">🏠 Bydlení</option>
+              <option value="Doprava">🚌 Doprava</option><option value="Zábava">🎉 Zábava</option>
+              <option value="Zdraví">💊 Zdraví</option><option value="Vzdělání">📚 Vzdělání</option>
+              <option value="HPP">💼 HPP</option><option value="Petska">🐾 Petska</option>
+              <option value="Finance">💰 Finance</option><option value="Hotovost">💵 Hotovost</option>
+              <option value="Ostatní">📦 Ostatní</option>
+            </select>
+          </div>
+        </div>
+        <label class="recurring-row" id="recurringRow">
+          <input type="checkbox" id="txRecurring" />
+          🔄 Opakující se (měsíčně)
+        </label>
+        <div class="wiz-nav">
+          <button class="btn-cancel" onclick="wizBack()">← Zpět</button>
+          <button class="btn-add" id="addBtn" onclick="addTransaction()">+ Přidat transakci</button>
+        </div>
+      </div>
+
       <p class="err" id="errMsg"></p>
     </div>
 
@@ -733,6 +775,39 @@ function showToast(msg, type = '') {
   el.className = 'toast show' + (type ? ' ' + type : '');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { el.className = 'toast'; }, 2600);
+}
+
+/* ── Wizard ── */
+let wizardStep = 1;
+
+function setWizStep(n) {
+  [1,2,3].forEach(i => {
+    const el  = document.getElementById('wstep-' + i);
+    const dot = document.getElementById('wdot-'  + i);
+    if (el)  el.style.display  = i === n ? '' : 'none';
+    if (dot) dot.className = 'wiz-dot' + (i === n ? ' active' : i < n ? ' done' : '');
+  });
+  wizardStep = n;
+  document.getElementById('errMsg').style.display = 'none';
+  setTimeout(() => {
+    if (n === 1) document.getElementById('txAmount').focus();
+    if (n === 2) document.getElementById('txName').focus();
+  }, 30);
+}
+
+function wizNext() {
+  if (wizardStep === 1) {
+    const v = parseFloat(document.getElementById('txAmount').value);
+    if (!v || v <= 0) { showErr('Zadej kladnou částku.'); return; }
+    setWizStep(2);
+  } else if (wizardStep === 2) {
+    if (!document.getElementById('txName').value.trim()) { showErr('Zadej název.'); return; }
+    setWizStep(3);
+  }
+}
+
+function wizBack() {
+  if (wizardStep > 1) setWizStep(wizardStep - 1);
 }
 
 /* ── Type tabs ── */
@@ -1162,8 +1237,9 @@ async function addTransaction() {
 
   newTxId = data[0].id;
   transactions.push(data[0]);
-  document.getElementById('txName').value    = '';
+  setWizStep(1);
   document.getElementById('txAmount').value  = '';
+  document.getElementById('txName').value    = '';
   document.getElementById('txRecurring').checked = false;
   renderAll();
   showToast('Transakce přidána ✓', 'success');
@@ -1283,6 +1359,8 @@ initDark();
 loadAccountSettings();
 document.getElementById('headerDate').textContent = new Date().toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long' });
 document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
+document.getElementById('txAmount').addEventListener('keydown', e => { if (e.key === 'Enter') wizNext(); });
+document.getElementById('txName').addEventListener('keydown',   e => { if (e.key === 'Enter') wizNext(); });
 loadTransactions();
 </script>
 
