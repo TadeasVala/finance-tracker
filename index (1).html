@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f4f6f1;
+  --surface: #ffffff;
+  --surface2: #f0f2ed;
+  --border: #e4e8df;
+  --text: #1a1e17;
+  --muted: #7a8570;
+  --accent: #6abf69;
+  --accent-dark: #3d8c3c;
+  --accent-bg: #eaf5ea;
+  --green: #4caf50;
+  --red: #ef5350;
+  --blue: #42a5f5;
+  --orange: #ff8a65;
+  --purple: #ab47bc;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+  padding: 0 0 5rem;
+}
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.header-title { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.header-date { font-size: 0.75rem; color: var(--muted); }
+.container { max-width: 680px; margin: 0 auto; padding: 1.25rem 1rem; }
+
+.form-card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.card-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+.row { display: grid; gap: 10px; margin-bottom: 10px; }
+.row.two { grid-template-columns: 1fr 1fr; }
+.row.three { grid-template-columns: 1fr 1fr 1fr; }
+.field label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+input, select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.9rem;
+  padding: 0.65rem 0.9rem;
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input:focus, select:focus { border-color: var(--accent); background: #fff; }
+input::placeholder { color: var(--muted); }
+
+.type-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.type-tab {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  user-select: none;
+}
+.type-tab.active-prijem { background: #e8f5e9; border-color: var(--green); color: var(--green); }
+.type-tab.active-vydaj { background: #fdecea; border-color: var(--red); color: var(--red); }
+.type-tab.active-prevod { background: #e3f2fd; border-color: var(--blue); color: var(--blue); }
+
+.btn-add {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  margin-top: 4px;
+}
+.btn-add:hover { background: var(--accent-dark); }
+.btn-add:active { transform: scale(0.98); }
+.btn-add:disabled { opacity: 0.5; cursor: not-allowed; }
+.err { font-size: 0.78rem; color: var(--red); margin-top: 8px; display: none; }
+
+.accounts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+.acct-card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border-top: 3px solid var(--accent);
+}
+.acct-card.bezny { border-top-color: var(--blue); }
+.acct-card.sporak { border-top-color: var(--green); }
+.acct-card.penzijko { border-top-color: var(--purple); }
+.acct-card.petska { border-top-color: var(--orange); }
+.acct-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+.acct-card.bezny .acct-icon { background: #e3f2fd; }
+.acct-card.sporak .acct-icon { background: #e8f5e9; }
+.acct-card.penzijko .acct-icon { background: #f3e5f5; }
+.acct-card.petska .acct-icon { background: #fff3e0; }
+.acct-name { font-size: 0.7rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.acct-val { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+.acct-val.neg { color: var(--red); }
+
+.total-card {
+  background: var(--accent);
+  border-radius: 20px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 16px rgba(106,191,105,0.3);
+}
+.total-label { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.85); }
+.total-val { font-size: 1.6rem; font-weight: 700; color: #fff; }
+
+.chart-card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.chart-title { font-size: 0.9rem; font-weight: 700; }
+.chart-filter { display: flex; gap: 6px; }
+.cf-btn {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.cf-btn.active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent-dark); }
+.chart-wrap { position: relative; height: 200px; }
+.legend-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+  margin-top: 1rem;
+}
+.legend-item { display: flex; align-items: center; gap: 7px; font-size: 0.78rem; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.legend-pct { margin-left: auto; font-weight: 700; color: var(--muted); font-size: 0.72rem; }
+
+.history-card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.search-input {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  width: 150px;
+  -webkit-appearance: auto;
+  appearance: auto;
+}
+
+.tx-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tx-row:last-child { border-bottom: none; }
+.tx-icon {
+  width: 38px; height: 38px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.tx-icon.prijem { background: #e8f5e9; }
+.tx-icon.vydaj { background: #fdecea; }
+.tx-icon.prevod { background: #e3f2fd; }
+.tx-name { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+.tx-sub { font-size: 0.7rem; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+.tx-right { margin-left: auto; text-align: right; flex-shrink: 0; }
+.tx-amount { font-size: 0.92rem; font-weight: 700; }
+.tx-amount.prijem { color: var(--green); }
+.tx-amount.vydaj { color: var(--red); }
+.tx-amount.prevod { color: var(--blue); }
+.tx-date-small { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+.tx-del {
+  background: none; border: none;
+  color: #ddd; cursor: pointer;
+  font-size: 1.2rem; padding: 4px 6px;
+  border-radius: 6px; transition: color 0.1s;
+  line-height: 1; margin-left: 2px; flex-shrink: 0;
+}
+.tx-del:hover { color: var(--red); }
+.cat-badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 20px;
+}
+.empty { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 2rem 0; }
+.loading { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 1.5rem 0; }
+
+@media (max-width: 480px) {
+  .row.three { grid-template-columns: 1fr 1fr; }
+  .row.three .to-field { grid-column: span 2; }
+  .legend-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-title">💸 Finance</span>
+  <span class="header-date" id="headerDate"></span>
+</div>
+
+<div class="container">
+
+  <div class="form-card">
+    <p class="card-label">Nová transakce</p>
+    <div class="type-tabs">
+      <div class="type-tab active-prijem" id="tab-prijem" onclick="setType('prijem')">↓ Příjem</div>
+      <div class="type-tab" id="tab-vydaj" onclick="setType('vydaj')">↑ Výdaj</div>
+      <div class="type-tab" id="tab-prevod" onclick="setType('prevod')">⇄ Převod</div>
+    </div>
+    <div class="row two">
+      <div class="field">
+        <label>Název</label>
+        <input type="text" id="txName" placeholder="např. Wolt plat" />
+      </div>
+      <div class="field">
+        <label>Částka (Kč)</label>
+        <input type="number" id="txAmount" placeholder="0" min="1" />
+      </div>
+    </div>
+    <div class="row three">
+      <div class="field">
+        <label>Datum</label>
+        <input type="date" id="txDate" style="-webkit-appearance:auto;appearance:auto;" />
+      </div>
+      <div class="field">
+        <label>Účet</label>
+        <select id="txAccount">
+          <option value="bezny">Běžný účet</option>
+          <option value="sporak">Spořící účet</option>
+          <option value="penzijko">Penzijko</option>
+          <option value="petska">Petska firemní</option>
+        </select>
+      </div>
+      <div class="field to-field" id="toAccountField" style="display:none;">
+        <label>Na účet</label>
+        <select id="txToAccount">
+          <option value="sporak">Spořící účet</option>
+          <option value="bezny">Běžný účet</option>
+          <option value="penzijko">Penzijko</option>
+          <option value="petska">Petska firemní</option>
+        </select>
+      </div>
+      <div class="field" id="catField">
+        <label>Kategorie</label>
+        <select id="txCategory">
+          <option value="Potraviny">🛒 Potraviny</option>
+          <option value="Bydlení">🏠 Bydlení</option>
+          <option value="Doprava">🚌 Doprava</option>
+          <option value="Zábava">🎉 Zábava</option>
+          <option value="Zdraví">💊 Zdraví</option>
+          <option value="Vzdělání">📚 Vzdělání</option>
+          <option value="HPP">💼 HPP</option>
+          <option value="Petska">🐾 Petska</option>
+          <option value="Finance">💰 Finance</option>
+          <option value="Hotovost">💵 Hotovost</option>
+          <option value="Ostatní">📦 Ostatní</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-add" id="addBtn" onclick="addTransaction()">Přidat transakci</button>
+    <p class="err" id="errMsg"></p>
+  </div>
+
+  <div class="accounts-grid">
+    <div class="acct-card bezny">
+      <div class="acct-icon">🏦</div>
+      <div class="acct-name">Běžný účet</div>
+      <div class="acct-val" id="val-bezny">—</div>
+    </div>
+    <div class="acct-card sporak">
+      <div class="acct-icon">🐖</div>
+      <div class="acct-name">Spořící účet</div>
+      <div class="acct-val" id="val-sporak">—</div>
+    </div>
+    <div class="acct-card penzijko">
+      <div class="acct-icon">👴</div>
+      <div class="acct-name">Penzijko</div>
+      <div class="acct-val" id="val-penzijko">—</div>
+    </div>
+    <div class="acct-card petska">
+      <div class="acct-icon">🐾</div>
+      <div class="acct-name">Petska firemní</div>
+      <div class="acct-val" id="val-petska">—</div>
+    </div>
+  </div>
+
+  <div class="total-card">
+    <span class="total-label">Celkem napříč účty</span>
+    <span class="total-val" id="totalAll">—</span>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-header">
+      <span class="chart-title">Výdaje podle kategorie</span>
+      <div class="chart-filter">
+        <button class="cf-btn active" id="cf-month" onclick="setChartFilter('month')">Tento měsíc</button>
+        <button class="cf-btn" id="cf-all" onclick="setChartFilter('all')">Vše</button>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
+    <div class="legend-grid" id="chartLegend"></div>
+  </div>
+
+  <div class="history-card">
+    <div class="history-header">
+      <span class="card-label" style="margin:0;">Historie</span>
+      <input type="text" class="search-input" id="searchInput" placeholder="🔍 Hledat..." oninput="renderHistory()" />
+    </div>
+    <div id="historyList"><p class="loading">Načítám...</p></div>
+  </div>
+
+</div>
+
+<script>
+const SB_URL = 'https://eaiwhttmuubzenlpsfad.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXdodHRtdXViemVubHBzZmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0MTQ5OTksImV4cCI6MjA5Mzk5MDk5OX0.wpq1aUciLu6njaIU5-bOzZ5sVhz_q6Rg4ZbnjUWnWsk';
+const db = supabase.createClient(SB_URL, SB_KEY);
+
+const DEFAULTS = { bezny: 24069, sporak: 35327, penzijko: 13414, petska: 12245 };
+const LABELS = { bezny: 'Běžný účet', sporak: 'Spořící účet', penzijko: 'Penzijko', petska: 'Petska firemní' };
+const CAT_COLORS = {
+  'Potraviny':'#4caf50','Bydlení':'#42a5f5','Doprava':'#ff8a65',
+  'Zábava':'#ab47bc','Zdraví':'#ef5350','Vzdělání':'#26c6da',
+  'HPP':'#ffd54f','Petska':'#8d6e63','Finance':'#78909c',
+  'Hotovost':'#a5d6a7','Ostatní':'#b0bec5'
+};
+const CAT_EMOJI = {
+  'Potraviny':'🛒','Bydlení':'🏠','Doprava':'🚌','Zábava':'🎉',
+  'Zdraví':'💊','Vzdělání':'📚','HPP':'💼','Petska':'🐾',
+  'Finance':'💰','Hotovost':'💵','Ostatní':'📦'
+};
+
+let transactions = [];
+let currentType = 'prijem';
+let chartFilter = 'month';
+let pieChart = null;
+
+const fmt = n => Math.round(n).toLocaleString('cs-CZ') + ' Kč';
+
+function setType(t) {
+  currentType = t;
+  ['prijem','vydaj','prevod'].forEach(x => {
+    document.getElementById('tab-'+x).className = 'type-tab' + (x===t ? ' active-'+x : '');
+  });
+  document.getElementById('toAccountField').style.display = t==='prevod' ? 'block' : 'none';
+  document.getElementById('catField').style.display = t==='prevod' ? 'none' : 'block';
+}
+
+function setChartFilter(f) {
+  chartFilter = f;
+  document.getElementById('cf-month').className = 'cf-btn' + (f==='month' ? ' active' : '');
+  document.getElementById('cf-all').className = 'cf-btn' + (f==='all' ? ' active' : '');
+  renderChart();
+}
+
+function calcBalances() {
+  const b = {...DEFAULTS};
+  transactions.forEach(tx => {
+    if (tx.type==='prijem') b[tx.account] = (b[tx.account]||0) + tx.amount;
+    else if (tx.type==='vydaj') b[tx.account] = (b[tx.account]||0) - tx.amount;
+    else if (tx.type==='prevod') {
+      b[tx.account] = (b[tx.account]||0) - tx.amount;
+      if (tx.to_account) b[tx.to_account] = (b[tx.to_account]||0) + tx.amount;
+    }
+  });
+  return b;
+}
+
+function renderBalances() {
+  const b = calcBalances();
+  Object.keys(DEFAULTS).forEach(k => {
+    const el = document.getElementById('val-'+k);
+    el.textContent = fmt(b[k]);
+    el.className = 'acct-val' + (b[k] < 0 ? ' neg' : '');
+  });
+  document.getElementById('totalAll').textContent = fmt(Object.values(b).reduce((a,c)=>a+c,0));
+}
+
+function renderChart() {
+  const now = new Date();
+  const src = chartFilter==='month'
+    ? transactions.filter(tx => {
+        const d = new Date(tx.tx_date || tx.created_at);
+        return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+      })
+    : transactions;
+
+  const cats = {};
+  src.filter(tx=>tx.type==='vydaj').forEach(tx => {
+    const c = tx.category||'Ostatní';
+    cats[c] = (cats[c]||0) + tx.amount;
+  });
+
+  const sorted = Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  const total = sorted.reduce((s,[,v])=>s+v,0);
+
+  if (pieChart) pieChart.destroy();
+  if (!sorted.length) {
+    document.getElementById('chartLegend').innerHTML = '<p style="color:var(--muted);font-size:0.8rem;grid-column:span 2;">Žádné výdaje v tomto období</p>';
+    return;
+  }
+
+  pieChart = new Chart(document.getElementById('pieChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: sorted.map(([k])=>k),
+      datasets: [{
+        data: sorted.map(([,v])=>v),
+        backgroundColor: sorted.map(([k])=>CAT_COLORS[k]||'#ccc'),
+        borderWidth: 2,
+        borderColor: '#fff',
+        hoverOffset: 10
+      }]
+    },
+    options: {
+      cutout: '62%',
+      animation: { animateRotate: true, duration: 600 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.label}: ${Math.round(ctx.raw).toLocaleString('cs-CZ')} Kč (${Math.round(ctx.raw/total*100)}%)`
+          }
+        }
+      }
+    }
+  });
+
+  document.getElementById('chartLegend').innerHTML = sorted.map(([cat,val]) => `
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${CAT_COLORS[cat]||'#ccc'}"></div>
+      <span>${CAT_EMOJI[cat]||''} ${cat}</span>
+      <span class="legend-pct">${Math.round(val/total*100)}%</span>
+    </div>
+  `).join('');
+}
+
+function renderHistory() {
+  const q = (document.getElementById('searchInput').value||'').toLowerCase();
+  const shown = transactions.filter(tx =>
+    !q || tx.name.toLowerCase().includes(q) || (tx.category||'').toLowerCase().includes(q)
+  );
+
+  if (!shown.length) {
+    document.getElementById('historyList').innerHTML = '<p class="empty">Žádné záznamy</p>';
+    return;
+  }
+
+  document.getElementById('historyList').innerHTML = [...shown].reverse().slice(0,60).map(tx => {
+    const d = tx.tx_date ? new Date(tx.tx_date+'T12:00:00') : new Date(tx.created_at);
+    const dateStr = d.toLocaleDateString('cs-CZ', {day:'numeric',month:'short'});
+    const meta = tx.type==='prevod' ? `${LABELS[tx.account]} → ${LABELS[tx.to_account]}` : LABELS[tx.account];
+    const sign = tx.type==='prijem' ? '+' : tx.type==='vydaj' ? '−' : '';
+    const cat = tx.category||'';
+    const cc = CAT_COLORS[cat]||'#b0bec5';
+    const ico = tx.type==='prijem' ? '↓' : tx.type==='vydaj' ? '↑' : '⇄';
+    return `<div class="tx-row">
+      <div class="tx-icon ${tx.type}">${ico}</div>
+      <div style="flex:1;min-width:0;">
+        <div class="tx-name">${tx.name}</div>
+        <div class="tx-sub">
+          <span>${meta}</span>
+          ${cat ? `<span class="cat-badge" style="background:${cc}22;color:${cc}">${CAT_EMOJI[cat]||''} ${cat}</span>` : ''}
+        </div>
+      </div>
+      <div class="tx-right">
+        <div class="tx-amount ${tx.type}">${sign}${fmt(tx.amount)}</div>
+        <div class="tx-date-small">${dateStr}</div>
+      </div>
+      <button class="tx-del" onclick="deleteTx('${tx.id}')" title="Smazat">×</button>
+    </div>`;
+  }).join('');
+}
+
+async function loadTransactions() {
+  const { data, error } = await db.from('transactions').select('*')
+    .order('tx_date', {ascending:true, nullsFirst:false})
+    .order('created_at', {ascending:true});
+  if (!error && data) {
+    transactions = data;
+    renderBalances(); renderChart(); renderHistory();
+  } else {
+    document.getElementById('historyList').innerHTML = '<p class="empty">Chyba při načítání dat.</p>';
+  }
+}
+
+async function addTransaction() {
+  const name = document.getElementById('txName').value.trim();
+  const amount = parseFloat(document.getElementById('txAmount').value);
+  const account = document.getElementById('txAccount').value;
+  const toAccount = document.getElementById('txToAccount').value;
+  const category = document.getElementById('txCategory').value;
+  const txDate = document.getElementById('txDate').value;
+  const btn = document.getElementById('addBtn');
+  const err = document.getElementById('errMsg');
+
+  err.style.display = 'none';
+  if (!name) { showErr('Zadej název.'); return; }
+  if (!amount || amount <= 0) { showErr('Zadej kladnou částku.'); return; }
+  if (currentType==='prevod' && account===toAccount) { showErr('Účty musí být různé.'); return; }
+
+  btn.disabled = true; btn.textContent = 'Ukládám...';
+
+  const { data, error } = await db.from('transactions').insert([{
+    name, amount, account,
+    type: currentType,
+    to_account: currentType==='prevod' ? toAccount : null,
+    category: currentType!=='prevod' ? category : null,
+    tx_date: txDate || new Date().toISOString().split('T')[0]
+  }]).select();
+
+  btn.disabled = false; btn.textContent = 'Přidat transakci';
+  if (error) { showErr('Chyba: ' + error.message); return; }
+
+  transactions.push(data[0]);
+  renderBalances(); renderChart(); renderHistory();
+  document.getElementById('txName').value = '';
+  document.getElementById('txAmount').value = '';
+}
+
+async function deleteTx(id) {
+  if (!confirm('Smazat tuto transakci?')) return;
+  const { error } = await db.from('transactions').delete().eq('id', id);
+  if (!error) {
+    transactions = transactions.filter(t=>t.id!==id);
+    renderBalances(); renderChart(); renderHistory();
+  }
+}
+
+function showErr(msg) {
+  const e = document.getElementById('errMsg');
+  e.textContent = msg; e.style.display = 'block';
+}
+
+// Init
+document.getElementById('headerDate').textContent = new Date().toLocaleDateString('cs-CZ',{weekday:'long',day:'numeric',month:'long'});
+document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
+loadTransactions();
+</script>
+
+<script>
+// Seed historická data z Notionu — spustí se jen jednou pokud je tabulka prázdná
+async function seedIfEmpty() {
+  const dbc = supabase.createClient(
+    'https://eaiwhttmuubzenlpsfad.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXdodHRtdXViemVubHBzZmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0MTQ5OTksImV4cCI6MjA5Mzk5MDk5OX0.wpq1aUciLu6njaIU5-bOzZ5sVhz_q6Rg4ZbnjUWnWsk'
+  );
+  const { count } = await dbc.from('transactions').select('*',{count:'exact',head:true});
+  if (count && count > 0) return;
+  await dbc.from('transactions').insert([
+    {name:'mekáč ústí',amount:89,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-08'},
+    {name:'MHD',amount:40,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
+    {name:'MHD',amount:40,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
+    {name:'MHD',amount:40,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
+    {name:'vlak',amount:210,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
+    {name:'vlak',amount:210,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
+    {name:'vlak',amount:210,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
+    {name:'mekáč',amount:120,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-08'},
+    {name:'canva',amount:359,account:'bezny',type:'vydaj',category:'Vzdělání',tx_date:'2026-05-08'},
+    {name:'večerka',amount:85,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-08'},
+    {name:'nájem + jídlo',amount:12000,account:'bezny',type:'vydaj',category:'Bydlení',tx_date:'2026-05-08'},
+    {name:'albert brno nákup',amount:420,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-08'},
+    {name:'google workspace',amount:180,account:'bezny',type:'vydaj',category:'Vzdělání',tx_date:'2026-05-08'},
+    {name:'miners kafe brno',amount:95,account:'bezny',type:'vydaj',category:'Zábava',tx_date:'2026-05-08'},
+    {name:'mekac',amount:110,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-10'},
+    {name:'aktin',amount:650,account:'bezny',type:'vydaj',category:'Zdraví',tx_date:'2026-05-10'},
+    {name:'divadlo pití',amount:280,account:'bezny',type:'vydaj',category:'Zábava',tx_date:'2026-05-10'},
+    {name:'MHD',amount:40,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-10'},
+    {name:'pití večerka',amount:65,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-10'},
+    {name:'1000 Kč hotovost',amount:1000,account:'bezny',type:'vydaj',category:'Hotovost',tx_date:'2026-05-10'},
+    {name:'nákup',amount:340,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-10'},
+    {name:'taxi',amount:185,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-10'},
+    {name:'penzijko',amount:2000,account:'penzijko',type:'prijem',category:'Finance',tx_date:'2026-05-10'},
+    {name:'wolt plat',amount:24069,account:'bezny',type:'prijem',category:'HPP',tx_date:'2026-05-10'},
+  ]);
+}
+seedIfEmpty();
+</script>
+
+</body>
+</html>
