@@ -27,8 +27,19 @@
   --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
   --shadow: 0 2px 12px rgba(0,0,0,0.07);
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.13);
-  --r: 18px;
-  --r-sm: 11px;
+  --r: 18px; --r-sm: 11px;
+}
+body.dark {
+  --bg: #0f1310;
+  --surface: #1b1f18;
+  --surface2: #242820;
+  --border: #2e332a;
+  --text: #e4ede0;
+  --muted: #6b7564;
+  --accent-bg: #1a2e1a;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.3);
+  --shadow: 0 2px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
 }
 
 body {
@@ -37,8 +48,8 @@ body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   min-height: 100vh;
   padding-bottom: 3rem;
+  transition: background 0.25s, color 0.25s;
 }
-
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
@@ -49,330 +60,270 @@ body {
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   padding: 0.85rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  transition: background 0.25s, border-color 0.25s;
 }
+body.dark .header { background: rgba(27,31,24,0.95); }
 .header-left { display: flex; align-items: center; gap: 0.7rem; }
 .header-logo {
   width: 34px; height: 34px;
   background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1rem;
-  flex-shrink: 0;
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
   box-shadow: 0 3px 10px rgba(91,181,90,0.35);
 }
 .header-title { font-size: 1.05rem; font-weight: 800; }
+.header-right { display: flex; align-items: center; gap: 0.5rem; }
 .header-date { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+.icon-btn {
+  background: var(--surface2); border: none;
+  border-radius: 50%; width: 34px; height: 34px;
+  font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); transition: background 0.15s, color 0.15s;
+}
+.icon-btn:hover { background: var(--border); color: var(--text); }
+
+/* ── Reminder banner ── */
+.reminder-banner {
+  background: linear-gradient(135deg, #fff8e1, #fff3cd);
+  border-bottom: 1px solid #ffe082;
+  padding: 0.65rem 1.5rem;
+  display: flex; align-items: center; gap: 0.75rem;
+  font-size: 0.82rem; font-weight: 600; color: #7a5c00;
+}
+body.dark .reminder-banner { background: linear-gradient(135deg, #2a2200, #1f1a00); border-color: #3a2e00; color: #ffd54f; }
+.reminder-banner.hidden { display: none; }
+.reminder-text { flex: 1; }
+.reminder-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 1.1rem; color: #b8860b; padding: 2px 6px;
+  border-radius: 6px; line-height: 1;
+}
+.reminder-close:hover { background: rgba(0,0,0,0.08); }
 
 /* ── Layout ── */
 .app-layout {
-  max-width: 1120px;
-  margin: 0 auto;
+  max-width: 1120px; margin: 0 auto;
   padding: 1.25rem 1rem;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
+  display: grid; grid-template-columns: 1fr; gap: 1rem;
 }
-
 @media (min-width: 820px) {
-  .app-layout {
-    grid-template-columns: 340px 1fr;
-    gap: 1.25rem;
-    padding: 1.5rem;
-    align-items: start;
-  }
-  .left-panel {
-    position: sticky;
-    top: 66px;
-  }
+  .app-layout { grid-template-columns: 340px 1fr; gap: 1.25rem; padding: 1.5rem; align-items: start; }
+  .left-panel { position: sticky; top: 66px; }
 }
-
-.left-panel, .right-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+.left-panel, .right-panel { display: flex; flex-direction: column; gap: 1rem; }
 
 /* ── Cards ── */
-.card {
-  background: var(--surface);
-  border-radius: var(--r);
-  box-shadow: var(--shadow);
-}
+.card { background: var(--surface); border-radius: var(--r); box-shadow: var(--shadow); transition: background 0.25s, box-shadow 0.25s; }
 .card-body { padding: 1.25rem; }
-
-.section-label {
-  font-size: 0.67rem;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 1rem;
-}
+.section-label { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
 
 /* ── Form ── */
 .type-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 5px;
-  margin-bottom: 1rem;
-  background: var(--surface2);
-  border-radius: var(--r-sm);
-  padding: 4px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 5px; margin-bottom: 1rem;
+  background: var(--surface2); border-radius: var(--r-sm); padding: 4px;
 }
 .type-tab {
-  border-radius: 8px;
-  padding: 0.5rem 0.25rem;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--muted);
-  cursor: pointer;
-  text-align: center;
-  transition: all 0.18s;
-  user-select: none;
-  border: none;
-  background: transparent;
+  border-radius: 8px; padding: 0.5rem 0.25rem;
+  font-size: 0.8rem; font-weight: 700; color: var(--muted);
+  cursor: pointer; text-align: center; transition: all 0.18s;
+  user-select: none; border: none; background: transparent;
 }
 .type-tab:hover { color: var(--text); }
 .type-tab.active-prijem { background: #e8f5e9; color: var(--green); box-shadow: var(--shadow-sm); }
 .type-tab.active-vydaj  { background: #fdecea; color: var(--red);   box-shadow: var(--shadow-sm); }
 .type-tab.active-prevod { background: #e3f2fd; color: var(--blue);  box-shadow: var(--shadow-sm); }
+body.dark .type-tab.active-prijem { background: rgba(76,175,80,0.15); }
+body.dark .type-tab.active-vydaj  { background: rgba(239,83,80,0.15); }
+body.dark .type-tab.active-prevod { background: rgba(66,165,245,0.15); }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 8px;
-}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
-
-.field label {
-  display: block;
-  font-size: 0.67rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 5px;
-}
+.field label { display: block; font-size: 0.67rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
 input, select {
-  width: 100%;
-  background: var(--surface2);
-  border: 1.5px solid transparent;
-  border-radius: var(--r-sm);
-  color: var(--text);
+  width: 100%; background: var(--surface2); border: 1.5px solid transparent;
+  border-radius: var(--r-sm); color: var(--text);
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 500;
-  padding: 0.65rem 0.85rem;
-  outline: none;
-  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-  -webkit-appearance: none;
-  appearance: none;
+  font-size: 0.9rem; font-weight: 500; padding: 0.65rem 0.85rem;
+  outline: none; transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none; appearance: none;
 }
-input:focus, select:focus {
-  border-color: var(--accent);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(91,181,90,0.13);
-}
+input:focus, select:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px rgba(91,181,90,0.13); }
 input::placeholder { color: var(--muted); font-weight: 400; }
 select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%237a8570' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 11px center;
-  padding-right: 1.9rem;
-  cursor: pointer;
+  background-repeat: no-repeat; background-position: right 11px center;
+  padding-right: 1.9rem; cursor: pointer;
+}
+
+/* Recurring checkbox */
+.recurring-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 8px; margin-bottom: 2px;
+  font-size: 0.8rem; font-weight: 600; color: var(--muted);
+  cursor: pointer; user-select: none;
+}
+.recurring-row input[type="checkbox"] {
+  width: 16px; height: 16px; padding: 0;
+  accent-color: var(--accent); cursor: pointer;
+  border-radius: 4px;
 }
 
 .btn-add {
   width: 100%;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-  color: #fff;
-  border: none;
-  border-radius: var(--r-sm);
+  color: #fff; border: none; border-radius: var(--r-sm);
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.92rem;
-  font-weight: 700;
-  padding: 0.82rem;
-  cursor: pointer;
-  transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
-  margin-top: 6px;
-  box-shadow: 0 4px 16px rgba(61,140,60,0.32);
-  letter-spacing: 0.01em;
+  font-size: 0.92rem; font-weight: 700; padding: 0.82rem;
+  cursor: pointer; transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+  margin-top: 6px; box-shadow: 0 4px 16px rgba(61,140,60,0.32);
 }
 .btn-add:hover { opacity: 0.9; box-shadow: 0 6px 22px rgba(61,140,60,0.38); }
 .btn-add:active { transform: scale(0.985); }
 .btn-add:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; transform: none; }
-
-.err {
-  font-size: 0.78rem;
-  color: var(--red);
-  margin-top: 8px;
-  display: none;
-  padding: 0.5rem 0.75rem;
-  background: #fdecea;
-  border-radius: 8px;
-  font-weight: 500;
-}
+.err { font-size: 0.78rem; color: var(--red); margin-top: 8px; display: none; padding: 0.5rem 0.75rem; background: #fdecea; border-radius: 8px; font-weight: 500; }
+body.dark .err { background: rgba(239,83,80,0.15); }
 
 /* ── Account cards ── */
-.accounts-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
+.accounts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .acct-card {
-  background: var(--surface);
-  border-radius: var(--r);
-  padding: 1rem 1.1rem;
-  box-shadow: var(--shadow);
+  background: var(--surface); border-radius: var(--r);
+  padding: 1rem 1.1rem; box-shadow: var(--shadow);
   border-top: 3px solid var(--accent);
-  transition: transform 0.15s, box-shadow 0.15s;
-  cursor: default;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.25s;
+  cursor: pointer; position: relative;
 }
 .acct-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-.acct-card.bezny   { border-top-color: var(--blue); }
-.acct-card.sporak  { border-top-color: var(--green); }
-.acct-card.penzijko{ border-top-color: var(--purple); }
-.acct-card.petska     { border-top-color: var(--orange); }
-.acct-card.investice  { border-top-color: #26c6da; }
-.acct-card.hotovost   { border-top-color: #ffb300; }
-.acct-icon {
-  width: 34px; height: 34px;
-  border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1rem;
-  margin-bottom: 0.55rem;
-}
-.acct-card.bezny   .acct-icon { background: #e3f2fd; }
-.acct-card.sporak  .acct-icon { background: #e8f5e9; }
-.acct-card.penzijko.acct-icon { background: #f3e5f5; }
-.acct-card.petska     .acct-icon { background: #fff3e0; }
-.acct-card.investice  .acct-icon { background: #e0f7fa; }
-.acct-card.hotovost   .acct-icon { background: #fff8e1; }
+.acct-card.bezny    { border-top-color: var(--blue); }
+.acct-card.sporak   { border-top-color: var(--green); }
+.acct-card.penzijko { border-top-color: var(--purple); }
+.acct-card.petska   { border-top-color: var(--orange); }
+.acct-card.investice{ border-top-color: #26c6da; }
+.acct-card.hotovost { border-top-color: #ffb300; }
+.acct-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 1rem; margin-bottom: 0.55rem; }
+.acct-card.bezny    .acct-icon { background: #e3f2fd; }
+.acct-card.sporak   .acct-icon { background: #e8f5e9; }
+.acct-card.penzijko .acct-icon { background: #f3e5f5; }
+.acct-card.petska   .acct-icon { background: #fff3e0; }
+.acct-card.investice .acct-icon { background: #e0f7fa; }
+.acct-card.hotovost  .acct-icon { background: #fff8e1; }
+body.dark .acct-card.bezny    .acct-icon { background: rgba(66,165,245,0.15); }
+body.dark .acct-card.sporak   .acct-icon { background: rgba(76,175,80,0.15); }
+body.dark .acct-card.penzijko .acct-icon { background: rgba(171,71,188,0.15); }
+body.dark .acct-card.petska   .acct-icon { background: rgba(255,138,101,0.15); }
+body.dark .acct-card.investice .acct-icon { background: rgba(38,198,218,0.15); }
+body.dark .acct-card.hotovost  .acct-icon { background: rgba(255,179,0,0.15); }
 .acct-name { font-size: 0.63rem; font-weight: 700; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
 .acct-val  { font-size: 1.1rem; font-weight: 800; color: var(--text); }
 .acct-val.neg { color: var(--red); }
+.acct-trend { font-size: 0.65rem; font-weight: 700; margin-top: 4px; }
+.acct-trend.up   { color: var(--green); }
+.acct-trend.down { color: var(--red); }
+.acct-trend.flat { color: var(--muted); }
+.acct-settings-hint {
+  position: absolute; top: 8px; right: 8px;
+  font-size: 0.65rem; color: transparent;
+  transition: color 0.15s;
+}
+.acct-card:hover .acct-settings-hint { color: var(--muted); }
 
 /* ── Total ── */
 .total-card {
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-  border-radius: var(--r);
-  padding: 1.05rem 1.25rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  border-radius: var(--r); padding: 1.05rem 1.25rem;
+  display: flex; justify-content: space-between; align-items: center;
   box-shadow: 0 6px 24px rgba(61,140,60,0.3);
 }
 .total-label { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.85); }
 .total-val   { font-size: 1.55rem; font-weight: 800; color: #fff; }
 
+/* ── Monthly summary ── */
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+.summary-item { text-align: center; }
+.summary-label { font-size: 0.63rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.summary-val { font-size: 1.05rem; font-weight: 800; }
+.summary-val.income  { color: var(--green); }
+.summary-val.expense { color: var(--red); }
+.summary-val.saving  { color: var(--blue); }
+.summary-divider { border: none; border-top: 1px solid var(--border); margin: 0.75rem 0; }
+.summary-row { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; padding: 3px 0; }
+.summary-row-label { color: var(--muted); flex: 1; }
+.summary-row-val { font-weight: 700; }
+.summary-row-val.good { color: var(--green); }
+.summary-row-val.bad  { color: var(--red); }
+.summary-row-val.neutral { color: var(--muted); }
+.saving-bar-wrap { margin-top: 0.75rem; }
+.saving-bar-track { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+.saving-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-dark)); transition: width 0.6s ease; }
+
+/* ── Category limits ── */
+.limit-card-body { padding: 1rem 1.25rem; }
+.limit-item { margin-bottom: 0.7rem; }
+.limit-item:last-child { margin-bottom: 0; }
+.limit-header { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px; }
+.limit-name { font-weight: 600; }
+.limit-vals { color: var(--muted); font-weight: 500; }
+.limit-vals span.over { color: var(--red); font-weight: 700; }
+.limit-bar-track { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.limit-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.limit-bar-fill.ok   { background: var(--green); }
+.limit-bar-fill.warn { background: var(--orange); }
+.limit-bar-fill.over { background: var(--red); }
+
+/* ── Recurring / Fixed ── */
+.recurring-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.recurring-item:last-child { border-bottom: none; }
+.recurring-ico { font-size: 1rem; width: 30px; text-align: center; flex-shrink: 0; }
+.recurring-name { font-size: 0.85rem; font-weight: 600; flex: 1; }
+.recurring-amount { font-size: 0.85rem; font-weight: 700; color: var(--red); }
+.recurring-del { background: none; border: none; color: transparent; cursor: pointer; font-size: 1rem; padding: 3px 6px; border-radius: 6px; transition: all 0.1s; line-height: 1; }
+.recurring-item:hover .recurring-del { color: #ccc; }
+.recurring-del:hover { color: var(--red) !important; background: #fdecea; }
+
 /* ── Chart ── */
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
+.chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 .chart-title { font-size: 0.88rem; font-weight: 700; }
 .chart-filter { display: flex; gap: 5px; }
-.cf-btn {
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 4px 11px;
-  border-radius: 20px;
-  border: 1.5px solid var(--border);
-  background: var(--surface2);
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.15s;
-}
+.cf-btn { font-size: 0.7rem; font-weight: 700; padding: 4px 11px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; transition: all 0.15s; }
 .cf-btn.active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent-dark); }
 .chart-wrap { position: relative; height: 185px; }
-.legend-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 14px;
-  margin-top: 1rem;
-}
+.legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; margin-top: 1rem; }
 .legend-item { display: flex; align-items: center; gap: 7px; font-size: 0.77rem; }
 .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .legend-pct { margin-left: auto; font-weight: 700; color: var(--muted); font-size: 0.71rem; }
+.legend-warn { font-size: 0.7rem; margin-left: 2px; }
 
 /* ── History ── */
-.history-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  gap: 0.75rem;
-}
+.history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 0.75rem; }
 .search-wrap { position: relative; flex: 1; max-width: 180px; }
-.search-wrap::before {
-  content: '⌕';
-  position: absolute;
-  left: 9px;
-  top: 50%;
-  transform: translateY(-51%);
-  font-size: 1rem;
-  color: var(--muted);
-  pointer-events: none;
-  line-height: 1;
-}
-.search-input {
-  background: var(--surface2);
-  border: 1.5px solid transparent;
-  border-radius: 10px;
-  padding: 0.42rem 0.75rem 0.42rem 1.9rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  width: 100%;
-  color: var(--text);
-  transition: border-color 0.15s, box-shadow 0.15s;
-  -webkit-appearance: none;
-  appearance: none;
-}
-.search-input:focus { border-color: var(--accent); background: #fff; outline: none; box-shadow: 0 0 0 3px rgba(91,181,90,0.1); }
+.search-wrap::before { content: '⌕'; position: absolute; left: 9px; top: 50%; transform: translateY(-51%); font-size: 1rem; color: var(--muted); pointer-events: none; line-height: 1; }
+.search-input { background: var(--surface2); border: 1.5px solid transparent; border-radius: 10px; padding: 0.42rem 0.75rem 0.42rem 1.9rem; font-size: 0.8rem; font-weight: 500; width: 100%; color: var(--text); transition: border-color 0.15s, box-shadow 0.15s; -webkit-appearance: none; appearance: none; }
+.search-input:focus { border-color: var(--accent); background: var(--surface); outline: none; box-shadow: 0 0 0 3px rgba(91,181,90,0.1); }
 .search-input::placeholder { color: var(--muted); font-weight: 400; }
-
-/* Date groups */
+.cat-filter-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+.cat-pill { font-size: 0.72rem; font-weight: 700; padding: 4px 11px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; transition: all 0.15s; white-space: nowrap; line-height: 1.4; }
+.cat-pill:hover { border-color: var(--muted); color: var(--text); }
+.cat-pill.active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent-dark); }
 .date-group { margin-bottom: 0.25rem; }
-.date-group-label {
-  font-size: 0.67rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 0.75rem 8px 0.35rem;
-}
+.date-group-label { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); padding: 0.75rem 8px 0.35rem; }
 .date-group:first-child .date-group-label { padding-top: 0; }
-
-/* Transaction rows */
-.tx-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 8px;
-  border-radius: var(--r-sm);
-  transition: background 0.1s;
-}
+.tx-row { display: flex; align-items: center; gap: 10px; padding: 9px 8px; border-radius: var(--r-sm); transition: background 0.1s; }
 .tx-row:hover { background: var(--surface2); }
-.tx-icon {
-  width: 38px; height: 38px;
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.95rem;
-  font-weight: 800;
-  flex-shrink: 0;
+.tx-row.tx-new { animation: txAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes txAppear {
+  from { opacity: 0; transform: translateX(-12px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
 }
+.tx-icon { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; font-weight: 800; flex-shrink: 0; }
 .tx-icon.prijem { background: #e8f5e9; color: var(--green); }
 .tx-icon.vydaj  { background: #fdecea; color: var(--red);   }
 .tx-icon.prevod { background: #e3f2fd; color: var(--blue);  }
+body.dark .tx-icon.prijem { background: rgba(76,175,80,0.15); }
+body.dark .tx-icon.vydaj  { background: rgba(239,83,80,0.15); }
+body.dark .tx-icon.prevod { background: rgba(66,165,245,0.15); }
 .tx-name { font-size: 0.88rem; font-weight: 600; color: var(--text); }
 .tx-sub  { font-size: 0.7rem; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
 .tx-right { margin-left: auto; text-align: right; flex-shrink: 0; }
@@ -380,218 +331,58 @@ select {
 .tx-amount.prijem { color: var(--green); }
 .tx-amount.vydaj  { color: var(--red);   }
 .tx-amount.prevod { color: var(--blue);  }
-.tx-date-small { font-size: 0.67rem; color: var(--muted); margin-top: 1px; }
-.tx-del {
-  background: none; border: none;
-  color: transparent;
-  cursor: pointer;
-  font-size: 1.15rem; padding: 5px 7px;
-  border-radius: 8px; transition: all 0.12s;
-  line-height: 1; flex-shrink: 0;
-}
+.tx-edit { background: none; border: none; color: transparent; cursor: pointer; font-size: 0.85rem; padding: 5px 6px; border-radius: 8px; transition: all 0.12s; line-height: 1; flex-shrink: 0; }
+.tx-row:hover .tx-edit { color: #ccc; }
+.tx-edit:hover { color: var(--accent-dark) !important; background: var(--accent-bg); }
+.tx-del { background: none; border: none; color: transparent; cursor: pointer; font-size: 1.15rem; padding: 5px 7px; border-radius: 8px; transition: all 0.12s; line-height: 1; flex-shrink: 0; }
 .tx-row:hover .tx-del { color: #ccc; }
 .tx-del:hover { color: var(--red) !important; background: #fdecea; }
-
-.cat-badge {
-  display: inline-block;
-  font-size: 0.6rem;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
+body.dark .tx-del:hover { background: rgba(239,83,80,0.15); }
+.cat-badge { display: inline-block; font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
+.recurring-badge { font-size: 0.65rem; }
 .empty   { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 2.5rem 0; }
 .loading { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 1.5rem 0; }
 
-/* ── Edit button ── */
-.tx-edit {
-  background: none; border: none;
-  color: transparent;
-  cursor: pointer;
-  font-size: 0.85rem; padding: 5px 6px;
-  border-radius: 8px; transition: all 0.12s;
-  line-height: 1; flex-shrink: 0;
-}
-.tx-row:hover .tx-edit { color: #ccc; }
-.tx-edit:hover { color: var(--accent-dark) !important; background: var(--accent-bg); }
-
-/* ── Edit modal ── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 300;
-  display: none;
-  align-items: flex-end;
-  justify-content: center;
-  backdrop-filter: blur(3px);
-}
+/* ── Modals ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(3px); }
 .modal-overlay.open { display: flex; }
-.modal {
-  background: var(--surface);
-  border-radius: 24px 24px 0 0;
-  padding: 1.4rem 1.25rem 2rem;
-  width: 100%;
-  max-width: 560px;
-  box-shadow: var(--shadow-lg);
-  animation: slideUp 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
-}
-@keyframes slideUp {
-  from { transform: translateY(60px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
-@media (min-width: 600px) {
-  .modal-overlay { align-items: center; }
-  .modal { border-radius: 24px; }
-}
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.1rem;
-}
+.modal { background: var(--surface); border-radius: 24px 24px 0 0; padding: 1.4rem 1.25rem 2rem; width: 100%; max-width: 560px; box-shadow: var(--shadow-lg); animation: slideUp 0.22s cubic-bezier(0.34, 1.4, 0.64, 1); }
+@keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@media (min-width: 600px) { .modal-overlay { align-items: center; } .modal { border-radius: 24px; } }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
 .modal-title { font-size: 0.95rem; font-weight: 800; }
-.modal-close {
-  background: var(--surface2);
-  border: none; border-radius: 50%;
-  width: 30px; height: 30px;
-  font-size: 1.1rem; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--muted);
-  transition: background 0.15s, color 0.15s;
-  line-height: 1;
-}
+.modal-close { background: var(--surface2); border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: background 0.15s, color 0.15s; line-height: 1; }
 .modal-close:hover { background: var(--border); color: var(--text); }
-.modal-actions {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 8px;
-  margin-top: 1rem;
-}
-.btn-cancel {
-  background: var(--surface2);
-  color: var(--text-secondary);
-  border: none;
-  border-radius: var(--r-sm);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.9rem; font-weight: 700;
-  padding: 0.8rem; cursor: pointer;
-  transition: background 0.15s;
-}
+.modal-actions { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: 1rem; }
+.btn-cancel { background: var(--surface2); color: var(--muted); border: none; border-radius: var(--r-sm); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 700; padding: 0.8rem; cursor: pointer; transition: background 0.15s; }
 .btn-cancel:hover { background: var(--border); }
 
+/* ── Chart tooltip ── */
+.chart-tooltip { position: fixed; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow-lg); padding: 0.85rem 1rem; pointer-events: none; z-index: 200; min-width: 190px; max-width: 260px; opacity: 0; transition: opacity 0.15s; border: 1px solid var(--border); }
+.chart-tooltip.visible { opacity: 1; }
+.chart-tooltip-title { font-size: 0.78rem; font-weight: 800; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 7px; }
+.chart-tooltip-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.chart-tooltip-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 0.76rem; padding: 3px 0; color: var(--muted); border-bottom: 1px solid var(--border); }
+.chart-tooltip-row:last-of-type { border-bottom: none; }
+.chart-tooltip-row span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chart-tooltip-row span:last-child { font-weight: 600; flex-shrink: 0; color: var(--text); }
+.chart-tooltip-total { border-top: 1.5px solid var(--border); margin-top: 7px; padding-top: 7px; font-size: 0.78rem; font-weight: 800; display: flex; justify-content: space-between; }
+
 /* ── Toast ── */
-.toast {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: #1a1e17;
-  color: #fff;
-  padding: 0.65rem 1.25rem;
-  border-radius: 30px;
-  font-size: 0.84rem;
-  font-weight: 600;
-  z-index: 999;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
-  white-space: nowrap;
-  box-shadow: var(--shadow-lg);
-  pointer-events: none;
-  opacity: 0;
-}
+.toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1e17; color: #fff; padding: 0.65rem 1.25rem; border-radius: 30px; font-size: 0.84rem; font-weight: 600; z-index: 999; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s; white-space: nowrap; box-shadow: var(--shadow-lg); pointer-events: none; opacity: 0; }
 .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 .toast.error   { background: var(--red);   }
 .toast.success { background: var(--green); }
 
-/* ── Chart custom tooltip ── */
-.chart-tooltip {
-  position: fixed;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: var(--shadow-lg);
-  padding: 0.85rem 1rem;
-  pointer-events: none;
-  z-index: 200;
-  min-width: 190px;
-  max-width: 260px;
-  opacity: 0;
-  transition: opacity 0.15s;
-  border: 1px solid var(--border);
-}
-.chart-tooltip.visible { opacity: 1; }
-.chart-tooltip-title {
-  font-size: 0.78rem;
-  font-weight: 800;
-  margin-bottom: 0.6rem;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.chart-tooltip-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.chart-tooltip-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  font-size: 0.76rem;
-  padding: 3px 0;
-  color: var(--text-secondary);
-  border-bottom: 1px solid var(--border);
-}
-.chart-tooltip-row:last-of-type { border-bottom: none; }
-.chart-tooltip-row span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.chart-tooltip-row span:last-child { font-weight: 600; flex-shrink: 0; color: var(--text); }
-.chart-tooltip-total {
-  border-top: 1.5px solid var(--border);
-  margin-top: 7px;
-  padding-top: 7px;
-  font-size: 0.78rem;
-  font-weight: 800;
-  display: flex;
-  justify-content: space-between;
-}
-
-/* ── Category filter pills ── */
-.cat-filter-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 1rem;
-}
-.cat-pill {
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 4px 11px;
-  border-radius: 20px;
-  border: 1.5px solid var(--border);
-  background: var(--surface2);
-  color: var(--muted);
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-  line-height: 1.4;
-}
-.cat-pill:hover { border-color: var(--muted); color: var(--text); }
-.cat-pill.active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent-dark); }
-
 /* ── Responsive ── */
-@media (max-width: 819px) {
-  .legend-grid { grid-template-columns: 1fr; }
-}
+@media (max-width: 819px) { .legend-grid { grid-template-columns: 1fr; } }
 @media (max-width: 480px) {
   .form-grid.three { grid-template-columns: 1fr 1fr; }
-  .form-grid.three .to-field  { grid-column: span 2; }
-  .form-grid.three .cat-field { grid-column: span 2; }
+  .form-grid.three .to-field, .form-grid.three .cat-field { grid-column: span 2; }
   .header { padding: 0.8rem 1rem; }
+  .summary-grid { grid-template-columns: 1fr 1fr 1fr; }
 }
-@media (max-width: 360px) {
-  .form-grid { grid-template-columns: 1fr; }
-  .accounts-grid { grid-template-columns: 1fr 1fr; }
-}
+@media (max-width: 360px) { .form-grid { grid-template-columns: 1fr; } .accounts-grid { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
@@ -599,7 +390,8 @@ select {
 <div class="toast" id="toast"></div>
 <div class="chart-tooltip" id="chartTooltip"></div>
 
-<div class="modal-overlay" id="editOverlay" onclick="overlayClick(event)">
+<!-- Edit transaction modal -->
+<div class="modal-overlay" id="editOverlay" onclick="overlayClick(event,'editOverlay')">
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title">Upravit transakci</span>
@@ -611,53 +403,32 @@ select {
       <div class="type-tab" id="etab-prevod" onclick="setEditType('prevod')">⇄ Převod</div>
     </div>
     <div class="form-grid">
-      <div class="field">
-        <label>Název</label>
-        <input type="text" id="editName" autocomplete="off" />
-      </div>
-      <div class="field">
-        <label>Částka (Kč)</label>
-        <input type="number" id="editAmount" min="1" inputmode="numeric" />
-      </div>
+      <div class="field"><label>Název</label><input type="text" id="editName" autocomplete="off" /></div>
+      <div class="field"><label>Částka (Kč)</label><input type="number" id="editAmount" min="1" inputmode="numeric" /></div>
     </div>
     <div class="form-grid three">
-      <div class="field">
-        <label>Datum</label>
-        <input type="date" id="editDate" style="-webkit-appearance:auto;appearance:auto;" />
-      </div>
-      <div class="field">
-        <label>Účet</label>
+      <div class="field"><label>Datum</label><input type="date" id="editDate" style="-webkit-appearance:auto;appearance:auto;" /></div>
+      <div class="field"><label>Účet</label>
         <select id="editAccount">
-          <option value="bezny">Běžný účet</option>
-          <option value="sporak">Spořící účet</option>
-          <option value="penzijko">Penzijko</option>
-          <option value="petska">Petska firemní</option>
-          <option value="investice">Investice</option>
-          <option value="hotovost">Hotovost</option>
+          <option value="bezny">Běžný účet</option><option value="sporak">Spořící účet</option>
+          <option value="penzijko">Penzijko</option><option value="petska">Petska firemní</option>
+          <option value="investice">Investice</option><option value="hotovost">Hotovost</option>
         </select>
       </div>
-      <div class="field to-field" id="editToAccountField" style="display:none;">
-        <label>Na účet</label>
+      <div class="field to-field" id="editToAccountField" style="display:none;"><label>Na účet</label>
         <select id="editToAccount">
-          <option value="sporak">Spořící účet</option>
-          <option value="bezny">Běžný účet</option>
-          <option value="penzijko">Penzijko</option>
-          <option value="petska">Petska firemní</option>
+          <option value="sporak">Spořící účet</option><option value="bezny">Běžný účet</option>
+          <option value="penzijko">Penzijko</option><option value="petska">Petska firemní</option>
+          <option value="investice">Investice</option><option value="hotovost">Hotovost</option>
         </select>
       </div>
-      <div class="field cat-field" id="editCatField">
-        <label>Kategorie</label>
+      <div class="field cat-field" id="editCatField"><label>Kategorie</label>
         <select id="editCategory">
-          <option value="Potraviny">🛒 Potraviny</option>
-          <option value="Bydlení">🏠 Bydlení</option>
-          <option value="Doprava">🚌 Doprava</option>
-          <option value="Zábava">🎉 Zábava</option>
-          <option value="Zdraví">💊 Zdraví</option>
-          <option value="Vzdělání">📚 Vzdělání</option>
-          <option value="HPP">💼 HPP</option>
-          <option value="Petska">🐾 Petska</option>
-          <option value="Finance">💰 Finance</option>
-          <option value="Hotovost">💵 Hotovost</option>
+          <option value="Potraviny">🛒 Potraviny</option><option value="Bydlení">🏠 Bydlení</option>
+          <option value="Doprava">🚌 Doprava</option><option value="Zábava">🎉 Zábava</option>
+          <option value="Zdraví">💊 Zdraví</option><option value="Vzdělání">📚 Vzdělání</option>
+          <option value="HPP">💼 HPP</option><option value="Petska">🐾 Petska</option>
+          <option value="Finance">💰 Finance</option><option value="Hotovost">💵 Hotovost</option>
           <option value="Ostatní">📦 Ostatní</option>
         </select>
       </div>
@@ -670,19 +441,45 @@ select {
   </div>
 </div>
 
+<!-- Account settings modal -->
+<div class="modal-overlay" id="acctOverlay" onclick="overlayClick(event,'acctOverlay')">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="acctModalTitle">Nastavení účtu</span>
+      <button class="modal-close" onclick="closeAcctSettings()">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="field"><label>Název účtu</label><input type="text" id="acctName" autocomplete="off" /></div>
+      <div class="field"><label>Výchozí zůstatek (Kč)</label><input type="number" id="acctBalance" min="0" inputmode="numeric" /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAcctSettings()">Zrušit</button>
+      <button class="btn-add" id="acctSaveBtn" onclick="saveAcctSettings()">Uložit</button>
+    </div>
+  </div>
+</div>
+
 <header class="header">
   <div class="header-left">
     <div class="header-logo">💸</div>
     <span class="header-title">Finance</span>
   </div>
-  <span class="header-date" id="headerDate"></span>
+  <div class="header-right">
+    <span class="header-date" id="headerDate"></span>
+    <button class="icon-btn" id="darkToggle" onclick="toggleDark()" title="Tmavý režim">🌙</button>
+  </div>
 </header>
+
+<div class="reminder-banner hidden" id="reminderBanner">
+  <span>🔔</span>
+  <span class="reminder-text" id="reminderText"></span>
+  <button class="reminder-close" onclick="dismissReminder()">×</button>
+</div>
 
 <div class="app-layout">
 
   <!-- ── LEFT PANEL ── -->
   <div class="left-panel">
-
     <div class="card card-body">
       <p class="section-label">Nová transakce</p>
       <div class="type-tabs">
@@ -691,59 +488,40 @@ select {
         <div class="type-tab" id="tab-prevod" onclick="setType('prevod')">⇄ Převod</div>
       </div>
       <div class="form-grid">
-        <div class="field">
-          <label>Název</label>
-          <input type="text" id="txName" placeholder="např. Wolt plat" autocomplete="off" />
-        </div>
-        <div class="field">
-          <label>Částka (Kč)</label>
-          <input type="number" id="txAmount" placeholder="0" min="1" inputmode="numeric" />
-        </div>
+        <div class="field"><label>Název</label><input type="text" id="txName" placeholder="např. Wolt plat" autocomplete="off" /></div>
+        <div class="field"><label>Částka (Kč)</label><input type="number" id="txAmount" placeholder="0" min="1" inputmode="numeric" /></div>
       </div>
       <div class="form-grid three">
-        <div class="field">
-          <label>Datum</label>
-          <input type="date" id="txDate" style="-webkit-appearance:auto;appearance:auto;" />
-        </div>
-        <div class="field">
-          <label>Účet</label>
+        <div class="field"><label>Datum</label><input type="date" id="txDate" style="-webkit-appearance:auto;appearance:auto;" /></div>
+        <div class="field"><label>Účet</label>
           <select id="txAccount">
-            <option value="bezny">Běžný účet</option>
-            <option value="sporak">Spořící účet</option>
-            <option value="penzijko">Penzijko</option>
-            <option value="petska">Petska firemní</option>
-          <option value="investice">Investice</option>
-          <option value="hotovost">Hotovost</option>
+            <option value="bezny">Běžný účet</option><option value="sporak">Spořící účet</option>
+            <option value="penzijko">Penzijko</option><option value="petska">Petska firemní</option>
+            <option value="investice">Investice</option><option value="hotovost">Hotovost</option>
           </select>
         </div>
-        <div class="field to-field" id="toAccountField" style="display:none;">
-          <label>Na účet</label>
+        <div class="field to-field" id="toAccountField" style="display:none;"><label>Na účet</label>
           <select id="txToAccount">
-            <option value="sporak">Spořící účet</option>
-            <option value="bezny">Běžný účet</option>
-            <option value="penzijko">Penzijko</option>
-            <option value="petska">Petska firemní</option>
-          <option value="investice">Investice</option>
-          <option value="hotovost">Hotovost</option>
+            <option value="sporak">Spořící účet</option><option value="bezny">Běžný účet</option>
+            <option value="penzijko">Penzijko</option><option value="petska">Petska firemní</option>
+            <option value="investice">Investice</option><option value="hotovost">Hotovost</option>
           </select>
         </div>
-        <div class="field cat-field" id="catField">
-          <label>Kategorie</label>
+        <div class="field cat-field" id="catField"><label>Kategorie</label>
           <select id="txCategory">
-            <option value="Potraviny">🛒 Potraviny</option>
-            <option value="Bydlení">🏠 Bydlení</option>
-            <option value="Doprava">🚌 Doprava</option>
-            <option value="Zábava">🎉 Zábava</option>
-            <option value="Zdraví">💊 Zdraví</option>
-            <option value="Vzdělání">📚 Vzdělání</option>
-            <option value="HPP">💼 HPP</option>
-            <option value="Petska">🐾 Petska</option>
-            <option value="Finance">💰 Finance</option>
-            <option value="Hotovost">💵 Hotovost</option>
+            <option value="Potraviny">🛒 Potraviny</option><option value="Bydlení">🏠 Bydlení</option>
+            <option value="Doprava">🚌 Doprava</option><option value="Zábava">🎉 Zábava</option>
+            <option value="Zdraví">💊 Zdraví</option><option value="Vzdělání">📚 Vzdělání</option>
+            <option value="HPP">💼 HPP</option><option value="Petska">🐾 Petska</option>
+            <option value="Finance">💰 Finance</option><option value="Hotovost">💵 Hotovost</option>
             <option value="Ostatní">📦 Ostatní</option>
           </select>
         </div>
       </div>
+      <label class="recurring-row">
+        <input type="checkbox" id="txRecurring" />
+        🔄 Opakující se (měsíčně)
+      </label>
       <button class="btn-add" id="addBtn" onclick="addTransaction()">+ Přidat transakci</button>
       <p class="err" id="errMsg"></p>
     </div>
@@ -753,54 +531,113 @@ select {
         <span class="chart-title">Výdaje podle kategorie</span>
         <div class="chart-filter">
           <button class="cf-btn active" id="cf-month" onclick="setChartFilter('month')">Tento měsíc</button>
-          <button class="cf-btn" id="cf-all"   onclick="setChartFilter('all')">Vše</button>
+          <button class="cf-btn" id="cf-all" onclick="setChartFilter('all')">Vše</button>
         </div>
       </div>
       <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
       <div class="legend-grid" id="chartLegend"></div>
     </div>
-
   </div>
 
   <!-- ── RIGHT PANEL ── -->
   <div class="right-panel">
 
-    <div class="accounts-grid">
-      <div class="acct-card bezny">
+    <div class="accounts-grid" id="accountsGrid">
+      <div class="acct-card bezny" onclick="openAcctSettings('bezny')">
+        <span class="acct-settings-hint">⚙</span>
         <div class="acct-icon">🏦</div>
-        <div class="acct-name">Běžný účet</div>
+        <div class="acct-name" id="name-bezny">Běžný účet</div>
         <div class="acct-val" id="val-bezny">—</div>
+        <div class="acct-trend" id="trend-bezny"></div>
       </div>
-      <div class="acct-card sporak">
+      <div class="acct-card sporak" onclick="openAcctSettings('sporak')">
+        <span class="acct-settings-hint">⚙</span>
         <div class="acct-icon">🐖</div>
-        <div class="acct-name">Spořící účet</div>
+        <div class="acct-name" id="name-sporak">Spořící účet</div>
         <div class="acct-val" id="val-sporak">—</div>
+        <div class="acct-trend" id="trend-sporak"></div>
       </div>
-      <div class="acct-card penzijko">
+      <div class="acct-card penzijko" onclick="openAcctSettings('penzijko')">
+        <span class="acct-settings-hint">⚙</span>
         <div class="acct-icon">👴</div>
-        <div class="acct-name">Penzijko</div>
+        <div class="acct-name" id="name-penzijko">Penzijko</div>
         <div class="acct-val" id="val-penzijko">—</div>
+        <div class="acct-trend" id="trend-penzijko"></div>
       </div>
-      <div class="acct-card petska">
+      <div class="acct-card petska" onclick="openAcctSettings('petska')">
+        <span class="acct-settings-hint">⚙</span>
         <div class="acct-icon">🐾</div>
-        <div class="acct-name">Petska firemní</div>
+        <div class="acct-name" id="name-petska">Petska firemní</div>
         <div class="acct-val" id="val-petska">—</div>
+        <div class="acct-trend" id="trend-petska"></div>
       </div>
-      <div class="acct-card investice">
+      <div class="acct-card investice" onclick="openAcctSettings('investice')">
+        <span class="acct-settings-hint">⚙</span>
         <div class="acct-icon">📈</div>
-        <div class="acct-name">Investice</div>
+        <div class="acct-name" id="name-investice">Investice</div>
         <div class="acct-val" id="val-investice">—</div>
+        <div class="acct-trend" id="trend-investice"></div>
       </div>
-      <div class="acct-card hotovost">
+      <div class="acct-card hotovost" onclick="openAcctSettings('hotovost')">
+        <span class="acct-settings-hint">⚙</span>
         <div class="acct-icon">💵</div>
-        <div class="acct-name">Hotovost</div>
+        <div class="acct-name" id="name-hotovost">Hotovost</div>
         <div class="acct-val" id="val-hotovost">—</div>
+        <div class="acct-trend" id="trend-hotovost"></div>
       </div>
     </div>
 
     <div class="total-card">
       <span class="total-label">Celkem napříč účty</span>
       <span class="total-val" id="totalAll">—</span>
+    </div>
+
+    <!-- Monthly summary -->
+    <div class="card card-body" id="summaryCard">
+      <p class="section-label">Tento měsíc</p>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-label">Příjmy</div>
+          <div class="summary-val income" id="sumIncome">—</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Výdaje</div>
+          <div class="summary-val expense" id="sumExpense">—</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">Úspora</div>
+          <div class="summary-val saving" id="sumSaving">—</div>
+        </div>
+      </div>
+      <div class="saving-bar-wrap">
+        <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);font-weight:600;">
+          <span>Úspornost</span><span id="sumRate">—</span>
+        </div>
+        <div class="saving-bar-track"><div class="saving-bar-fill" id="sumBar" style="width:0%"></div></div>
+      </div>
+      <hr class="summary-divider">
+      <div class="summary-row">
+        <span>🔺</span>
+        <span class="summary-row-label">Největší výdaj</span>
+        <span class="summary-row-val" id="sumBiggest">—</span>
+      </div>
+      <div class="summary-row" style="margin-top:6px;">
+        <span>📊</span>
+        <span class="summary-row-label">vs. minulý měsíc</span>
+        <span class="summary-row-val" id="sumVsLast">—</span>
+      </div>
+    </div>
+
+    <!-- Category limits -->
+    <div class="card limit-card-body" id="limitsCard" style="display:none;">
+      <p class="section-label" style="margin-bottom:0.75rem;">⚠️ Sledování limitů</p>
+      <div id="limitsList"></div>
+    </div>
+
+    <!-- Fixed / recurring expenses -->
+    <div class="card card-body" id="recurringCard" style="display:none;">
+      <p class="section-label">🔄 Fixní výdaje</p>
+      <div id="recurringList"></div>
     </div>
 
     <div class="card card-body">
@@ -822,18 +659,26 @@ const SB_URL = 'https://eaiwhttmuubzenlpsfad.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhaXdodHRtdXViemVubHBzZmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0MTQ5OTksImV4cCI6MjA5Mzk5MDk5OX0.wpq1aUciLu6njaIU5-bOzZ5sVhz_q6Rg4ZbnjUWnWsk';
 const db = supabase.createClient(SB_URL, SB_KEY);
 
-const DEFAULTS   = { bezny: 24069, sporak: 35327, penzijko: 13414, petska: 12245, investice: 20000, hotovost: 900 };
-const LABELS     = { bezny: 'Běžný účet', sporak: 'Spořící účet', penzijko: 'Penzijko', petska: 'Petska firemní', investice: 'Investice', hotovost: 'Hotovost' };
+const DEFAULTS_BASE = { bezny: 24069, sporak: 35327, penzijko: 13414, petska: 12245, investice: 20000, hotovost: 900 };
+const LABELS_BASE   = { bezny: 'Běžný účet', sporak: 'Spořící účet', penzijko: 'Penzijko', petska: 'Petska firemní', investice: 'Investice', hotovost: 'Hotovost' };
+let DEFAULTS = { ...DEFAULTS_BASE };
+let LABELS   = { ...LABELS_BASE };
+
 const CAT_COLORS = {
   'Potraviny':'#4caf50','Bydlení':'#42a5f5','Doprava':'#ff8a65',
   'Zábava':'#ab47bc','Zdraví':'#ef5350','Vzdělání':'#26c6da',
   'HPP':'#ffd54f','Petska':'#8d6e63','Finance':'#78909c',
   'Hotovost':'#a5d6a7','Ostatní':'#b0bec5'
 };
-const CAT_EMOJI  = {
+const CAT_EMOJI = {
   'Potraviny':'🛒','Bydlení':'🏠','Doprava':'🚌','Zábava':'🎉',
   'Zdraví':'💊','Vzdělání':'📚','HPP':'💼','Petska':'🐾',
   'Finance':'💰','Hotovost':'💵','Ostatní':'📦'
+};
+const CAT_LIMITS = {
+  'Potraviny': 5000, 'Bydlení': 20000, 'Doprava': 2000,
+  'Zábava': 3000, 'Zdraví': 2000, 'Vzdělání': 1500,
+  'Petska': 3000, 'Hotovost': 2000, 'Ostatní': 1000
 };
 
 let transactions     = [];
@@ -843,8 +688,43 @@ let pieChart         = null;
 let toastTimer       = null;
 let catTransactions  = {};
 let activeHistoryCat = null;
+let editingId        = null;
+let editType         = 'vydaj';
+let editingAcct      = null;
+let newTxId          = null;
 
 const fmt = n => Math.round(n).toLocaleString('cs-CZ') + ' Kč';
+
+/* ── localStorage helpers ── */
+function getAccountSettings() { return JSON.parse(localStorage.getItem('accountSettings') || '{}'); }
+function getRecurringTemplates() { return JSON.parse(localStorage.getItem('recurringTemplates') || '[]'); }
+function saveRecurringTemplates(t) { localStorage.setItem('recurringTemplates', JSON.stringify(t)); }
+
+function loadAccountSettings() {
+  const s = getAccountSettings();
+  Object.keys(DEFAULTS_BASE).forEach(k => {
+    if (s[k]) {
+      if (s[k].balance !== undefined) DEFAULTS[k] = s[k].balance;
+      if (s[k].label)                 LABELS[k]   = s[k].label;
+      const nameEl = document.getElementById('name-' + k);
+      if (nameEl) nameEl.textContent = LABELS[k];
+    }
+  });
+}
+
+/* ── Dark mode ── */
+function toggleDark() {
+  const dark = document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode', dark ? '1' : '0');
+  document.getElementById('darkToggle').textContent = dark ? '☀️' : '🌙';
+  if (pieChart) renderChart();
+}
+function initDark() {
+  if (localStorage.getItem('darkMode') === '1') {
+    document.body.classList.add('dark');
+    document.getElementById('darkToggle').textContent = '☀️';
+  }
+}
 
 /* ── Toast ── */
 function showToast(msg, type = '') {
@@ -863,6 +743,7 @@ function setType(t) {
   });
   document.getElementById('toAccountField').style.display = t === 'prevod' ? 'block' : 'none';
   document.getElementById('catField').style.display       = t === 'prevod' ? 'none'  : 'block';
+  document.getElementById('txRecurring').closest('.recurring-row').style.display = t === 'prevod' ? 'none' : 'flex';
 }
 
 /* ── Chart filter ── */
@@ -873,68 +754,219 @@ function setChartFilter(f) {
   renderChart();
 }
 
+/* ── Month helpers ── */
+function isThisMonth(tx) {
+  const now = new Date();
+  const d   = new Date((tx.tx_date || tx.created_at.split('T')[0]) + 'T12:00:00');
+  return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+}
+function isLastMonth(tx) {
+  const now  = new Date();
+  const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const d    = new Date((tx.tx_date || tx.created_at.split('T')[0]) + 'T12:00:00');
+  return d.getMonth() === prev.getMonth() && d.getFullYear() === prev.getFullYear();
+}
+
 /* ── Balances ── */
-function calcBalances() {
-  const b = { ...DEFAULTS };
-  transactions.forEach(tx => {
-    if (tx.type === 'prijem')       b[tx.account]    = (b[tx.account]    || 0) + tx.amount;
-    else if (tx.type === 'vydaj')   b[tx.account]    = (b[tx.account]    || 0) - tx.amount;
+function calcBalances(txList) {
+  const src = txList || transactions;
+  const b   = { ...DEFAULTS };
+  src.forEach(tx => {
+    if (tx.type === 'prijem')      b[tx.account]    = (b[tx.account]    || 0) + tx.amount;
+    else if (tx.type === 'vydaj')  b[tx.account]    = (b[tx.account]    || 0) - tx.amount;
     else if (tx.type === 'prevod') {
-      b[tx.account]    = (b[tx.account]    || 0) - tx.amount;
+      b[tx.account] = (b[tx.account] || 0) - tx.amount;
       if (tx.to_account) b[tx.to_account] = (b[tx.to_account] || 0) + tx.amount;
     }
   });
   return b;
 }
 
+function calcMonthNet(acct, filter) {
+  let net = 0;
+  transactions.filter(filter).forEach(tx => {
+    if (tx.type === 'prijem' && tx.account === acct) net += tx.amount;
+    if (tx.type === 'vydaj'  && tx.account === acct) net -= tx.amount;
+    if (tx.type === 'prevod') {
+      if (tx.account === acct) net -= tx.amount;
+      if (tx.to_account === acct) net += tx.amount;
+    }
+  });
+  return net;
+}
+
 function renderBalances() {
   const b = calcBalances();
   Object.keys(DEFAULTS).forEach(k => {
     const el = document.getElementById('val-' + k);
+    if (!el) return;
     el.textContent = fmt(b[k]);
     el.className   = 'acct-val' + (b[k] < 0 ? ' neg' : '');
+
+    // Trend vs last month
+    const thisNet = calcMonthNet(k, isThisMonth);
+    const lastNet = calcMonthNet(k, isLastMonth);
+    const tEl = document.getElementById('trend-' + k);
+    if (!tEl) return;
+    if (thisNet === 0 && lastNet === 0) { tEl.textContent = ''; return; }
+    const arrow = thisNet >= 0 ? '↑' : '↓';
+    const cls   = thisNet >= 0 ? 'up' : 'down';
+    const diff  = lastNet !== 0 ? Math.abs(Math.round((thisNet - lastNet) / Math.abs(lastNet) * 100)) : null;
+    tEl.className   = 'acct-trend ' + cls;
+    tEl.textContent = arrow + ' ' + fmt(Math.abs(thisNet)) + ' tento měsíc'
+      + (diff !== null ? ` (${thisNet > lastNet ? '+' : '-'}${diff}% vs. loňský)` : '');
   });
   document.getElementById('totalAll').textContent = fmt(Object.values(b).reduce((a, c) => a + c, 0));
+}
+
+/* ── Monthly summary ── */
+function renderSummary() {
+  const thisMonth = transactions.filter(isThisMonth);
+  const lastMonth = transactions.filter(isLastMonth);
+
+  const income  = thisMonth.filter(t => t.type === 'prijem').reduce((s, t) => s + t.amount, 0);
+  const expense = thisMonth.filter(t => t.type === 'vydaj').reduce((s, t) => s + t.amount, 0);
+  const saving  = income - expense;
+  const rate    = income > 0 ? Math.round(saving / income * 100) : 0;
+
+  document.getElementById('sumIncome').textContent  = '+' + fmt(income);
+  document.getElementById('sumExpense').textContent = '−' + fmt(expense);
+  document.getElementById('sumSaving').textContent  = fmt(saving);
+  document.getElementById('sumRate').textContent    = rate + '%';
+  document.getElementById('sumBar').style.width     = Math.max(0, Math.min(100, rate)) + '%';
+
+  // Biggest expense
+  const biggest = thisMonth.filter(t => t.type === 'vydaj').sort((a, b) => b.amount - a.amount)[0];
+  document.getElementById('sumBiggest').textContent = biggest
+    ? `${biggest.name} — ${fmt(biggest.amount)}`
+    : '—';
+  document.getElementById('sumBiggest').className = 'summary-row-val bad';
+
+  // vs last month
+  const lastExp = lastMonth.filter(t => t.type === 'vydaj').reduce((s, t) => s + t.amount, 0);
+  const vsEl    = document.getElementById('sumVsLast');
+  if (lastExp > 0 && expense > 0) {
+    const pct  = Math.round((expense - lastExp) / lastExp * 100);
+    const more = pct > 0;
+    vsEl.textContent = `Utratil jsi o ${Math.abs(pct)}% ${more ? 'více' : 'méně'} než minulý měsíc`;
+    vsEl.className   = 'summary-row-val ' + (more ? 'bad' : 'good');
+  } else {
+    vsEl.textContent = 'Nedostatek dat'; vsEl.className = 'summary-row-val neutral';
+  }
+}
+
+/* ── Category limits ── */
+function renderLimits() {
+  const now     = new Date();
+  const thisMonth = transactions.filter(isThisMonth);
+  const spent   = {};
+  thisMonth.filter(t => t.type === 'vydaj').forEach(t => {
+    const c = t.category || 'Ostatní';
+    spent[c] = (spent[c] || 0) + t.amount;
+  });
+
+  const warnings = Object.entries(CAT_LIMITS)
+    .filter(([cat]) => spent[cat])
+    .map(([cat, limit]) => ({ cat, limit, amount: spent[cat] || 0 }))
+    .sort((a, b) => (b.amount / b.limit) - (a.amount / a.limit));
+
+  const card = document.getElementById('limitsCard');
+  if (!warnings.length) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+
+  const pct  = v => Math.min(100, Math.round(v.amount / v.limit * 100));
+  const cls  = v => v.amount > v.limit ? 'over' : v.amount > v.limit * 0.8 ? 'warn' : 'ok';
+
+  document.getElementById('limitsList').innerHTML = warnings.map(v => `
+    <div class="limit-item">
+      <div class="limit-header">
+        <span class="limit-name">${CAT_EMOJI[v.cat] || ''} ${v.cat}</span>
+        <span class="limit-vals">${Math.round(v.amount).toLocaleString('cs-CZ')} / <span class="${v.amount > v.limit ? 'over' : ''}">${v.limit.toLocaleString('cs-CZ')} Kč</span></span>
+      </div>
+      <div class="limit-bar-track">
+        <div class="limit-bar-fill ${cls(v)}" style="width:${pct(v)}%"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ── Recurring / Fixed ── */
+function renderRecurring() {
+  const templates = getRecurringTemplates();
+  const card = document.getElementById('recurringCard');
+  if (!templates.length) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  document.getElementById('recurringList').innerHTML = templates.map((t, i) => `
+    <div class="recurring-item">
+      <span class="recurring-ico">${CAT_EMOJI[t.category] || '📌'}</span>
+      <div style="flex:1;min-width:0;">
+        <div class="recurring-name">${t.name}</div>
+        <div style="font-size:0.68rem;color:var(--muted);">${LABELS[t.account] || t.account} · měsíčně</div>
+      </div>
+      <span class="recurring-amount">−${fmt(t.amount)}</span>
+      <button class="recurring-del" onclick="deleteRecurring(${i})" title="Odebrat">×</button>
+    </div>
+  `).join('');
+}
+
+function deleteRecurring(i) {
+  const templates = getRecurringTemplates();
+  templates.splice(i, 1);
+  saveRecurringTemplates(templates);
+  renderRecurring();
+  showToast('Fixní platba odebrána');
+}
+
+/* ── Recurring reminder ── */
+function checkReminder() {
+  const templates = getRecurringTemplates();
+  if (!templates.length) return;
+  const dismissed = localStorage.getItem('reminderDismissed');
+  const now       = new Date();
+  const monthKey  = `${now.getFullYear()}-${now.getMonth()}`;
+  if (dismissed === monthKey) return;
+
+  const thisMonthTx = transactions.filter(isThisMonth);
+  const missing = templates.filter(t =>
+    !thisMonthTx.some(tx => tx.name === t.name && tx.account === t.account)
+  );
+  if (!missing.length) return;
+
+  document.getElementById('reminderText').textContent =
+    `Nezapomeň přidat opakující se platby: ${missing.map(m => m.name).join(', ')}`;
+  document.getElementById('reminderBanner').classList.remove('hidden');
+}
+
+function dismissReminder() {
+  const now = new Date();
+  localStorage.setItem('reminderDismissed', `${now.getFullYear()}-${now.getMonth()}`);
+  document.getElementById('reminderBanner').classList.add('hidden');
 }
 
 /* ── Chart tooltip ── */
 function externalTooltip({ chart, tooltip }) {
   const el = document.getElementById('chartTooltip');
   if (tooltip.opacity === 0) { el.classList.remove('visible'); return; }
-
   const cat   = tooltip.dataPoints[0].label;
   const total = tooltip.dataPoints[0].raw;
   const txs   = catTransactions[cat] || [];
   const color = CAT_COLORS[cat] || '#ccc';
-
   el.innerHTML = `
     <div class="chart-tooltip-title">
       <span class="chart-tooltip-dot" style="background:${color}"></span>
       ${CAT_EMOJI[cat] || ''} ${cat}
     </div>
-    ${txs.map(tx => `
-      <div class="chart-tooltip-row">
-        <span>${tx.name}</span>
-        <span>${fmt(tx.amount)}</span>
-      </div>`).join('')}
-    ${txs.length > 1 ? `
-    <div class="chart-tooltip-total">
-      <span>Celkem</span><span>${fmt(total)}</span>
-    </div>` : ''}
+    ${txs.map(tx => `<div class="chart-tooltip-row"><span>${tx.name}</span><span>${fmt(tx.amount)}</span></div>`).join('')}
+    ${txs.length > 1 ? `<div class="chart-tooltip-total"><span>Celkem</span><span>${fmt(total)}</span></div>` : ''}
   `;
-
   const rect = chart.canvas.getBoundingClientRect();
-  const cx   = rect.left + tooltip.caretX;
-  const cy   = rect.top  + tooltip.caretY;
-  const tw   = el.offsetWidth || 220;
-  const th   = el.offsetHeight || 120;
-  let left   = cx + 14;
-  let top    = cy - th / 2;
+  const cx = rect.left + tooltip.caretX, cy = rect.top + tooltip.caretY;
+  const tw = el.offsetWidth || 220, th = el.offsetHeight || 120;
+  let left = cx + 14, top = cy - th / 2;
   if (left + tw > window.innerWidth - 8)  left = cx - tw - 14;
-  if (top < 8)                             top  = 8;
+  if (top < 8) top = 8;
   if (top + th > window.innerHeight - 8)  top  = window.innerHeight - th - 8;
-  el.style.left = left + 'px';
-  el.style.top  = top  + 'px';
+  el.style.left = left + 'px'; el.style.top = top + 'px';
   el.classList.add('visible');
 }
 
@@ -942,13 +974,9 @@ function externalTooltip({ chart, tooltip }) {
 function renderChart() {
   const now = new Date();
   const src = chartFilter === 'month'
-    ? transactions.filter(tx => {
-        const d = new Date(tx.tx_date || tx.created_at);
-        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-      })
+    ? transactions.filter(isThisMonth)
     : transactions;
 
-  // Build per-category transaction map for tooltip
   catTransactions = {};
   src.filter(tx => tx.type === 'vydaj').forEach(tx => {
     const c = tx.category || 'Ostatní';
@@ -957,10 +985,13 @@ function renderChart() {
   });
 
   const cats   = {};
-  Object.entries(catTransactions).forEach(([c, txs]) => {
-    cats[c] = txs.reduce((s, t) => s + t.amount, 0);
+  const spent  = {};
+  const now2   = new Date();
+  transactions.filter(isThisMonth).filter(t => t.type === 'vydaj').forEach(t => {
+    spent[t.category || 'Ostatní'] = (spent[t.category || 'Ostatní'] || 0) + t.amount;
   });
 
+  Object.entries(catTransactions).forEach(([c, txs]) => { cats[c] = txs.reduce((s, t) => s + t.amount, 0); });
   const sorted = Object.entries(cats).sort((a, b) => b[1] - a[1]);
   const total  = sorted.reduce((s, [, v]) => s + v, 0);
 
@@ -968,54 +999,45 @@ function renderChart() {
   document.getElementById('chartTooltip').classList.remove('visible');
 
   if (!sorted.length) {
-    document.getElementById('chartLegend').innerHTML =
-      '<p style="color:var(--muted);font-size:0.8rem;grid-column:span 2;">Žádné výdaje v tomto období</p>';
+    document.getElementById('chartLegend').innerHTML = '<p style="color:var(--muted);font-size:0.8rem;grid-column:span 2;">Žádné výdaje v tomto období</p>';
     return;
   }
 
+  const borderColor = document.body.classList.contains('dark') ? '#1b1f18' : '#fff';
   pieChart = new Chart(document.getElementById('pieChart').getContext('2d'), {
     type: 'doughnut',
     data: {
       labels: sorted.map(([k]) => k),
-      datasets: [{
-        data: sorted.map(([, v]) => v),
-        backgroundColor: sorted.map(([k]) => CAT_COLORS[k] || '#ccc'),
-        borderWidth: 2,
-        borderColor: '#fff',
-        hoverOffset: 10
-      }]
+      datasets: [{ data: sorted.map(([, v]) => v), backgroundColor: sorted.map(([k]) => CAT_COLORS[k] || '#ccc'), borderWidth: 2, borderColor, hoverOffset: 10 }]
     },
     options: {
       cutout: '62%',
       animation: { animateRotate: true, duration: 600 },
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: false, external: externalTooltip }
-      }
+      plugins: { legend: { display: false }, tooltip: { enabled: false, external: externalTooltip } }
     }
   });
 
-  document.getElementById('chartLegend').innerHTML = sorted.map(([cat, val]) => `
-    <div class="legend-item" style="cursor:pointer" onclick="setCatFilter('${cat}')">
+  document.getElementById('chartLegend').innerHTML = sorted.map(([cat, val]) => {
+    const over = CAT_LIMITS[cat] && (spent[cat] || 0) > CAT_LIMITS[cat];
+    const warn = CAT_LIMITS[cat] && !over && (spent[cat] || 0) > CAT_LIMITS[cat] * 0.8;
+    return `<div class="legend-item" style="cursor:pointer" onclick="setCatFilter('${cat}')">
       <div class="legend-dot" style="background:${CAT_COLORS[cat] || '#ccc'}"></div>
       <span>${CAT_EMOJI[cat] || ''} ${cat}</span>
+      ${over ? '<span class="legend-warn">🔴</span>' : warn ? '<span class="legend-warn">🟡</span>' : ''}
       <span class="legend-pct">${Math.round(val / total * 100)}%</span>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
-/* ── Category filter pills ── */
+/* ── Category filters ── */
 function renderCatFilters() {
-  const cats = [...new Set(
-    transactions.filter(t => t.category).map(t => t.category)
-  )].sort();
+  const cats = [...new Set(transactions.filter(t => t.category).map(t => t.category))].sort();
   let html = `<button class="cat-pill${!activeHistoryCat ? ' active' : ''}" onclick="setCatFilter(null)">Vše</button>`;
   cats.forEach(cat => {
-    const cc     = CAT_COLORS[cat] || '#b0bec5';
+    const cc = CAT_COLORS[cat] || '#b0bec5';
     const active = activeHistoryCat === cat;
     html += `<button class="cat-pill${active ? ' active' : ''}" onclick="setCatFilter('${cat}')"
-      style="${active ? `background:${cc}22;border-color:${cc};color:${cc}` : ''}"
-      >${CAT_EMOJI[cat] || ''} ${cat}</button>`;
+      style="${active ? `background:${cc}22;border-color:${cc};color:${cc}` : ''}">${CAT_EMOJI[cat] || ''} ${cat}</button>`;
   });
   document.getElementById('catFilterRow').innerHTML = html;
 }
@@ -1028,23 +1050,19 @@ function setCatFilter(cat) {
 
 /* ── History ── */
 function renderHistory() {
-  const q     = (document.getElementById('searchInput').value || '').toLowerCase();
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
   const shown = transactions.filter(tx =>
     (!q || tx.name.toLowerCase().includes(q) || (tx.category || '').toLowerCase().includes(q)) &&
     (!activeHistoryCat || tx.category === activeHistoryCat)
   );
 
-  if (!shown.length) {
-    document.getElementById('historyList').innerHTML = '<p class="empty">Žádné záznamy</p>';
-    return;
-  }
+  if (!shown.length) { document.getElementById('historyList').innerHTML = '<p class="empty">Žádné záznamy</p>'; return; }
 
   const reversed = [...shown].reverse().slice(0, 60);
-
-  // Group by date
+  const templates = getRecurringTemplates();
   const groups = {};
   reversed.forEach(tx => {
-    const d   = tx.tx_date ? new Date(tx.tx_date + 'T12:00:00') : new Date(tx.created_at);
+    const d   = new Date((tx.tx_date || tx.created_at.split('T')[0]) + 'T12:00:00');
     const key = d.toLocaleDateString('cs-CZ', { weekday: 'short', day: 'numeric', month: 'long' });
     if (!groups[key]) groups[key] = [];
     groups[key].push(tx);
@@ -1054,25 +1072,23 @@ function renderHistory() {
   Object.entries(groups).forEach(([date, txs]) => {
     html += `<div class="date-group"><div class="date-group-label">${date}</div>`;
     txs.forEach(tx => {
-      const meta  = tx.type === 'prevod' ? `${LABELS[tx.account]} → ${LABELS[tx.to_account]}` : LABELS[tx.account];
-      const sign  = tx.type === 'prijem' ? '+' : tx.type === 'vydaj' ? '−' : '';
-      const cat   = tx.category || '';
-      const cc    = CAT_COLORS[cat] || '#b0bec5';
-      const ico   = tx.type === 'prijem' ? '↓' : tx.type === 'vydaj' ? '↑' : '⇄';
-      const d     = tx.tx_date ? new Date(tx.tx_date + 'T12:00:00') : new Date(tx.created_at);
-      const time  = d.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
-      html += `<div class="tx-row">
+      const meta = tx.type === 'prevod' ? `${LABELS[tx.account] || tx.account} → ${LABELS[tx.to_account] || tx.to_account}` : (LABELS[tx.account] || tx.account);
+      const sign = tx.type === 'prijem' ? '+' : tx.type === 'vydaj' ? '−' : '';
+      const cat  = tx.category || '';
+      const cc   = CAT_COLORS[cat] || '#b0bec5';
+      const ico  = tx.type === 'prijem' ? '↓' : tx.type === 'vydaj' ? '↑' : '⇄';
+      const isRecurring = templates.some(t => t.name === tx.name && t.account === tx.account);
+      const isNew = tx.id === newTxId;
+      html += `<div class="tx-row${isNew ? ' tx-new' : ''}">
         <div class="tx-icon ${tx.type}">${ico}</div>
         <div style="flex:1;min-width:0;">
-          <div class="tx-name">${tx.name}</div>
+          <div class="tx-name">${tx.name}${isRecurring ? ' <span class="recurring-badge">🔄</span>' : ''}</div>
           <div class="tx-sub">
             <span>${meta}</span>
             ${cat ? `<span class="cat-badge" style="background:${cc}22;color:${cc}">${CAT_EMOJI[cat] || ''} ${cat}</span>` : ''}
           </div>
         </div>
-        <div class="tx-right">
-          <div class="tx-amount ${tx.type}">${sign}${fmt(tx.amount)}</div>
-        </div>
+        <div class="tx-right"><div class="tx-amount ${tx.type}">${sign}${fmt(tx.amount)}</div></div>
         <button class="tx-edit" onclick="openEdit('${tx.id}')" title="Upravit">✎</button>
         <button class="tx-del"  onclick="deleteTx('${tx.id}')" title="Smazat">×</button>
       </div>`;
@@ -1086,14 +1102,25 @@ function renderHistory() {
 /* ── Load ── */
 async function loadTransactions() {
   const { data, error } = await db.from('transactions').select('*')
-    .order('tx_date',    { ascending: true, nullsFirst: false })
+    .order('tx_date', { ascending: true, nullsFirst: false })
     .order('created_at', { ascending: true });
   if (!error && data) {
     transactions = data;
-    renderBalances(); renderChart(); renderCatFilters(); renderHistory();
+    renderAll();
+    checkReminder();
   } else {
     document.getElementById('historyList').innerHTML = '<p class="empty">Chyba při načítání dat.</p>';
   }
+}
+
+function renderAll() {
+  renderBalances();
+  renderChart();
+  renderSummary();
+  renderLimits();
+  renderRecurring();
+  renderCatFilters();
+  renderHistory();
 }
 
 /* ── Add ── */
@@ -1104,16 +1131,15 @@ async function addTransaction() {
   const toAccount = document.getElementById('txToAccount').value;
   const category  = document.getElementById('txCategory').value;
   const txDate    = document.getElementById('txDate').value;
+  const recurring = document.getElementById('txRecurring').checked;
   const btn       = document.getElementById('addBtn');
-  const errEl     = document.getElementById('errMsg');
 
-  errEl.style.display = 'none';
-  if (!name)                                           { showErr('Zadej název.');            return; }
-  if (!amount || amount <= 0)                          { showErr('Zadej kladnou částku.');   return; }
-  if (currentType === 'prevod' && account === toAccount) { showErr('Účty musí být různé.'); return; }
+  document.getElementById('errMsg').style.display = 'none';
+  if (!name)                                             { showErr('Zadej název.');            return; }
+  if (!amount || amount <= 0)                            { showErr('Zadej kladnou částku.');   return; }
+  if (currentType === 'prevod' && account === toAccount) { showErr('Účty musí být různé.');   return; }
 
   btn.disabled = true; btn.textContent = 'Ukládám…';
-
   const { data, error } = await db.from('transactions').insert([{
     name, amount, account,
     type:       currentType,
@@ -1123,21 +1149,28 @@ async function addTransaction() {
   }]).select();
 
   btn.disabled = false; btn.textContent = '+ Přidat transakci';
-
   if (error) { showErr('Chyba: ' + error.message); return; }
 
+  // Save recurring template
+  if (recurring && currentType !== 'prevod') {
+    const templates = getRecurringTemplates();
+    if (!templates.some(t => t.name === name && t.account === account)) {
+      templates.push({ name, amount, account, category, type: currentType });
+      saveRecurringTemplates(templates);
+    }
+  }
+
+  newTxId = data[0].id;
   transactions.push(data[0]);
-  renderBalances(); renderChart(); renderHistory();
-  document.getElementById('txName').value   = '';
-  document.getElementById('txAmount').value = '';
+  document.getElementById('txName').value    = '';
+  document.getElementById('txAmount').value  = '';
+  document.getElementById('txRecurring').checked = false;
+  renderAll();
   showToast('Transakce přidána ✓', 'success');
+  setTimeout(() => { newTxId = null; }, 800);
 }
 
-/* ── Delete ── */
 /* ── Edit ── */
-let editingId = null;
-let editType  = 'vydaj';
-
 function openEdit(id) {
   const tx = transactions.find(t => t.id === id);
   if (!tx) return;
@@ -1154,14 +1187,7 @@ function openEdit(id) {
   setTimeout(() => document.getElementById('editName').focus(), 50);
 }
 
-function closeEdit() {
-  document.getElementById('editOverlay').classList.remove('open');
-  editingId = null;
-}
-
-function overlayClick(e) {
-  if (e.target === document.getElementById('editOverlay')) closeEdit();
-}
+function closeEdit() { document.getElementById('editOverlay').classList.remove('open'); editingId = null; }
 
 function setEditType(t) {
   editType = t;
@@ -1188,52 +1214,79 @@ async function saveEdit() {
   if (editType === 'prevod' && account === toAccount) { errEl.textContent = 'Účty musí být různé.'; errEl.style.display = 'block'; return; }
 
   btn.disabled = true; btn.textContent = 'Ukládám…';
-
-  const update = {
-    name, amount, account,
-    type:       editType,
-    to_account: editType === 'prevod' ? toAccount : null,
-    category:   editType !== 'prevod' ? category  : null,
-    tx_date:    txDate
-  };
-
+  const update = { name, amount, account, type: editType, to_account: editType === 'prevod' ? toAccount : null, category: editType !== 'prevod' ? category : null, tx_date: txDate };
   const { error } = await db.from('transactions').update(update).eq('id', editingId);
   btn.disabled = false; btn.textContent = 'Uložit změny';
 
   if (error) { errEl.textContent = 'Chyba: ' + error.message; errEl.style.display = 'block'; return; }
-
   const idx = transactions.findIndex(t => t.id === editingId);
   if (idx !== -1) transactions[idx] = { ...transactions[idx], ...update };
-
   closeEdit();
-  renderBalances(); renderChart(); renderCatFilters(); renderHistory();
+  renderAll();
   showToast('Transakce upravena ✓', 'success');
 }
 
+/* ── Delete ── */
 async function deleteTx(id) {
   if (!confirm('Smazat tuto transakci?')) return;
   const { error } = await db.from('transactions').delete().eq('id', id);
   if (!error) {
     transactions = transactions.filter(t => t.id !== id);
-    renderBalances(); renderChart(); renderHistory();
+    renderAll();
     showToast('Transakce smazána');
   }
 }
 
-function showErr(msg) {
-  const e = document.getElementById('errMsg');
-  e.textContent = msg; e.style.display = 'block';
+/* ── Account settings ── */
+function openAcctSettings(key) {
+  editingAcct = key;
+  document.getElementById('acctModalTitle').textContent = 'Nastavení — ' + LABELS[key];
+  document.getElementById('acctName').value    = LABELS[key];
+  document.getElementById('acctBalance').value = DEFAULTS[key];
+  document.getElementById('acctOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('acctName').focus(), 50);
 }
 
+function closeAcctSettings() { document.getElementById('acctOverlay').classList.remove('open'); editingAcct = null; }
+
+function saveAcctSettings() {
+  const label   = document.getElementById('acctName').value.trim();
+  const balance = parseFloat(document.getElementById('acctBalance').value);
+  if (!label || isNaN(balance)) return;
+
+  const s = getAccountSettings();
+  s[editingAcct] = { label, balance };
+  localStorage.setItem('accountSettings', JSON.stringify(s));
+
+  LABELS[editingAcct]   = label;
+  DEFAULTS[editingAcct] = balance;
+  const nameEl = document.getElementById('name-' + editingAcct);
+  if (nameEl) nameEl.textContent = label;
+
+  closeAcctSettings();
+  renderAll();
+  showToast('Účet upraven ✓', 'success');
+}
+
+/* ── Overlay clicks ── */
+function overlayClick(e, id) {
+  if (e.target === document.getElementById(id)) {
+    if (id === 'editOverlay') closeEdit();
+    if (id === 'acctOverlay') closeAcctSettings();
+  }
+}
+
+function showErr(msg) { const e = document.getElementById('errMsg'); e.textContent = msg; e.style.display = 'block'; }
+
 // Init
-document.getElementById('headerDate').textContent =
-  new Date().toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long' });
+initDark();
+loadAccountSettings();
+document.getElementById('headerDate').textContent = new Date().toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long' });
 document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
 loadTransactions();
 </script>
 
 <script>
-// Seed historická data z Notionu — spustí se jen jednou pokud je tabulka prázdná
 async function seedIfEmpty() {
   const dbc = supabase.createClient(
     'https://eaiwhttmuubzenlpsfad.supabase.co',
@@ -1242,34 +1295,34 @@ async function seedIfEmpty() {
   const { count } = await dbc.from('transactions').select('*', { count: 'exact', head: true });
   if (count && count > 0) return;
   await dbc.from('transactions').insert([
-    {name:'mekáč ústí',amount:89,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-08'},
-    {name:'MHD',amount:40,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
-    {name:'MHD',amount:40,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
-    {name:'MHD',amount:40,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
-    {name:'vlak',amount:210,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
-    {name:'vlak',amount:210,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
-    {name:'vlak',amount:210,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
-    {name:'mekáč',amount:120,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-08'},
-    {name:'canva',amount:359,account:'bezny',type:'vydaj',category:'Vzdělání',tx_date:'2026-05-08'},
-    {name:'večerka',amount:85,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-08'},
-    {name:'nájem + jídlo',amount:12000,account:'bezny',type:'vydaj',category:'Bydlení',tx_date:'2026-05-08'},
-    {name:'albert brno nákup',amount:420,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-08'},
-    {name:'google workspace',amount:180,account:'bezny',type:'vydaj',category:'Vzdělání',tx_date:'2026-05-08'},
-    {name:'miners kafe brno',amount:95,account:'bezny',type:'vydaj',category:'Zábava',tx_date:'2026-05-08'},
-    {name:'mekac',amount:110,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-10'},
-    {name:'aktin',amount:650,account:'bezny',type:'vydaj',category:'Zdraví',tx_date:'2026-05-10'},
+    {name:'nájem + jídlo',amount:16154,account:'bezny',type:'vydaj',category:'Bydlení',tx_date:'2026-05-02'},
+    {name:'albert brno nákup',amount:334,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-03'},
+    {name:'MHD',amount:50,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-04'},
+    {name:'MHD',amount:90,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-04'},
+    {name:'vlak',amount:224,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-04'},
+    {name:'vlak',amount:224,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-04'},
+    {name:'canva',amount:323,account:'bezny',type:'vydaj',category:'Petska',tx_date:'2026-05-04'},
+    {name:'google workspace',amount:197,account:'bezny',type:'vydaj',category:'Petska',tx_date:'2026-05-04'},
+    {name:'miners kafe brno',amount:150,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-04'},
+    {name:'vlak',amount:256,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-06'},
+    {name:'mekáč ústí',amount:541,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-06'},
+    {name:'wolt',amount:25101,account:'bezny',type:'prijem',category:'HPP',tx_date:'2026-05-06'},
+    {name:'večerka',amount:75,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-07'},
+    {name:'mekáč',amount:320,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-07'},
+    {name:'MHD',amount:22,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-08'},
+    {name:'mekac',amount:669,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-08'},
+    {name:'aktin',amount:1521,account:'bezny',type:'vydaj',category:'Zdraví',tx_date:'2026-05-10'},
     {name:'divadlo pití',amount:280,account:'bezny',type:'vydaj',category:'Zábava',tx_date:'2026-05-10'},
-    {name:'MHD',amount:40,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-10'},
-    {name:'pití večerka',amount:65,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-10'},
+    {name:'pizza hranice',amount:270,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-10'},
+    {name:'pití večerka',amount:100,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-10'},
+    {name:'MHD',amount:22,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-10'},
+    {name:'nákup',amount:1147,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-10'},
     {name:'1000 Kč hotovost',amount:1000,account:'bezny',type:'vydaj',category:'Hotovost',tx_date:'2026-05-10'},
-    {name:'nákup',amount:340,account:'bezny',type:'vydaj',category:'Potraviny',tx_date:'2026-05-10'},
-    {name:'taxi',amount:185,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-10'},
+    {name:'taxi',amount:100,account:'bezny',type:'vydaj',category:'Doprava',tx_date:'2026-05-10'},
     {name:'penzijko',amount:2000,account:'penzijko',type:'prijem',category:'Finance',tx_date:'2026-05-10'},
-    {name:'wolt plat',amount:24069,account:'bezny',type:'prijem',category:'HPP',tx_date:'2026-05-10'},
   ]);
 }
 seedIfEmpty();
 </script>
-
 </body>
 </html>
