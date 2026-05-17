@@ -590,13 +590,386 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
   .d-rail-title { font-size:13.5px; font-weight:700; color:var(--ink); letter-spacing:-.01em; margin-bottom:12px; }
   .d-bill-row { display:flex; align-items:center; gap:10px; padding:9px 0; }
   .d-bill-row + .d-bill-row { border-top:.5px solid var(--line); }
-  .d-insight-card {
-    background:linear-gradient(135deg,var(--primary) 0%,var(--rose) 100%);
-    border-radius:var(--r); padding:18px; color:var(--primary-ink);
-    box-shadow:0 4px 20px rgba(122,63,46,.18);
+
+  /* ── Net worth hero ── */
+  #d-nw-hero {
+    background: linear-gradient(135deg, #2d2420 0%, #4a3a2c 60%, #6b4938 100%);
+    border-radius: var(--r);
+    padding: 22px 24px;
+    color: #F4ECE2;
+    margin-bottom: 14px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 8px 28px rgba(0,0,0,.12);
   }
-  .d-insight-card h4 { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.65; margin-bottom:8px; }
-  .d-insight-card p  { font-size:16px; font-weight:800; letter-spacing:-.02em; line-height:1.4; }
+  #d-nw-hero::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(600px 220px at 100% 0%, rgba(255,181,167,.22), transparent 60%);
+    pointer-events:none;
+  }
+  body.dark #d-nw-hero { background: linear-gradient(135deg, #15131a 0%, #1f1a22 60%, #2a2230 100%); }
+  .d-nw-top { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; }
+  .d-nw-lbl { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; opacity:.55; }
+  .d-nw-val { font-size:38px; font-weight:800; letter-spacing:-.03em; margin-top:4px; font-variant-numeric:tabular-nums; }
+  .d-nw-delta {
+    display:inline-flex; align-items:center; gap:5px;
+    background: rgba(255,255,255,.08); border-radius:999px;
+    padding:5px 11px; font-size:12.5px; font-weight:700;
+    margin-top:9px;
+  }
+  .d-nw-delta.up   { color: #88e6a3; }
+  .d-nw-delta.down { color: #ffb4a8; }
+  .d-nw-mini-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:18px; }
+  .d-nw-mini { background: rgba(255,255,255,.06); border-radius:14px; padding:11px 14px; }
+  .d-nw-mini-lbl { font-size:10.5px; font-weight:600; opacity:.55; text-transform:uppercase; letter-spacing:.04em; margin-bottom:3px; }
+  .d-nw-mini-val { font-size:17px; font-weight:800; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+  .d-nw-mini-val.up   { color: #88e6a3; }
+  .d-nw-mini-val.down { color: #ffb4a8; }
+
+  /* ── Cashflow chart card ── */
+  #d-cashflow-card { height: 280px; padding: 18px 18px 12px; position: relative; }
+  #d-cashflow-card .cf-tabs { display:flex; gap:4px; }
+  #d-cashflow-card .cf-tabs button {
+    font-size:11.5px; font-weight:700; padding:5px 12px; border-radius:999px;
+    border:.5px solid var(--line); background:var(--bg-alt); color:var(--ink-dim);
+    cursor:pointer; transition:all .15s; font-family:inherit;
+  }
+  #d-cashflow-card .cf-tabs button.active { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  #d-cashflow-canvas-wrap { height: 215px; margin-top: 8px; position: relative; }
+
+  /* ── Account sparklines ── */
+  .d-acct-row .d-acct-spark { width:64px; height:22px; flex-shrink:0; opacity:.7; }
+  body.dark .d-acct-row .d-acct-spark { opacity:.55; }
+  .d-acct-row .d-acct-delta { font-size:10.5px; font-weight:700; min-width:50px; text-align:right; font-variant-numeric:tabular-nums; }
+  .d-acct-row .d-acct-delta.up { color: var(--green); }
+  .d-acct-row .d-acct-delta.down { color: var(--red); }
+
+  /* ── Spending heatmap ── */
+  #d-heatmap-card { padding: 18px; }
+  .d-heatmap-grid {
+    display:grid;
+    grid-template-columns: repeat(53, 11px);
+    grid-template-rows: repeat(7, 11px);
+    grid-auto-flow: column;
+    gap: 3px;
+    margin-top: 10px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .d-hm-cell {
+    width: 11px; height: 11px; border-radius: 2.5px;
+    background: var(--bg-alt);
+    cursor: pointer; transition: transform .12s;
+  }
+  .d-hm-cell:hover { transform: scale(1.6); }
+  .d-hm-l1 { background: rgba(255,181,167,.28); }
+  .d-hm-l2 { background: rgba(255,181,167,.55); }
+  .d-hm-l3 { background: rgba(255,138,118,.78); }
+  .d-hm-l4 { background: #c64a3a; }
+  body.dark .d-hm-l1 { background: rgba(255,181,167,.18); }
+  body.dark .d-hm-l2 { background: rgba(255,181,167,.4); }
+  body.dark .d-hm-l3 { background: rgba(255,138,118,.6); }
+  .d-heatmap-legend {
+    display:flex; align-items:center; gap:5px; margin-top:8px;
+    font-size:10.5px; color:var(--ink-dim);
+  }
+  .d-heatmap-legend .d-hm-cell { cursor:default; }
+  .d-heatmap-legend .d-hm-cell:hover { transform: none; }
+
+  /* ── Activity filter pills ── */
+  .d-filter-row {
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+  .d-filter-group {
+    display:flex; gap:4px; padding:3px;
+    background:var(--bg-alt); border-radius:999px;
+    border:.5px solid var(--line);
+  }
+  .d-filter-pill {
+    font-size:11.5px; font-weight:600; padding:5px 11px; border-radius:999px;
+    border:none; background:transparent; color:var(--ink-dim);
+    cursor:pointer; transition:all .15s; font-family:inherit;
+  }
+  .d-filter-pill.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px var(--line); }
+  .d-filter-pill.active-red    { background: rgba(197,48,48,.12); color: var(--red); }
+  .d-filter-pill.active-green  { background: rgba(47,133,90,.14); color: var(--green); }
+  .d-filter-pill.active-blue   { background: rgba(49,130,206,.14); color: var(--blue); }
+  .d-filter-clear { font-size:11.5px; color:var(--ink-dim); background:none; border:none; cursor:pointer; font-family:inherit; font-weight:500; }
+  .d-filter-clear:hover { color: var(--ink); }
+  .d-filter-summary { font-size:11.5px; color:var(--ink-dim); font-weight:500; }
+
+  /* ── Transaction hover popup ── */
+  .d-tx-popup {
+    position: fixed; z-index: 500;
+    background: var(--surface); border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.18);
+    border: .5px solid var(--line);
+    padding: 14px 16px; min-width: 240px; max-width: 320px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .12s;
+  }
+  .d-tx-popup.visible { opacity: 1; }
+  .d-tx-popup-title { font-size:12.5px; font-weight:800; color:var(--ink); margin-bottom:6px; }
+  .d-tx-popup-sub { font-size:11px; color:var(--ink-dim); margin-bottom:10px; }
+  .d-tx-popup-row { display:flex; justify-content:space-between; font-size:11.5px; padding:3px 0; border-top:.5px solid var(--line); }
+  .d-tx-popup-row:first-of-type { border-top:none; }
+  .d-tx-popup-row span:first-child { color:var(--ink-dim); }
+  .d-tx-popup-row span:last-child { font-weight:700; color:var(--ink); }
+
+  /* ── Subscription detector banner ── */
+  .d-sub-banner {
+    background: linear-gradient(135deg, #FDE68A 0%, #FBE9D7 100%);
+    border: .5px solid rgba(212,175,55,.4);
+    border-radius: var(--r);
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 14px;
+    color: #6b4a00;
+    box-shadow: 0 2px 10px rgba(212,175,55,.18);
+  }
+  body.dark .d-sub-banner { background: linear-gradient(135deg, #3d3220 0%, #2a2218 100%); color: #fde68a; border-color: rgba(253,230,138,.18); }
+  .d-sub-icon { font-size: 22px; flex-shrink:0; }
+  .d-sub-body { flex:1; min-width:0; }
+  .d-sub-title { font-size: 13px; font-weight: 800; letter-spacing:-.01em; }
+  .d-sub-text { font-size: 12px; opacity:.8; margin-top:2px; }
+  .d-sub-actions { display:flex; gap:6px; flex-shrink:0; }
+  .d-sub-btn {
+    font-size:11.5px; font-weight:700; padding:7px 13px; border-radius:10px;
+    background: rgba(255,255,255,.55); color: #6b4a00; border:.5px solid rgba(212,175,55,.3);
+    cursor:pointer; font-family:inherit; transition: all .15s;
+  }
+  body.dark .d-sub-btn { background: rgba(255,255,255,.08); color: #fde68a; border-color: rgba(253,230,138,.2); }
+  .d-sub-btn:hover { background: rgba(255,255,255,.85); transform: translateY(-1px); }
+  body.dark .d-sub-btn:hover { background: rgba(255,255,255,.14); }
+  .d-sub-btn.primary { background: #b88a00; color: #fff; border-color: #b88a00; }
+  .d-sub-btn.primary:hover { background: #8c6800; }
+
+  /* ── AI Tips chatbot ── */
+  #d-bot {
+    background: var(--surface);
+    border-radius: var(--r);
+    border: .5px solid var(--line);
+    box-shadow: 0 8px 28px rgba(0,0,0,.06);
+    padding: 14px 14px 12px;
+    display: flex; flex-direction: column;
+    max-height: calc(100vh - 280px);
+  }
+  body.dark #d-bot { background: var(--surface); box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+  .d-bot-head { display:flex; align-items:center; gap:10px; padding-bottom:10px; border-bottom: .5px solid var(--line); margin-bottom:10px; }
+  .d-bot-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--rose) 100%);
+    color: var(--primary-ink);
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; font-weight:800; flex-shrink:0;
+    box-shadow: 0 2px 8px rgba(255,181,167,.4);
+  }
+  .d-bot-title { font-size: 13px; font-weight: 800; color: var(--ink); letter-spacing:-.01em; }
+  .d-bot-status { font-size: 10.5px; color: var(--green); font-weight: 600; display:flex; align-items:center; gap:4px; }
+  .d-bot-status::before { content:''; width:6px; height:6px; border-radius:50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .4; } }
+  .d-bot-stream {
+    flex:1; overflow-y: auto;
+    display:flex; flex-direction:column; gap: 10px;
+    padding-right: 4px;
+  }
+  .d-bot-stream::-webkit-scrollbar { width: 4px; }
+  .d-bot-stream::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+  .d-bot-msg {
+    background: var(--bg-alt); border-radius: 14px 14px 14px 4px;
+    padding: 11px 13px; font-size: 12.5px; line-height: 1.5;
+    color: var(--ink);
+    animation: botIn .35s cubic-bezier(.34,1.4,.64,1);
+    border-left: 2.5px solid transparent;
+  }
+  @keyframes botIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .d-bot-msg b { font-weight: 800; color: var(--ink); }
+  .d-bot-msg.warn  { border-left-color: var(--red); }
+  .d-bot-msg.win   { border-left-color: var(--green); }
+  .d-bot-msg.idea  { border-left-color: var(--primary); }
+  .d-bot-msg.info  { border-left-color: var(--blue); }
+  .d-bot-msg .d-bot-emoji { font-size: 14px; margin-right: 4px; }
+  .d-bot-msg .d-bot-cta {
+    display:inline-block; margin-top: 8px;
+    font-size: 11px; font-weight: 700;
+    padding: 5px 11px; border-radius: 999px;
+    background: var(--ink); color: var(--surface);
+    border: none; cursor: pointer; font-family: inherit;
+    transition: opacity .15s;
+  }
+  .d-bot-msg .d-bot-cta:hover { opacity: .85; }
+  .d-bot-actions { margin-top: 10px; display:flex; gap:6px; }
+  .d-bot-actions button {
+    flex:1; font-size: 11px; font-weight: 700;
+    padding: 7px 8px; border-radius: 10px;
+    background: var(--bg-alt); color: var(--ink-dim); border: .5px solid var(--line);
+    cursor: pointer; font-family: inherit; transition: all .15s;
+  }
+  .d-bot-actions button:hover { background: var(--line); color: var(--ink); }
+  .d-bot-typing {
+    display:flex; align-items:center; gap:4px; padding: 11px 13px;
+    background: var(--bg-alt); border-radius: 14px 14px 14px 4px;
+    width: fit-content;
+  }
+  .d-bot-typing span {
+    width: 5px; height: 5px; border-radius: 50%; background: var(--ink-sub);
+    animation: bounce 1.2s infinite;
+  }
+  .d-bot-typing span:nth-child(2) { animation-delay: .15s; }
+  .d-bot-typing span:nth-child(3) { animation-delay: .3s; }
+  @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-4px); opacity: 1; } }
+
+  /* ── Goals page ── */
+  .d-goal-card {
+    background: var(--surface); border-radius: var(--r);
+    border: .5px solid var(--line); padding: 18px;
+    box-shadow: 0 1px 0 var(--line), 0 4px 16px var(--line);
+    transition: transform .15s;
+  }
+  .d-goal-card:hover { transform: translateY(-2px); }
+  .d-goal-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 14px; }
+  .d-goal-name { font-size: 14.5px; font-weight: 800; color: var(--ink); letter-spacing:-.01em; }
+  .d-goal-sub  { font-size: 11.5px; color: var(--ink-dim); margin-top: 2px; }
+  .d-goal-amounts { display:flex; align-items:baseline; gap: 6px; margin-bottom: 8px; }
+  .d-goal-current { font-size: 22px; font-weight: 800; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+  .d-goal-target  { font-size: 13px; color: var(--ink-dim); font-weight: 600; }
+  .d-goal-track {
+    height: 8px; background: var(--bg-alt); border-radius: 999px; overflow: hidden;
+  }
+  .d-goal-fill {
+    height: 100%; border-radius: 999px;
+    background: linear-gradient(90deg, var(--primary), var(--rose));
+    transition: width .6s cubic-bezier(.4,1.2,.5,1);
+  }
+  .d-goal-meta { display:flex; justify-content:space-between; margin-top: 10px; font-size: 11.5px; color: var(--ink-dim); font-weight: 600; }
+  .d-goal-meta .d-goal-pct { color: var(--primary-ink); font-weight: 800; }
+  body.dark .d-goal-meta .d-goal-pct { color: var(--rose); }
+  .d-goal-del { background: none; border: none; cursor: pointer; color: var(--ink-sub); font-size: 16px; padding: 2px 6px; border-radius: 6px; transition: all .12s; }
+  .d-goal-del:hover { color: var(--red); background: rgba(197,48,48,.08); }
+  #d-goals-empty {
+    text-align:center; padding: 60px 24px;
+    color: var(--ink-dim); font-size: 13px;
+  }
+  #d-goals-empty .d-goals-empty-icon { font-size: 48px; margin-bottom: 14px; }
+
+  /* ── Command palette ── */
+  .d-cmd-overlay {
+    position: fixed; inset: 0; background: rgba(20,15,25,.55);
+    backdrop-filter: blur(6px); z-index: 999;
+    display:none; align-items:flex-start; justify-content:center;
+    padding-top: 14vh;
+  }
+  .d-cmd-overlay.open { display:flex; animation: cmdFade .15s ease; }
+  @keyframes cmdFade { from { opacity: 0; } to { opacity: 1; } }
+  .d-cmd-box {
+    width: min(620px, 92vw);
+    background: var(--surface);
+    border-radius: 18px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.35);
+    border: .5px solid var(--line);
+    overflow: hidden;
+    animation: cmdRise .2s cubic-bezier(.3,1.3,.5,1);
+  }
+  @keyframes cmdRise { from { transform: translateY(-12px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .d-cmd-input-row {
+    display:flex; align-items:center; gap:10px;
+    padding: 16px 20px;
+    border-bottom: .5px solid var(--line);
+  }
+  .d-cmd-input-row input {
+    flex:1; background: transparent; border:none; outline:none;
+    font-size: 17px; font-weight: 500; color: var(--ink);
+    font-family: inherit;
+    padding: 0;
+  }
+  .d-cmd-list {
+    max-height: 60vh; overflow-y: auto; padding: 6px 8px;
+  }
+  .d-cmd-item {
+    display:flex; align-items:center; gap:12px;
+    padding: 11px 14px; border-radius: 12px;
+    cursor: pointer; transition: background .1s;
+    font-size: 13.5px; color: var(--ink);
+  }
+  .d-cmd-item.active { background: var(--bg-alt); }
+  .d-cmd-icon {
+    width: 32px; height: 32px; border-radius: 10px;
+    background: var(--bg-alt); display:flex; align-items:center; justify-content:center;
+    font-size: 15px; flex-shrink:0;
+  }
+  .d-cmd-item.active .d-cmd-icon { background: var(--primary); color: var(--primary-ink); }
+  .d-cmd-label { flex:1; min-width:0; font-weight: 600; }
+  .d-cmd-sub   { font-size: 11px; color: var(--ink-dim); font-weight: 500; margin-top: 1px; }
+  .d-cmd-shortcut { font-size: 10.5px; color: var(--ink-dim); font-weight: 700;
+    background: var(--bg-alt); padding: 3px 7px; border-radius: 6px;
+    border: .5px solid var(--line); }
+  .d-cmd-section { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-dim); padding: 12px 14px 4px; }
+  .d-cmd-empty { padding: 30px; text-align: center; color: var(--ink-dim); font-size: 13px; }
+
+  /* ── Monthly snapshot ── */
+  .d-snap-overlay {
+    position: fixed; inset: 0; background: rgba(20,15,25,.7);
+    backdrop-filter: blur(8px); z-index: 998;
+    display:none; align-items:center; justify-content:center;
+    padding: 40px 20px;
+  }
+  .d-snap-overlay.open { display: flex; animation: cmdFade .2s ease; }
+  .d-snap-box {
+    width: min(800px, 100%); max-height: 90vh; overflow-y: auto;
+    background: var(--surface); border-radius: 22px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.4);
+    padding: 30px 32px; position: relative;
+  }
+  .d-snap-close { position:absolute; top:14px; right:16px; width:32px; height:32px; border-radius:50%; background:var(--bg-alt); border:none; cursor:pointer; font-size:16px; }
+  .d-snap-h1 { font-size: 28px; font-weight: 800; letter-spacing: -.025em; color: var(--ink); margin-bottom: 4px; }
+  .d-snap-h2 { font-size: 13px; color: var(--ink-dim); font-weight: 600; margin-bottom: 22px; }
+  .d-snap-kpi { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+  .d-snap-kpi-card { background: var(--bg-alt); border-radius: 14px; padding: 14px; }
+  .d-snap-kpi-lbl { font-size: 10.5px; color: var(--ink-dim); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  .d-snap-kpi-val { font-size: 19px; font-weight: 800; letter-spacing: -.02em; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .d-snap-kpi-val.up { color: var(--green); }
+  .d-snap-kpi-val.down { color: var(--red); }
+  .d-snap-section-title { font-size: 14px; font-weight: 800; letter-spacing: -.01em; color: var(--ink); margin: 20px 0 10px; }
+  .d-snap-actions { display:flex; gap:8px; margin-top: 22px; padding-top: 18px; border-top: .5px solid var(--line); }
+  .d-snap-actions button { flex:1; padding: 12px; border-radius: 12px; font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; border: none; transition: all .15s; }
+  .d-snap-actions .d-snap-print { background: var(--ink); color: var(--surface); }
+  .d-snap-actions .d-snap-print:hover { opacity: .85; }
+  .d-snap-actions .d-snap-cancel { background: var(--bg-alt); color: var(--ink); }
+  @media print {
+    body * { visibility: hidden; }
+    .d-snap-overlay, .d-snap-overlay * { visibility: visible; }
+    .d-snap-overlay { position: absolute; inset: 0; background: white; padding: 0; }
+    .d-snap-box { box-shadow: none; max-height: none; }
+    .d-snap-close, .d-snap-actions { display: none !important; }
+  }
+
+  /* ── Glass card hover / microanimations ── */
+  .d-page .card {
+    transition: transform .2s cubic-bezier(.34,1.2,.5,1), box-shadow .2s;
+  }
+  .d-page .card.card-pad:hover,
+  .d-page .card.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 1px 0 var(--line), 0 12px 32px rgba(122,63,46,.1);
+  }
+  body.dark .d-page .card.card-pad:hover { box-shadow: 0 12px 32px rgba(0,0,0,.4); }
+
+  /* Denser tx table */
+  .d-tx-table td { padding: 7px 10px; }
+  .d-tx-table th { padding: 4px 10px 6px; }
+  .d-tx-table .d-tx-name { font-size: 12.5px; }
+
+  /* ── Floating add button (desktop) ── */
+  .d-fab {
+    position: fixed; bottom: 26px; right: 26px; z-index: 90;
+    width: 54px; height: 54px; border-radius: 50%;
+    background: var(--ink); color: var(--surface);
+    border: none; cursor: pointer; font-size: 28px;
+    box-shadow: 0 8px 24px rgba(122,63,46,.28);
+    display: none; align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .d-fab:hover { transform: scale(1.06) rotate(90deg); }
 }
 </style>
 </head>
@@ -1024,12 +1397,24 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
       <svg viewBox="0 0 24 24"><path d="M21.21 15.89A9 9 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
       Kategorie
     </button>
+    <button class="d-nav-item" id="dn-goals" onclick="showDesktopPage('goals')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
+      Cíle
+    </button>
     <button class="d-nav-item" id="dn-petska" onclick="showDesktopPage('petska')">
       <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       Petska
     </button>
     <div class="d-nav-spacer"></div>
-    <div class="d-user-pill">
+    <button class="d-nav-item" onclick="openCommandPalette()" style="font-size:12px;">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      Hledat <span style="margin-left:auto;font-size:10px;background:var(--bg-alt);padding:2px 6px;border-radius:5px;border:.5px solid var(--line);">⌘K</span>
+    </button>
+    <button class="d-nav-item" onclick="openMonthlySnapshot()" style="font-size:12px;">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>
+      Měsíční report
+    </button>
+    <div class="d-user-pill" style="margin-top:6px;">
       <div class="d-user-avatar">TK</div>
       <div>
         <div class="d-user-name">Tadeáš</div>
@@ -1052,44 +1437,93 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
 
     <!-- ── Overview ── -->
     <div id="dp-overview" class="d-page">
-      <div class="d-stat-cards" id="d-stat-cards"></div>
-      <div class="d-two-col">
-        <div class="card card-pad">
-          <div style="font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:14px;">Výdaje posledních 7 dní</div>
-          <div id="d-spend-bars"></div>
-        </div>
-        <div class="card card-pad">
-          <div style="font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:14px;">Tento měsíc</div>
-          <div class="month-split">
-            <div class="month-half"><div class="month-half-lbl">Výdaje</div><div class="month-half-val" id="d-sum-expense">—</div></div>
-            <div class="month-divider"></div>
-            <div class="month-half"><div class="month-half-lbl">Příjmy</div><div class="month-half-val inc" id="d-sum-income">—</div></div>
+      <!-- Subscription detector banner (hidden until detected) -->
+      <div id="d-sub-banner-host"></div>
+
+      <!-- Net worth hero -->
+      <div id="d-nw-hero">
+        <div class="d-nw-top">
+          <div>
+            <div class="d-nw-lbl">Net worth · Celkový majetek</div>
+            <div class="d-nw-val" id="d-nw-val">—</div>
+            <div class="d-nw-delta" id="d-nw-delta"><span id="d-nw-delta-arrow">↑</span> <span id="d-nw-delta-val">—</span> <span style="opacity:.55;font-weight:500;">vs. minulý měsíc</span></div>
           </div>
-          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);">
-            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-              <span style="font-size:11.5px;color:var(--ink-dim);">Míra úspor</span>
-              <span style="font-size:12px;font-weight:700;color:var(--green);" id="d-savings-rate">—</span>
-            </div>
-            <div class="progress-track"><div class="progress-fill" id="d-savings-fill" style="width:0%;background:var(--green);"></div></div>
+          <div style="text-align:right;">
+            <div class="d-nw-lbl">Petska firemní</div>
+            <div style="font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums;" id="d-nw-petska">—</div>
+          </div>
+        </div>
+        <div class="d-nw-mini-stats">
+          <div class="d-nw-mini">
+            <div class="d-nw-mini-lbl">Příjmy / měsíc</div>
+            <div class="d-nw-mini-val up" id="d-nw-inc">—</div>
+          </div>
+          <div class="d-nw-mini">
+            <div class="d-nw-mini-lbl">Výdaje / měsíc</div>
+            <div class="d-nw-mini-val down" id="d-nw-exp">—</div>
+          </div>
+          <div class="d-nw-mini">
+            <div class="d-nw-mini-lbl">Míra úspor</div>
+            <div class="d-nw-mini-val" id="d-nw-rate">—</div>
           </div>
         </div>
       </div>
+
+      <!-- Cashflow chart -->
+      <div class="card" id="d-cashflow-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Cashflow · zůstatek v čase</div>
+            <div style="font-size:11px;color:var(--ink-dim);margin-top:2px;">Vývoj celkového majetku</div>
+          </div>
+          <div class="cf-tabs">
+            <button class="active" id="dcf-30" onclick="setCashflowRange(30)">30d</button>
+            <button id="dcf-90" onclick="setCashflowRange(90)">90d</button>
+            <button id="dcf-365" onclick="setCashflowRange(365)">1r</button>
+          </div>
+        </div>
+        <div id="d-cashflow-canvas-wrap"><canvas id="d-cashflow-chart"></canvas></div>
+      </div>
+
       <div class="d-two-col">
         <div class="card card-pad">
-          <div style="font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:12px;">Účty</div>
+          <div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:12px;letter-spacing:-.01em;">Účty</div>
           <div id="d-accounts"></div>
         </div>
         <div class="card card-pad">
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
-            <span style="font-size:13.5px;font-weight:600;color:var(--ink);">Kategorie</span>
+            <span style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Top kategorie</span>
             <span style="font-size:11px;color:var(--ink-dim);">tento měsíc</span>
           </div>
           <div id="d-cat-mini"></div>
         </div>
       </div>
+
+      <!-- Spending heatmap -->
+      <div class="card" id="d-heatmap-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Intenzita výdajů</div>
+            <div style="font-size:11px;color:var(--ink-dim);margin-top:2px;">Posledních 52 týdnů · barevně podle denní útraty</div>
+          </div>
+          <div style="font-size:11px;color:var(--ink-dim);" id="d-heatmap-stats">—</div>
+        </div>
+        <div class="d-heatmap-grid" id="d-heatmap-grid"></div>
+        <div class="d-heatmap-legend">
+          <span>Méně</span>
+          <div class="d-hm-cell"></div>
+          <div class="d-hm-cell d-hm-l1"></div>
+          <div class="d-hm-cell d-hm-l2"></div>
+          <div class="d-hm-cell d-hm-l3"></div>
+          <div class="d-hm-cell d-hm-l4"></div>
+          <span>Více</span>
+        </div>
+      </div>
+
+      <!-- Recent transactions -->
       <div class="card" style="overflow:hidden;">
         <div style="padding:14px 18px 10px;display:flex;justify-content:space-between;align-items:baseline;">
-          <span style="font-size:13.5px;font-weight:600;color:var(--ink);">Poslední transakce</span>
+          <span style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Poslední transakce</span>
           <button class="sec-action" onclick="showDesktopPage('activity')">Zobrazit vše →</button>
         </div>
         <div id="d-recent" style="padding:0 8px 8px;"></div>
@@ -1098,12 +1532,84 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
 
     <!-- ── Activity ── -->
     <div id="dp-activity" class="d-page" style="display:none;">
-      <div class="search-bar" style="margin-bottom:14px;">
+      <div class="search-bar" style="margin-bottom:12px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-dim);flex-shrink:0;"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input type="text" id="d-activity-search" placeholder="Hledat transakce…" oninput="renderDesktopActivity()" autocomplete="off"/>
       </div>
+
+      <!-- Filter row -->
+      <div class="d-filter-row">
+        <div class="d-filter-group" id="d-filter-period">
+          <button class="d-filter-pill active" data-period="all" onclick="setActivityFilter('period','all')">Vše</button>
+          <button class="d-filter-pill" data-period="month" onclick="setActivityFilter('period','month')">Tento měsíc</button>
+          <button class="d-filter-pill" data-period="last" onclick="setActivityFilter('period','last')">Minulý měsíc</button>
+          <button class="d-filter-pill" data-period="30d" onclick="setActivityFilter('period','30d')">30 dní</button>
+        </div>
+        <div class="d-filter-group" id="d-filter-type">
+          <button class="d-filter-pill active" data-type="all" onclick="setActivityFilter('type','all')">Vše</button>
+          <button class="d-filter-pill" data-type="vydaj" onclick="setActivityFilter('type','vydaj')">↑ Výdaje</button>
+          <button class="d-filter-pill" data-type="prijem" onclick="setActivityFilter('type','prijem')">↓ Příjmy</button>
+          <button class="d-filter-pill" data-type="prevod" onclick="setActivityFilter('type','prevod')">⇄ Převody</button>
+        </div>
+        <div class="d-filter-group" id="d-filter-account">
+          <button class="d-filter-pill active" data-acct="all" onclick="setActivityFilter('account','all')">Všechny účty</button>
+        </div>
+        <div style="flex:1"></div>
+        <span class="d-filter-summary" id="d-filter-summary">—</span>
+        <button class="d-filter-clear" onclick="clearActivityFilters()">Vyčistit ↺</button>
+      </div>
+
       <div class="card" style="overflow:hidden;">
         <div id="d-activity-list" style="padding:0 8px 8px;"></div>
+      </div>
+    </div>
+
+    <!-- ── Goals ── -->
+    <div id="dp-goals" class="d-page" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+        <div>
+          <div style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Spořící cíle</div>
+          <div style="font-size:11px;color:var(--ink-dim);margin-top:2px;">Sleduj postup k vlastním cílům</div>
+        </div>
+        <button class="d-add-btn" onclick="openGoalForm()">+ Nový cíl</button>
+      </div>
+
+      <!-- Form (hidden by default) -->
+      <div class="card card-pad" id="d-goal-form" style="display:none;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;">Nový cíl</div>
+        <div class="form-grid">
+          <div class="field"><label>Název</label><input type="text" id="d-goal-name" placeholder="Letní dovolená, MacBook…" autocomplete="off"/></div>
+          <div class="field"><label>Cílová částka (Kč)</label><input type="number" id="d-goal-target" placeholder="50000" min="1" inputmode="numeric"/></div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Aktuálně naspořeno (Kč)</label><input type="number" id="d-goal-current" placeholder="0" min="0" inputmode="numeric"/></div>
+          <div class="field"><label>Termín (volitelné)</label><input type="date" id="d-goal-deadline" style="-webkit-appearance:auto;appearance:auto;"/></div>
+        </div>
+        <div class="field" style="margin-top:6px;"><label>Ikona</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="d-filter-pill" onclick="setGoalIcon('🎯')">🎯</button>
+            <button class="d-filter-pill" onclick="setGoalIcon('✈️')">✈️</button>
+            <button class="d-filter-pill" onclick="setGoalIcon('🏠')">🏠</button>
+            <button class="d-filter-pill" onclick="setGoalIcon('💻')">💻</button>
+            <button class="d-filter-pill" onclick="setGoalIcon('🚗')">🚗</button>
+            <button class="d-filter-pill" onclick="setGoalIcon('🎓')">🎓</button>
+            <button class="d-filter-pill" onclick="setGoalIcon('💍')">💍</button>
+            <button class="d-filter-pill" onclick="setGoalIcon('🐾')">🐾</button>
+            <button class="d-filter-pill" onclick="setGoalIcon('📈')">📈</button>
+          </div>
+          <input type="hidden" id="d-goal-icon" value="🎯"/>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-sec" onclick="closeGoalForm()">Zrušit</button>
+          <button class="btn-primary" onclick="saveGoal()">Uložit cíl</button>
+        </div>
+      </div>
+
+      <div id="d-goals-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"></div>
+      <div id="d-goals-empty" style="display:none;">
+        <div class="d-goals-empty-icon">🎯</div>
+        <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px;">Zatím žádné cíle</div>
+        <div>Klikni na <b>+ Nový cíl</b> a začni spořit.</div>
       </div>
     </div>
 
@@ -1178,13 +1684,51 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
       <div class="d-rail-title">📅 Nadcházející platby</div>
       <div id="d-upcoming-list"><p style="color:var(--ink-dim);font-size:.78rem;">Načítám…</p></div>
     </div>
-    <div class="d-insight-card">
-      <h4>Přehled měsíce</h4>
-      <p id="d-insight-text">Načítám…</p>
+
+    <!-- AI Finance Bot -->
+    <div id="d-bot">
+      <div class="d-bot-head">
+        <div class="d-bot-avatar">P</div>
+        <div style="flex:1;min-width:0;">
+          <div class="d-bot-title">Petr · finanční bot</div>
+          <div class="d-bot-status">analyzuje data</div>
+        </div>
+      </div>
+      <div class="d-bot-stream" id="d-bot-stream"></div>
+      <div class="d-bot-actions">
+        <button onclick="regenerateBotTips()">🔄 Nové tipy</button>
+        <button onclick="botDeepDive()">🔍 Co dál?</button>
+      </div>
     </div>
   </aside>
 
 </div><!-- /desktop-layout -->
+
+<!-- Floating add button on desktop -->
+<button class="d-fab" id="d-fab" onclick="openAddSheet()" title="Přidat transakci (N)">+</button>
+
+<!-- Transaction hover popup -->
+<div class="d-tx-popup" id="d-tx-popup"></div>
+
+<!-- Command palette overlay -->
+<div class="d-cmd-overlay" id="d-cmd-overlay" onclick="if(event.target.id==='d-cmd-overlay')closeCommandPalette()">
+  <div class="d-cmd-box">
+    <div class="d-cmd-input-row">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-dim);"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="text" id="d-cmd-input" placeholder="Hledat akci, transakci, kategorii…" autocomplete="off" oninput="renderCommandPalette()" onkeydown="cmdPaletteKey(event)"/>
+      <span class="d-cmd-shortcut">esc</span>
+    </div>
+    <div class="d-cmd-list" id="d-cmd-list"></div>
+  </div>
+</div>
+
+<!-- Monthly snapshot overlay -->
+<div class="d-snap-overlay" id="d-snap-overlay" onclick="if(event.target.id==='d-snap-overlay')closeMonthlySnapshot()">
+  <div class="d-snap-box" id="d-snap-box">
+    <button class="d-snap-close" onclick="closeMonthlySnapshot()">×</button>
+    <div id="d-snap-content"><!-- generated --></div>
+  </div>
+</div>
 
 <!-- ══ Bottom nav ══ -->
 <nav class="bottom-nav">
@@ -1970,16 +2514,18 @@ let dpPetskaChart = null;
 let dpPetskaType  = 'vydaj';
 
 function showDesktopPage(page) {
-  ['overview','activity','budgets','petska'].forEach(p => {
+  ['overview','activity','budgets','goals','petska'].forEach(p => {
     const el = q('dp-' + p); if (el) el.style.display = p === page ? '' : 'none';
     const btn = q('dn-' + p); if (btn) btn.className = 'd-nav-item' + (p === page ? ' active' : '');
   });
   currentDesktopPage = page;
-  const titles = { overview:'Přehled', activity:'Výpis', budgets:'Kategorie', petska:'🐾 Petska' };
+  const titles = { overview:'Přehled', activity:'Výpis', budgets:'Kategorie', goals:'🎯 Cíle', petska:'🐾 Petska' };
   const titleEl = q('d-page-title'); if (titleEl) titleEl.textContent = titles[page] || page;
+  if (page === 'overview') renderDesktopOverview();
   if (page === 'budgets') renderDesktopBudgets();
   if (page === 'petska')  renderDesktopPetska();
   if (page === 'activity') renderDesktopActivity();
+  if (page === 'goals')    renderGoals();
 }
 
 function setDPetskaType(t) {
@@ -2017,31 +2563,45 @@ function renderDesktopOverview() {
   const b = calcBalances();
   const total = Object.values(b).reduce((a,c) => a+c, 0);
   const thisMonth = transactions.filter(isThisMonth);
+  const lastMonthTx = transactions.filter(isLastMonth);
   const income  = thisMonth.filter(t => t.type==='prijem').reduce((s,t) => s+t.amount, 0);
   const expense = thisMonth.filter(t => t.type==='vydaj').reduce((s,t) => s+t.amount, 0);
 
-  const statsEl = q('d-stat-cards');
-  if (statsEl) statsEl.innerHTML = [
-    { label:'Celkový majetek', val:fmt(total),          icon:'💰', cls:'' },
-    { label:'Příjmy / měsíc',  val:'+'+fmt(income),    icon:'↓',  cls:'d-stat-green' },
-    { label:'Výdaje / měsíc',  val:'−'+fmt(expense),   icon:'↑',  cls:expense>income?'d-stat-red':'' },
-    { label:'Petska firemní',  val:fmt(b.petska||0),   icon:'🐾', cls:'' },
-  ].map(c => `<div class="d-stat-card card card-pad">
-    <div class="d-stat-icon">${c.icon}</div>
-    <div class="d-stat-lbl">${c.label}</div>
-    <div class="d-stat-val ${c.cls}">${c.val}</div>
-  </div>`).join('');
+  // Net worth delta vs end of last month
+  const endOfLastMonth = new Date();
+  endOfLastMonth.setDate(0); endOfLastMonth.setHours(23,59,59,999);
+  const balLastMonthEnd = calcBalanceAtDate(endOfLastMonth);
+  const totalLast = Object.values(balLastMonthEnd).reduce((a,c) => a+c, 0);
+  const delta = total - totalLast;
+  const deltaPct = totalLast !== 0 ? (delta / Math.abs(totalLast)) * 100 : 0;
 
-  if (q('d-sum-income'))  q('d-sum-income').textContent  = '+'+fmt(income);
-  if (q('d-sum-expense')) q('d-sum-expense').textContent = '−'+fmt(expense);
+  if (q('d-nw-val'))         q('d-nw-val').textContent         = fmt(total);
+  if (q('d-nw-petska'))      q('d-nw-petska').textContent      = fmt(b.petska||0);
+  if (q('d-nw-inc'))         q('d-nw-inc').textContent         = '+' + fmt(income);
+  if (q('d-nw-exp'))         q('d-nw-exp').textContent         = '−' + fmt(expense);
   const rate = income > 0 ? Math.max(0, Math.round((income-expense)/income*100)) : 0;
-  if (q('d-savings-rate')) q('d-savings-rate').textContent = rate + '%';
-  if (q('d-savings-fill')) q('d-savings-fill').style.width = Math.min(rate,100) + '%';
+  if (q('d-nw-rate'))        q('d-nw-rate').textContent        = rate + '%';
+  const rateEl = q('d-nw-rate');
+  if (rateEl) rateEl.className = 'd-nw-mini-val ' + (rate >= 20 ? 'up' : rate >= 0 ? '' : 'down');
 
-  renderDesktopSpendingBars();
+  const deltaEl = q('d-nw-delta'), arrowEl = q('d-nw-delta-arrow'), valEl = q('d-nw-delta-val');
+  if (deltaEl) {
+    if (totalLast === 0) {
+      deltaEl.style.display = 'none';
+    } else {
+      deltaEl.style.display = '';
+      deltaEl.className = 'd-nw-delta ' + (delta >= 0 ? 'up' : 'down');
+      arrowEl.textContent = delta >= 0 ? '↑' : '↓';
+      valEl.textContent = fmt(Math.abs(delta)) + ' (' + (delta>=0?'+':'') + deltaPct.toFixed(1) + '%)';
+    }
+  }
+
   renderDesktopAccounts();
   renderDesktopCatMini();
   renderDesktopRecent();
+  renderDesktopCashflow();
+  renderDesktopHeatmap();
+  renderSubscriptionBanner();
 }
 
 function renderDesktopSpendingBars() {
@@ -2076,14 +2636,28 @@ function renderDesktopAccounts() {
     {k:'bezny',icon:'🏦'},{k:'sporak',icon:'🐖'},{k:'penzijko',icon:'👴'},
     {k:'petska',icon:'🐾'},{k:'investice',icon:'📈'},{k:'hotovost',icon:'💵'},
   ];
-  el.innerHTML = accts.map(({k,icon}) => `
-    <div class="d-acct-row" onclick="openAcctSettings('${k}')">
+  el.innerHTML = accts.map(({k,icon}) => {
+    const series = calcAcctSeries(k, 30);
+    const last  = series[series.length-1] || 0;
+    const first = series[0] || 0;
+    const dlt = last - first;
+    const sparkPath = buildSparkline(series, 64, 22);
+    const sparkColor = dlt >= 0 ? '#2F855A' : '#C53030';
+    return `<div class="d-acct-row" onclick="openAcctSettings('${k}')">
       <div class="cat-bubble cat-bubble-sm" style="background:var(--bg-alt);font-size:16px;">${icon}</div>
       <div style="flex:1;min-width:0;">
         <div style="font-size:13px;font-weight:600;color:var(--ink);">${LABELS[k]}</div>
+        <div style="font-size:10.5px;color:var(--ink-dim);">30d trend</div>
       </div>
-      <div style="font-size:13.5px;font-weight:700;color:${(b[k]||0)<0?'var(--red)':'var(--ink)'};">${fmt(b[k]||0)}</div>
-    </div>`).join('');
+      <svg class="d-acct-spark" viewBox="0 0 64 22" preserveAspectRatio="none">
+        <path d="${sparkPath}" fill="none" stroke="${sparkColor}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;min-width:90px;">
+        <div style="font-size:13.5px;font-weight:700;color:${(b[k]||0)<0?'var(--red)':'var(--ink)'};font-variant-numeric:tabular-nums;">${fmt(b[k]||0)}</div>
+        <div class="d-acct-delta ${dlt>=0?'up':'down'}" style="margin-top:1px;">${dlt>=0?'+':''}${fmt(dlt).replace(' Kč','')}</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderDesktopCatMini() {
@@ -2122,10 +2696,48 @@ function renderDesktopActivity() {
   const el = q('d-activity-list'); if (!el) return;
   const siEl = q('d-activity-search');
   const sq   = (siEl ? siEl.value : '').toLowerCase();
-  const shown = transactions.filter(tx =>
-    !sq || tx.name.toLowerCase().includes(sq) || (tx.category||'').toLowerCase().includes(sq)
-  );
-  const rev = [...shown].reverse().slice(0,200);
+  const { period, type, account } = activityFilters;
+
+  // Account filter pills (lazy-render)
+  const acctEl = q('d-filter-account');
+  if (acctEl && acctEl.children.length <= 1) {
+    const keys = ['bezny','sporak','penzijko','petska','investice','hotovost'];
+    const allBtn = acctEl.children[0];
+    acctEl.innerHTML = '';
+    acctEl.appendChild(allBtn);
+    keys.forEach(k => {
+      const btn = document.createElement('button');
+      btn.className = 'd-filter-pill';
+      btn.dataset.acct = k;
+      btn.textContent = LABELS[k] || k;
+      btn.onclick = () => setActivityFilter('account', k);
+      acctEl.appendChild(btn);
+    });
+  }
+
+  let shown = transactions.filter(tx => {
+    if (sq && !(tx.name.toLowerCase().includes(sq) || (tx.category||'').toLowerCase().includes(sq))) return false;
+    if (type !== 'all' && tx.type !== type) return false;
+    if (account !== 'all' && tx.account !== account && tx.to_account !== account) return false;
+    if (period === 'month' && !isThisMonth(tx)) return false;
+    if (period === 'last'  && !isLastMonth(tx)) return false;
+    if (period === '30d') {
+      const d = new Date((tx.tx_date||tx.created_at.split('T')[0])+'T12:00:00');
+      const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-30);
+      if (d < cutoff) return false;
+    }
+    return true;
+  });
+
+  const totals = shown.reduce((s,t) => {
+    if (t.type === 'prijem') s.inc += t.amount;
+    if (t.type === 'vydaj')  s.exp += t.amount;
+    return s;
+  }, { inc:0, exp:0 });
+  const sumEl = q('d-filter-summary');
+  if (sumEl) sumEl.textContent = `${shown.length} záznamů · +${fmt(totals.inc)} / −${fmt(totals.exp)}`;
+
+  const rev = [...shown].reverse().slice(0,300);
   if (!rev.length) { el.innerHTML='<p class="empty" style="padding:24px;">Žádné záznamy</p>'; return; }
   el.innerHTML = buildTxTable(rev, true);
 }
@@ -2142,7 +2754,7 @@ function buildTxTable(txns, withDelete) {
     const acctLabel = tx.type==='prevod'
       ? (LABELS[tx.account]||tx.account)+' → '+(LABELS[tx.to_account]||tx.to_account)
       : (LABELS[tx.account]||tx.account);
-    return `<tr>
+    return `<tr onmouseenter="showTxPopup(event,'${tx.id}')" onmouseleave="hideTxPopup()">
       <td><div class="cat-bubble cat-bubble-sm" style="background:${cc}22;">${CAT_EMOJI[tx.category]||'📦'}</div></td>
       <td class="d-tx-name">${tx.name}</td>
       <td class="d-tx-cat">${tx.category||'—'}</td>
@@ -2299,23 +2911,907 @@ function renderDesktopRail() {
     }).join('');
   }
 
-  // Insight
-  const income  = thisMonth.filter(t=>t.type==='prijem').reduce((s,t)=>s+t.amount,0);
-  const expense = thisMonth.filter(t=>t.type==='vydaj').reduce((s,t)=>s+t.amount,0);
-  const rate = income>0 ? Math.max(0,Math.round((income-expense)/income*100)) : 0;
-  const catTotals = {};
-  thisMonth.filter(t=>t.type==='vydaj').forEach(t => { const c=t.category||'Ostatní'; catTotals[c]=(catTotals[c]||0)+t.amount; });
-  const bigCat = Object.entries(catTotals).sort((a,b)=>b[1]-a[1])[0];
-  const insEl = q('d-insight-text');
-  if (insEl) {
-    if (income===0) insEl.textContent = 'Přidej příjmy pro výpočet míry úspor.';
-    else {
-      let msg = `Spoříš ${rate}% příjmů.`;
-      if (bigCat) msg += ` Největší výdaj: ${CAT_EMOJI[bigCat[0]]||''} ${bigCat[0]} (${fmt(bigCat[1])}).`;
-      insEl.textContent = msg;
+  renderBotTips();
+}
+
+/* ════════════════════════════════════════════════════
+   DESKTOP HELPERS — balance over time, sparklines
+   ════════════════════════════════════════════════════ */
+function calcBalanceAtDate(date) {
+  const b = { ...DEFAULTS };
+  const cutoff = (date instanceof Date) ? date : new Date(date);
+  transactions.forEach(tx => {
+    const txDate = new Date((tx.tx_date || tx.created_at.split('T')[0]) + 'T12:00:00');
+    if (txDate > cutoff) return;
+    if      (tx.type === 'prijem') b[tx.account] = (b[tx.account]||0) + tx.amount;
+    else if (tx.type === 'vydaj')  b[tx.account] = (b[tx.account]||0) - tx.amount;
+    else if (tx.type === 'prevod') {
+      b[tx.account]    = (b[tx.account]||0)    - tx.amount;
+      if (tx.to_account) b[tx.to_account] = (b[tx.to_account]||0) + tx.amount;
     }
+  });
+  return b;
+}
+
+function calcAcctSeries(acct, days) {
+  const out = [];
+  const now = new Date(); now.setHours(23,59,59,999);
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now); d.setDate(now.getDate() - i);
+    const b = calcBalanceAtDate(d);
+    out.push(b[acct] || 0);
+  }
+  return out;
+}
+
+function calcTotalSeries(days) {
+  const out = [];
+  const now = new Date(); now.setHours(23,59,59,999);
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now); d.setDate(now.getDate() - i);
+    const b = calcBalanceAtDate(d);
+    out.push(Object.values(b).reduce((a,c) => a+c, 0));
+  }
+  return out;
+}
+
+function buildSparkline(series, w, h) {
+  if (!series.length) return '';
+  const min = Math.min(...series), max = Math.max(...series);
+  const range = max - min || 1;
+  return series.map((v,i) => {
+    const x = (i / (series.length-1 || 1)) * w;
+    const y = h - ((v - min) / range) * h;
+    return `${i===0?'M':'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+  }).join(' ');
+}
+
+/* ════════════════════════════════════════════════════
+   CASHFLOW LINE CHART
+   ════════════════════════════════════════════════════ */
+let dCashflowChart = null;
+let cashflowRange = 30;
+
+function setCashflowRange(days) {
+  cashflowRange = days;
+  ['30','90','365'].forEach(d => {
+    const el = q('dcf-'+d); if (el) el.classList.toggle('active', parseInt(d)===days);
+  });
+  renderDesktopCashflow();
+}
+
+function renderDesktopCashflow() {
+  const canvas = q('d-cashflow-chart'); if (!canvas) return;
+  const series = calcTotalSeries(cashflowRange);
+  const labels = [];
+  const now = new Date();
+  for (let i = cashflowRange - 1; i >= 0; i--) {
+    const d = new Date(now); d.setDate(now.getDate() - i);
+    labels.push(d.toLocaleDateString('cs-CZ', { day:'numeric', month:'short' }));
+  }
+  if (dCashflowChart) { dCashflowChart.destroy(); dCashflowChart = null; }
+  const dark = document.body.classList.contains('dark');
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,215);
+  grad.addColorStop(0, 'rgba(255,181,167,.45)');
+  grad.addColorStop(1, 'rgba(255,181,167,.02)');
+  const skipL = Math.max(1, Math.floor(cashflowRange/8));
+  dCashflowChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data: series,
+        borderColor: '#C53030',
+        backgroundColor: grad,
+        borderWidth: 2,
+        fill: true,
+        tension: .35,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: '#C53030',
+        pointHoverBorderColor: '#fff',
+        pointHoverBorderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: dark ? '#1F1A22' : '#2d2420',
+          titleColor: '#F4ECE2',
+          bodyColor: '#F4ECE2',
+          padding: 10,
+          cornerRadius: 10,
+          displayColors: false,
+          callbacks: { label: ctx => fmt(ctx.raw) }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            color: dark ? '#7A6B78' : '#8A6F5E',
+            font: { size: 10 },
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 8,
+            callback: function(val, i) { return i % skipL === 0 ? this.getLabelForValue(val) : ''; }
+          },
+          border: { display: false }
+        },
+        y: {
+          grid: { color: dark ? 'rgba(255,255,255,.05)' : 'rgba(122,63,46,.06)', drawBorder:false },
+          ticks: {
+            color: dark ? '#7A6B78' : '#8A6F5E',
+            font: { size: 10 },
+            callback: v => (v >= 1000 ? (v/1000).toFixed(0)+'k' : v) + ' Kč'
+          },
+          border: { display: false }
+        }
+      }
+    }
+  });
+}
+
+/* ════════════════════════════════════════════════════
+   SPENDING HEATMAP
+   ════════════════════════════════════════════════════ */
+function renderDesktopHeatmap() {
+  const grid = q('d-heatmap-grid'); if (!grid) return;
+  const totalsByDay = {};
+  transactions.filter(t => t.type==='vydaj').forEach(t => {
+    const k = t.tx_date || (t.created_at||'').split('T')[0];
+    if (!k) return;
+    totalsByDay[k] = (totalsByDay[k]||0) + t.amount;
+  });
+  // 52 weeks ending today
+  const today = new Date(); today.setHours(0,0,0,0);
+  // start = today - 52*7 days, aligned to start of week (sunday)
+  const start = new Date(today); start.setDate(today.getDate() - 52*7);
+  // Align to sunday
+  start.setDate(start.getDate() - start.getDay());
+
+  const vals = Object.values(totalsByDay);
+  const sorted = [...vals].sort((a,b)=>a-b);
+  const q1 = sorted[Math.floor(sorted.length*.5)] || 0;
+  const q2 = sorted[Math.floor(sorted.length*.75)] || 0;
+  const q3 = sorted[Math.floor(sorted.length*.9)]  || 0;
+
+  let html = '';
+  const cur = new Date(start);
+  let totalDays = 0, daysWithSpend = 0, totalSpend = 0;
+  while (cur <= today) {
+    const iso = cur.toISOString().split('T')[0];
+    const v = totalsByDay[iso] || 0;
+    if (v > 0) { daysWithSpend++; totalSpend += v; }
+    totalDays++;
+    let cls = '';
+    if      (v > q3) cls = 'd-hm-l4';
+    else if (v > q2) cls = 'd-hm-l3';
+    else if (v > q1) cls = 'd-hm-l2';
+    else if (v > 0)  cls = 'd-hm-l1';
+    const title = `${cur.toLocaleDateString('cs-CZ',{weekday:'short',day:'numeric',month:'short'})}: ${v>0?fmt(v):'žádné výdaje'}`;
+    html += `<div class="d-hm-cell ${cls}" title="${title}"></div>`;
+    cur.setDate(cur.getDate()+1);
+  }
+  grid.innerHTML = html;
+  const statsEl = q('d-heatmap-stats');
+  if (statsEl) {
+    const avg = daysWithSpend > 0 ? totalSpend / daysWithSpend : 0;
+    statsEl.textContent = `${daysWithSpend} dnů s útratou · Ø ${fmt(avg)}/den`;
   }
 }
+
+/* ════════════════════════════════════════════════════
+   ACTIVITY FILTERS
+   ════════════════════════════════════════════════════ */
+let activityFilters = { period:'all', type:'all', account:'all' };
+
+function setActivityFilter(group, value) {
+  activityFilters[group] = value;
+  // Update pill UI
+  if (group === 'period') {
+    document.querySelectorAll('#d-filter-period .d-filter-pill').forEach(b => {
+      b.classList.toggle('active', b.dataset.period === value);
+    });
+  } else if (group === 'type') {
+    document.querySelectorAll('#d-filter-type .d-filter-pill').forEach(b => {
+      b.classList.remove('active','active-red','active-green','active-blue');
+      if (b.dataset.type === value) {
+        b.classList.add('active');
+        if (value === 'vydaj')  b.classList.add('active-red');
+        if (value === 'prijem') b.classList.add('active-green');
+        if (value === 'prevod') b.classList.add('active-blue');
+      }
+    });
+  } else if (group === 'account') {
+    document.querySelectorAll('#d-filter-account .d-filter-pill').forEach(b => {
+      b.classList.toggle('active', b.dataset.acct === value);
+    });
+  }
+  renderDesktopActivity();
+}
+
+function clearActivityFilters() {
+  activityFilters = { period:'all', type:'all', account:'all' };
+  document.querySelectorAll('.d-filter-pill').forEach(b => b.classList.remove('active','active-red','active-green','active-blue'));
+  document.querySelectorAll('[data-period="all"],[data-type="all"],[data-acct="all"]').forEach(b => b.classList.add('active'));
+  const inp = q('d-activity-search'); if (inp) inp.value = '';
+  renderDesktopActivity();
+}
+
+/* ════════════════════════════════════════════════════
+   TRANSACTION HOVER POPUP
+   ════════════════════════════════════════════════════ */
+let popupTimer = null;
+function showTxPopup(evt, id) {
+  clearTimeout(popupTimer);
+  const tx = transactions.find(t => t.id === id); if (!tx) return;
+  const popup = q('d-tx-popup'); if (!popup) return;
+  // History: same name in last 6 months
+  const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - 6);
+  const same = transactions.filter(t => {
+    if (t.name.toLowerCase() !== tx.name.toLowerCase()) return false;
+    const d = new Date((t.tx_date||t.created_at.split('T')[0])+'T12:00:00');
+    return d >= cutoff;
+  });
+  const totalSame = same.reduce((s,t) => s+t.amount, 0);
+  const avg = same.length ? totalSame / same.length : 0;
+  const last = same.length > 1 ? same.sort((a,b) => new Date(b.tx_date||b.created_at) - new Date(a.tx_date||a.created_at))[1] : null;
+  const lastD = last ? new Date((last.tx_date||last.created_at.split('T')[0])+'T12:00:00').toLocaleDateString('cs-CZ',{day:'numeric',month:'short'}) : '—';
+  const monthAgg = {};
+  same.forEach(t => {
+    const d = new Date((t.tx_date||t.created_at.split('T')[0])+'T12:00:00');
+    const k = d.getFullYear()+'-'+d.getMonth();
+    monthAgg[k] = (monthAgg[k]||0) + t.amount;
+  });
+  const monthCount = Object.keys(monthAgg).length;
+
+  popup.innerHTML = `
+    <div class="d-tx-popup-title">${CAT_EMOJI[tx.category]||''} ${tx.name}</div>
+    <div class="d-tx-popup-sub">Historie za posledních 6 měsíců</div>
+    <div class="d-tx-popup-row"><span>Výskytů</span><span>${same.length}×</span></div>
+    <div class="d-tx-popup-row"><span>V kolika měsících</span><span>${monthCount}</span></div>
+    <div class="d-tx-popup-row"><span>Celkem</span><span>${fmt(totalSame)}</span></div>
+    <div class="d-tx-popup-row"><span>Průměr</span><span>${fmt(avg)}</span></div>
+    <div class="d-tx-popup-row"><span>Naposledy</span><span>${lastD}</span></div>
+  `;
+  const rect = evt.currentTarget.getBoundingClientRect();
+  popup.classList.add('visible');
+  const pw = popup.offsetWidth || 260, ph = popup.offsetHeight || 200;
+  let left = rect.right + 14;
+  if (left + pw > window.innerWidth - 12) left = rect.left - pw - 14;
+  let top = rect.top + rect.height/2 - ph/2;
+  if (top < 12) top = 12;
+  if (top + ph > window.innerHeight - 12) top = window.innerHeight - ph - 12;
+  popup.style.left = left + 'px';
+  popup.style.top  = top + 'px';
+}
+function hideTxPopup() {
+  popupTimer = setTimeout(() => {
+    const p = q('d-tx-popup'); if (p) p.classList.remove('visible');
+  }, 100);
+}
+
+/* ════════════════════════════════════════════════════
+   SUBSCRIPTION DETECTOR
+   ════════════════════════════════════════════════════ */
+function detectSubscriptions() {
+  const templates = getRecurringTemplates();
+  const tracked = new Set(templates.map(t => (t.name+'|'+t.account).toLowerCase()));
+  const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - 4);
+
+  const groups = {};
+  transactions.filter(t => t.type === 'vydaj').forEach(t => {
+    const d = new Date((t.tx_date||t.created_at.split('T')[0])+'T12:00:00');
+    if (d < cutoff) return;
+    const k = (t.name.toLowerCase().trim()+'|'+t.account);
+    if (tracked.has(k)) return;
+    if (!groups[k]) groups[k] = [];
+    groups[k].push({ tx:t, ym: d.getFullYear()*12+d.getMonth() });
+  });
+
+  const candidates = [];
+  Object.entries(groups).forEach(([k, items]) => {
+    const months = [...new Set(items.map(i => i.ym))];
+    if (months.length >= 3) {
+      // Check approx-similar amounts
+      const amts = items.map(i => i.tx.amount);
+      const avg = amts.reduce((s,a)=>s+a,0) / amts.length;
+      const variance = amts.every(a => Math.abs(a-avg) / avg < .25);
+      if (variance) {
+        candidates.push({
+          name: items[0].tx.name,
+          account: items[0].tx.account,
+          category: items[0].tx.category,
+          amount: Math.round(avg),
+          count: months.length,
+        });
+      }
+    }
+  });
+  return candidates.sort((a,b) => b.amount - a.amount);
+}
+
+function renderSubscriptionBanner() {
+  const host = q('d-sub-banner-host'); if (!host) return;
+  const dismissed = localStorage.getItem('subBannerDismissed') === 'true';
+  if (dismissed) { host.innerHTML = ''; return; }
+  const cands = detectSubscriptions();
+  if (!cands.length) { host.innerHTML = ''; return; }
+  const top = cands.slice(0, 3);
+  const totalMonthly = top.reduce((s,c) => s+c.amount, 0);
+  host.innerHTML = `
+    <div class="d-sub-banner">
+      <div class="d-sub-icon">🔁</div>
+      <div class="d-sub-body">
+        <div class="d-sub-title">Detekováno ${cands.length} opakujících se ${cands.length===1?'platba':cands.length<5?'platby':'plateb'}</div>
+        <div class="d-sub-text">${top.map(c => CAT_EMOJI[c.category]+' '+c.name+' (~'+fmt(c.amount)+')').join(' · ')} · Celkem ~${fmt(totalMonthly)}/měsíc</div>
+      </div>
+      <div class="d-sub-actions">
+        <button class="d-sub-btn primary" onclick="acceptSubscriptions()">Označit jako opakující</button>
+        <button class="d-sub-btn" onclick="dismissSubBanner()">Skrýt</button>
+      </div>
+    </div>`;
+}
+function acceptSubscriptions() {
+  const cands = detectSubscriptions();
+  const t = getRecurringTemplates();
+  cands.slice(0, 3).forEach(c => {
+    if (!t.some(x => x.name === c.name && x.account === c.account)) {
+      t.push({ name:c.name, amount:c.amount, account:c.account, category:c.category, type:'vydaj' });
+    }
+  });
+  saveRecurringTemplates(t);
+  showToast(`${cands.length} platba označena jako opakující ✓`, 'success');
+  renderAll();
+}
+function dismissSubBanner() {
+  localStorage.setItem('subBannerDismissed', 'true');
+  renderSubscriptionBanner();
+}
+
+/* ════════════════════════════════════════════════════
+   AI FINANCE BOT — rules-based tips
+   ════════════════════════════════════════════════════ */
+function generateBotTips() {
+  const tips = [];
+  const thisMonth = transactions.filter(isThisMonth);
+  const lastMonth = transactions.filter(isLastMonth);
+  const income  = thisMonth.filter(t => t.type==='prijem').reduce((s,t)=>s+t.amount,0);
+  const expense = thisMonth.filter(t => t.type==='vydaj').reduce((s,t)=>s+t.amount,0);
+  const lastIncome  = lastMonth.filter(t => t.type==='prijem').reduce((s,t)=>s+t.amount,0);
+  const lastExpense = lastMonth.filter(t => t.type==='vydaj').reduce((s,t)=>s+t.amount,0);
+  const rate = income > 0 ? Math.round((income-expense)/income*100) : 0;
+  const b = calcBalances();
+  const day = new Date().getDate();
+  const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
+  const monthFrac = day / daysInMonth;
+
+  // 1. Savings rate
+  if (income > 0) {
+    if (rate >= 25) tips.push({ cls:'win', emoji:'🏆', text:`<b>Spoříš ${rate} % příjmů.</b> Nadprůměrné — doporučení je 20 %. Tak dál!` });
+    else if (rate >= 10) tips.push({ cls:'info', emoji:'👍', text:`<b>Míra úspor: ${rate} %.</b> Solidní, ale cíl 20 % je na dosah — sniž jednu kategorii o ~${fmt(income*.05)}.` });
+    else if (rate >= 0)  tips.push({ cls:'warn', emoji:'⚠️', text:`<b>Míra úspor je jen ${rate} %.</b> Tento měsíc utratíš skoro vše co vyděláš. Najdi ${fmt(income*.1)} k osekání.` });
+    else                 tips.push({ cls:'warn', emoji:'🔴', text:`<b>Utrácíš víc než vyděláváš (${rate} %).</b> Schodek ${fmt(expense-income)} — okamžitě zkontroluj největší kategorie.` });
+  }
+
+  // 2. Biggest category vs last month
+  const catThis = {}, catLast = {};
+  thisMonth.filter(t=>t.type==='vydaj').forEach(t => { const c=t.category||'Ostatní'; catThis[c]=(catThis[c]||0)+t.amount; });
+  lastMonth.filter(t=>t.type==='vydaj').forEach(t => { const c=t.category||'Ostatní'; catLast[c]=(catLast[c]||0)+t.amount; });
+  const cats = Object.keys(catThis);
+  cats.forEach(c => {
+    if (!catLast[c] || catLast[c] < 200) return;
+    const change = (catThis[c] - catLast[c]) / catLast[c] * 100;
+    if (change > 40 && catThis[c] > 500) {
+      tips.push({ cls:'warn', emoji:CAT_EMOJI[c]||'📈', text:`<b>${c} +${Math.round(change)} % vs. minulý měsíc</b> (${fmt(catThis[c])} vs. ${fmt(catLast[c])}). Stojí za pohled.` });
+    } else if (change < -30 && catLast[c] > 500) {
+      tips.push({ cls:'win', emoji:CAT_EMOJI[c]||'📉', text:`<b>${c} −${Math.round(-change)} % vs. minulý měsíc.</b> Skvělý progress (${fmt(catThis[c])} vs. ${fmt(catLast[c])}).` });
+    }
+  });
+
+  // 3. Category limit warnings
+  Object.entries(CAT_LIMITS).forEach(([c, lim]) => {
+    const spent = catThis[c] || 0;
+    if (spent === 0) return;
+    const pace = spent / monthFrac;
+    if (spent > lim) {
+      tips.push({ cls:'warn', emoji:'🚨', text:`<b>${c}: limit překročen</b> (${fmt(spent)} / ${fmt(lim)}). Šetři tuhle kategorii zbytek měsíce.` });
+    } else if (pace > lim * 1.1 && monthFrac < .8) {
+      const daysLeft = daysInMonth - day;
+      tips.push({ cls:'warn', emoji:CAT_EMOJI[c]||'⏳', text:`<b>${c} jde nad limit:</b> tempem dosáhneš ${fmt(pace)}/měsíc (limit ${fmt(lim)}). Zbývá ${daysLeft} dnů.` });
+    }
+  });
+
+  // 4. Duplicate payments same month
+  const dupGroups = {};
+  thisMonth.filter(t => t.type==='vydaj').forEach(t => {
+    const k = t.name.toLowerCase().trim();
+    if (!dupGroups[k]) dupGroups[k] = [];
+    dupGroups[k].push(t);
+  });
+  Object.entries(dupGroups).forEach(([k, txs]) => {
+    if (txs.length >= 2 && txs[0].amount >= 300) {
+      const total = txs.reduce((s,t)=>s+t.amount,0);
+      tips.push({ cls:'idea', emoji:'💡', text:`<b>${txs[0].name}</b> jsi platil ${txs.length}× tento měsíc (${fmt(total)}). Roční předplatné by mohlo ušetřit ~20-30 %.` });
+    }
+  });
+
+  // 5. Petska runway
+  const petskaExp = transactions.filter(t => t.account==='petska' && t.type==='vydaj' && isThisMonth(t)).reduce((s,t)=>s+t.amount,0);
+  if (petskaExp > 0 && (b.petska||0) > 0) {
+    const runway = (b.petska||0) / petskaExp;
+    if (runway < 1.5) tips.push({ cls:'warn', emoji:'🐾', text:`<b>Petska runway: jen ${runway.toFixed(1)} měsíce.</b> Doporučení je 3 měsíce. Zvaž navýšit rezervu o ${fmt(petskaExp*3 - b.petska)}.` });
+    else if (runway > 6) tips.push({ cls:'win', emoji:'🐾', text:`<b>Petska má rezervu na ${Math.round(runway)} měsíců.</b> Část by mohla pracovat — třeba spořící účet/investice.` });
+  }
+
+  // 6. Unrecorded subscriptions
+  const subs = detectSubscriptions();
+  if (subs.length > 0) {
+    const total = subs.slice(0,3).reduce((s,c)=>s+c.amount,0);
+    tips.push({ cls:'idea', emoji:'🔁', text:`Detekováno <b>${subs.length} skrytých opakujících plateb</b> (~${fmt(total)}/měs). Klikni na žlutý banner nahoře a označ je.` });
+  }
+
+  // 7. Big win: income up
+  if (lastIncome > 0 && income > lastIncome * 1.15) {
+    const up = income - lastIncome;
+    tips.push({ cls:'win', emoji:'💰', text:`<b>Příjmy +${Math.round((income-lastIncome)/lastIncome*100)} % vs. minulý měsíc</b> (+${fmt(up)}). Z dodatečného příjmu ulož aspoň 50 % na spořící.` });
+  }
+
+  // 8. Wolt/HPP specific (custom heuristic)
+  const woltThis = thisMonth.filter(t => t.type==='prijem' && t.name.toLowerCase().includes('wolt')).reduce((s,t)=>s+t.amount,0);
+  const woltLast = lastMonth.filter(t => t.type==='prijem' && t.name.toLowerCase().includes('wolt')).reduce((s,t)=>s+t.amount,0);
+  if (woltLast > 1000 && woltThis < woltLast * .7) {
+    tips.push({ cls:'info', emoji:'🍔', text:`<b>Wolt příjem je tento měsíc o ${Math.round((woltLast-woltThis)/woltLast*100)} % nižší</b>. Jiný projekt nebo méně směn?` });
+  }
+
+  // 9. Cash heavy
+  const totalAll = Object.values(b).reduce((a,c)=>a+c,0);
+  if ((b.bezny||0) > totalAll * .5 && totalAll > 30000) {
+    tips.push({ cls:'idea', emoji:'🐖', text:`<b>${Math.round((b.bezny||0)/totalAll*100)} % majetku máš na běžném účtu.</b> Přesuň přebytek na spořící — generuje nulový úrok.` });
+  }
+
+  // 10. Today reminder
+  const templates = getRecurringTemplates();
+  const missing = templates.filter(t => !thisMonth.some(x => x.name===t.name && x.account===t.account));
+  if (missing.length && day > daysInMonth - 8) {
+    tips.push({ cls:'info', emoji:'📅', text:`<b>Konec měsíce za ${daysInMonth-day} dnů</b> a chybí: ${missing.map(m=>m.name).join(', ')}. Označit jako zaplacené?` });
+  }
+
+  // 11. Encouragement if nothing
+  if (tips.length === 0) {
+    tips.push({ cls:'info', emoji:'👋', text:`<b>Ahoj!</b> Zatím málo dat na tipy. Přidej pár transakcí nebo zkus tlačítko <b>"Co dál?"</b> níž.` });
+  }
+
+  return tips;
+}
+
+let botTips = [];
+let botMsgIndex = 0;
+
+function renderBotTips() {
+  botTips = generateBotTips();
+  botMsgIndex = 0;
+  const stream = q('d-bot-stream'); if (!stream) return;
+  stream.innerHTML = '';
+  // First message: greeting based on time
+  const h = new Date().getHours();
+  const greet = h < 11 ? 'Dobré ráno' : h < 17 ? 'Dobrý den' : 'Dobrý večer';
+  const b = calcBalances();
+  const total = Object.values(b).reduce((a,c)=>a+c,0);
+  appendBotMsg({
+    cls:'info', emoji:'👋',
+    text: `<b>${greet}, Tadeáši!</b> Tvůj celkový majetek je ${fmt(total)}. Tady je co mě dneska zaujalo:`
+  });
+  // Show first 4 tips with stagger
+  const toShow = botTips.slice(0, 4);
+  toShow.forEach((tip, i) => {
+    setTimeout(() => appendBotMsg(tip), 280 + i*220);
+  });
+  botMsgIndex = toShow.length;
+  if (botTips.length > 4) {
+    setTimeout(() => {
+      appendBotMsg({ cls:'idea', emoji:'➕', text:`Mám pro tebe ještě <b>${botTips.length - 4} dalších tipů</b>.`, cta:'Ukázat všechny|showAllBotTips' });
+    }, 280 + toShow.length*220 + 200);
+  }
+}
+
+function appendBotMsg(msg) {
+  const stream = q('d-bot-stream'); if (!stream) return;
+  const div = document.createElement('div');
+  div.className = 'd-bot-msg ' + (msg.cls||'info');
+  const ctaHtml = msg.cta ? (() => {
+    const [label, action] = msg.cta.split('|');
+    return `<br><button class="d-bot-cta" onclick="${action}()">${label}</button>`;
+  })() : '';
+  div.innerHTML = `<span class="d-bot-emoji">${msg.emoji||'💬'}</span> ${msg.text}${ctaHtml}`;
+  stream.appendChild(div);
+  stream.scrollTop = stream.scrollHeight;
+}
+
+function showAllBotTips() {
+  const stream = q('d-bot-stream'); if (!stream) return;
+  // Remove the "show more" message (last child)
+  if (stream.lastChild) stream.removeChild(stream.lastChild);
+  botTips.slice(botMsgIndex).forEach((tip, i) => {
+    setTimeout(() => appendBotMsg(tip), i*180);
+  });
+  botMsgIndex = botTips.length;
+}
+
+function regenerateBotTips() {
+  renderBotTips();
+  showToast('Tipy aktualizovány');
+}
+
+function botDeepDive() {
+  const stream = q('d-bot-stream'); if (!stream) return;
+  // Typing indicator
+  const typing = document.createElement('div');
+  typing.className = 'd-bot-typing';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  stream.appendChild(typing);
+  stream.scrollTop = stream.scrollHeight;
+  setTimeout(() => {
+    typing.remove();
+    const thisMonth = transactions.filter(isThisMonth);
+    const income  = thisMonth.filter(t => t.type==='prijem').reduce((s,t)=>s+t.amount,0);
+    const expense = thisMonth.filter(t => t.type==='vydaj').reduce((s,t)=>s+t.amount,0);
+    const proj = expense / (new Date().getDate()) * 30;
+    const surplus = income - proj;
+    appendBotMsg({
+      cls:'idea', emoji:'🔮',
+      text: `Tempem výdajů (${fmt(expense)} k ${new Date().getDate()}.) dosáhneš na konci měsíce <b>${fmt(proj)}</b>. ${surplus>=0?`Předpokládaný přebytek: <b style="color:var(--green)">+${fmt(surplus)}</b>`:`Předpokládaný schodek: <b style="color:var(--red)">${fmt(surplus)}</b>`}.`
+    });
+    setTimeout(() => {
+      const catThis = {};
+      thisMonth.filter(t=>t.type==='vydaj').forEach(t => { const c=t.category||'Ostatní'; catThis[c]=(catThis[c]||0)+t.amount; });
+      const top3 = Object.entries(catThis).sort((a,b)=>b[1]-a[1]).slice(0,3);
+      const top3Sum = top3.reduce((s,[,v])=>s+v, 0);
+      const pct = expense > 0 ? Math.round(top3Sum / expense * 100) : 0;
+      appendBotMsg({
+        cls:'info', emoji:'📊',
+        text: `<b>Top 3 kategorie</b> tvoří ${pct} % výdajů: ${top3.map(([c,v]) => `${CAT_EMOJI[c]||''}${c} (${fmt(v)})`).join(', ')}. Pokud chceš šetřit, začni tady.`
+      });
+    }, 350);
+  }, 700);
+}
+
+/* ════════════════════════════════════════════════════
+   GOALS
+   ════════════════════════════════════════════════════ */
+function getGoals() { return JSON.parse(localStorage.getItem('goals') || '[]'); }
+function saveGoals(g) { localStorage.setItem('goals', JSON.stringify(g)); }
+let editingGoalId = null;
+
+function openGoalForm(id) {
+  editingGoalId = id || null;
+  const form = q('d-goal-form'); if (!form) return;
+  form.style.display = '';
+  if (id) {
+    const g = getGoals().find(x => x.id === id);
+    if (g) {
+      q('d-goal-name').value     = g.name;
+      q('d-goal-target').value   = g.target;
+      q('d-goal-current').value  = g.current || 0;
+      q('d-goal-deadline').value = g.deadline || '';
+      q('d-goal-icon').value     = g.icon || '🎯';
+    }
+  } else {
+    q('d-goal-name').value     = '';
+    q('d-goal-target').value   = '';
+    q('d-goal-current').value  = '0';
+    q('d-goal-deadline').value = '';
+    q('d-goal-icon').value     = '🎯';
+  }
+  setTimeout(() => q('d-goal-name').focus(), 50);
+}
+function closeGoalForm() { const f = q('d-goal-form'); if (f) f.style.display = 'none'; editingGoalId = null; }
+function setGoalIcon(icon) { q('d-goal-icon').value = icon; showToast('Ikona: '+icon); }
+
+function saveGoal() {
+  const name     = q('d-goal-name').value.trim();
+  const target   = parseFloat(q('d-goal-target').value);
+  const current  = parseFloat(q('d-goal-current').value) || 0;
+  const deadline = q('d-goal-deadline').value;
+  const icon     = q('d-goal-icon').value || '🎯';
+  if (!name || !target || target <= 0) { showToast('Vyplň název a cílovou částku', 'error'); return; }
+  const goals = getGoals();
+  if (editingGoalId) {
+    const idx = goals.findIndex(g => g.id === editingGoalId);
+    if (idx >= 0) goals[idx] = { ...goals[idx], name, target, current, deadline, icon };
+  } else {
+    goals.push({ id: 'g'+Date.now(), name, target, current, deadline, icon, created: new Date().toISOString() });
+  }
+  saveGoals(goals);
+  closeGoalForm();
+  renderGoals();
+  showToast('Cíl uložen ✓', 'success');
+}
+
+function deleteGoal(id) {
+  if (!confirm('Smazat tento cíl?')) return;
+  saveGoals(getGoals().filter(g => g.id !== id));
+  renderGoals();
+  showToast('Cíl smazán');
+}
+
+function renderGoals() {
+  const list = q('d-goals-list'), empty = q('d-goals-empty');
+  if (!list || !empty) return;
+  const goals = getGoals();
+  if (!goals.length) { list.innerHTML = ''; empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  list.innerHTML = goals.map(g => {
+    const pct = Math.min(100, Math.round((g.current/g.target)*100));
+    let metaTxt = `${pct}% splněno · zbývá ${fmt(Math.max(0, g.target - g.current))}`;
+    if (g.deadline) {
+      const dl = new Date(g.deadline + 'T12:00:00');
+      const days = Math.ceil((dl - new Date()) / (1000*60*60*24));
+      if (days > 0) metaTxt = `${pct}% · do ${dl.toLocaleDateString('cs-CZ',{day:'numeric',month:'long'})} (${days}d)`;
+      else if (pct < 100) metaTxt = `${pct}% · po termínu o ${-days} dnů`;
+    }
+    if (pct >= 100) metaTxt = `🎉 Splněno!`;
+    return `<div class="d-goal-card">
+      <div class="d-goal-top">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:24px;">${g.icon||'🎯'}</div>
+          <div>
+            <div class="d-goal-name">${g.name}</div>
+            <div class="d-goal-sub">${g.deadline ? 'Termín: '+new Date(g.deadline+'T12:00:00').toLocaleDateString('cs-CZ',{day:'numeric',month:'short',year:'numeric'}) : 'Bez termínu'}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:4px;">
+          <button class="d-goal-del" onclick="openGoalForm('${g.id}')" title="Upravit">✎</button>
+          <button class="d-goal-del" onclick="deleteGoal('${g.id}')">×</button>
+        </div>
+      </div>
+      <div class="d-goal-amounts">
+        <span class="d-goal-current">${fmt(g.current)}</span>
+        <span class="d-goal-target">/ ${fmt(g.target)}</span>
+      </div>
+      <div class="d-goal-track"><div class="d-goal-fill" style="width:${pct}%"></div></div>
+      <div class="d-goal-meta">
+        <span>${metaTxt}</span>
+        <span class="d-goal-pct">${pct}%</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════════════════
+   COMMAND PALETTE
+   ════════════════════════════════════════════════════ */
+let cmdSelectedIndex = 0;
+let cmdItems = [];
+
+function openCommandPalette() {
+  const o = q('d-cmd-overlay'); if (!o) return;
+  o.classList.add('open');
+  const inp = q('d-cmd-input'); if (inp) inp.value = '';
+  renderCommandPalette();
+  setTimeout(() => inp && inp.focus(), 50);
+}
+function closeCommandPalette() {
+  const o = q('d-cmd-overlay'); if (o) o.classList.remove('open');
+}
+
+function buildCommandItems(query) {
+  const q = (query || '').toLowerCase().trim();
+  const items = [];
+  // Actions
+  const actions = [
+    { icon:'➕', label:'Přidat transakci', sub:'Nový výdaj, příjem nebo převod', action:() => { closeCommandPalette(); openAddSheet(); }, kw:'pridat novy add', shortcut:'N' },
+    { icon:'📊', label:'Přejít na Přehled', sub:'Net worth, cashflow, heatmap', action:() => { closeCommandPalette(); showDesktopPage('overview'); }, kw:'home dashboard prehled' },
+    { icon:'📜', label:'Přejít na Výpis', sub:'Všechny transakce s filtry', action:() => { closeCommandPalette(); showDesktopPage('activity'); }, kw:'historie vypis activity' },
+    { icon:'🥯', label:'Přejít na Kategorie', sub:'Donut chart + limity', action:() => { closeCommandPalette(); showDesktopPage('budgets'); }, kw:'kategorie budgets' },
+    { icon:'🎯', label:'Přejít na Cíle', sub:'Spořící cíle a progress', action:() => { closeCommandPalette(); showDesktopPage('goals'); }, kw:'cile goals' },
+    { icon:'🐾', label:'Přejít na Petska', sub:'Firemní účet', action:() => { closeCommandPalette(); showDesktopPage('petska'); }, kw:'petska firemni' },
+    { icon:'📄', label:'Měsíční report', sub:'Snapshot tohoto měsíce', action:() => { closeCommandPalette(); openMonthlySnapshot(); }, kw:'report export snapshot' },
+    { icon:'🌙', label:'Přepnout tmavý režim', sub:'Light / Dark', action:() => { closeCommandPalette(); toggleDark(); }, kw:'dark mode tema' },
+    { icon:'🔄', label:'Obnovit data', sub:'Načíst znovu z databáze', action:() => { closeCommandPalette(); loadTransactions(); showToast('Aktualizováno'); }, kw:'reload refresh' },
+  ];
+  actions.forEach(a => {
+    if (!q || a.label.toLowerCase().includes(q) || (a.kw||'').includes(q)) {
+      items.push({ ...a, section: 'Akce' });
+    }
+  });
+
+  // Transactions
+  if (q.length >= 2) {
+    transactions.slice().reverse().forEach(tx => {
+      if (tx.name.toLowerCase().includes(q) || (tx.category||'').toLowerCase().includes(q)) {
+        const d = new Date((tx.tx_date||tx.created_at.split('T')[0])+'T12:00:00');
+        const sign = tx.type==='prijem'?'+':tx.type==='vydaj'?'−':'⇄';
+        items.push({
+          section: 'Transakce',
+          icon: CAT_EMOJI[tx.category]||'📦',
+          label: `${sign}${fmt(tx.amount)} · ${tx.name}`,
+          sub: `${tx.category||'—'} · ${d.toLocaleDateString('cs-CZ',{day:'numeric',month:'short'})} · ${LABELS[tx.account]||tx.account}`,
+          action: () => { closeCommandPalette(); openEdit(tx.id); }
+        });
+      }
+    });
+  }
+  return items.slice(0, 30);
+}
+
+function renderCommandPalette() {
+  const inp = q('d-cmd-input');
+  const listEl = q('d-cmd-list'); if (!listEl || !inp) return;
+  cmdItems = buildCommandItems(inp.value);
+  cmdSelectedIndex = 0;
+  if (!cmdItems.length) { listEl.innerHTML = '<div class="d-cmd-empty">Nic nenalezeno</div>'; return; }
+  let html = '';
+  let currentSection = '';
+  cmdItems.forEach((it, i) => {
+    if (it.section !== currentSection) {
+      html += `<div class="d-cmd-section">${it.section}</div>`;
+      currentSection = it.section;
+    }
+    html += `<div class="d-cmd-item ${i===0?'active':''}" data-i="${i}" onclick="runCommand(${i})" onmouseenter="cmdHover(${i})">
+      <div class="d-cmd-icon">${it.icon}</div>
+      <div class="d-cmd-label">${it.label}<div class="d-cmd-sub">${it.sub||''}</div></div>
+      ${it.shortcut ? `<span class="d-cmd-shortcut">${it.shortcut}</span>` : ''}
+    </div>`;
+  });
+  listEl.innerHTML = html;
+}
+
+function cmdHover(i) {
+  cmdSelectedIndex = i;
+  document.querySelectorAll('.d-cmd-item').forEach((el,idx) => el.classList.toggle('active', idx===i));
+}
+
+function runCommand(i) {
+  const it = cmdItems[i]; if (!it) return;
+  if (it.action) it.action();
+}
+
+function cmdPaletteKey(e) {
+  if (e.key === 'ArrowDown') { e.preventDefault(); cmdSelectedIndex = Math.min(cmdSelectedIndex+1, cmdItems.length-1); updateCmdHighlight(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); cmdSelectedIndex = Math.max(cmdSelectedIndex-1, 0); updateCmdHighlight(); }
+  else if (e.key === 'Enter') { e.preventDefault(); runCommand(cmdSelectedIndex); }
+  else if (e.key === 'Escape') closeCommandPalette();
+}
+function updateCmdHighlight() {
+  document.querySelectorAll('.d-cmd-item').forEach((el,idx) => el.classList.toggle('active', idx===cmdSelectedIndex));
+  const active = document.querySelector('.d-cmd-item.active');
+  if (active) active.scrollIntoView({ block:'nearest' });
+}
+
+/* ════════════════════════════════════════════════════
+   MONTHLY SNAPSHOT / REPORT
+   ════════════════════════════════════════════════════ */
+function openMonthlySnapshot() {
+  const o = q('d-snap-overlay'); if (!o) return;
+  buildMonthlySnapshot();
+  o.classList.add('open');
+}
+function closeMonthlySnapshot() {
+  const o = q('d-snap-overlay'); if (o) o.classList.remove('open');
+}
+
+function buildMonthlySnapshot() {
+  const target = q('d-snap-content'); if (!target) return;
+  const now = new Date();
+  const months = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+  const thisMonth = transactions.filter(isThisMonth);
+  const lastMonth = transactions.filter(isLastMonth);
+  const income  = thisMonth.filter(t => t.type==='prijem').reduce((s,t)=>s+t.amount,0);
+  const expense = thisMonth.filter(t => t.type==='vydaj').reduce((s,t)=>s+t.amount,0);
+  const lastIncome  = lastMonth.filter(t => t.type==='prijem').reduce((s,t)=>s+t.amount,0);
+  const lastExpense = lastMonth.filter(t => t.type==='vydaj').reduce((s,t)=>s+t.amount,0);
+  const savings = income - expense;
+  const lastSavings = lastIncome - lastExpense;
+  const rate = income > 0 ? Math.round((income-expense)/income*100) : 0;
+  const catThis = {};
+  thisMonth.filter(t=>t.type==='vydaj').forEach(t => { const c=t.category||'Ostatní'; catThis[c]=(catThis[c]||0)+t.amount; });
+  const topCats = Object.entries(catThis).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const b = calcBalances();
+  const total = Object.values(b).reduce((a,c)=>a+c,0);
+
+  const cmp = (a, b, suf) => {
+    if (b === 0) return '';
+    const d = a - b;
+    const pct = (d/Math.abs(b)*100).toFixed(0);
+    return `<span style="font-size:11px;color:${d>=0?'var(--green)':'var(--red)'};font-weight:700;"> ${d>=0?'+':''}${pct}% ${suf||''}</span>`;
+  };
+
+  target.innerHTML = `
+    <div class="d-snap-h1">Měsíční report · ${months[now.getMonth()]} ${now.getFullYear()}</div>
+    <div class="d-snap-h2">Vytvořeno ${now.toLocaleDateString('cs-CZ',{day:'numeric',month:'long',year:'numeric'})} · ${thisMonth.length} transakcí</div>
+
+    <div class="d-snap-kpi">
+      <div class="d-snap-kpi-card">
+        <div class="d-snap-kpi-lbl">Net worth</div>
+        <div class="d-snap-kpi-val">${fmt(total)}</div>
+      </div>
+      <div class="d-snap-kpi-card">
+        <div class="d-snap-kpi-lbl">Příjmy</div>
+        <div class="d-snap-kpi-val up">+${fmt(income)}</div>
+        <div style="font-size:10.5px;color:var(--ink-dim);margin-top:2px;">vs. min. m.${cmp(income,lastIncome)}</div>
+      </div>
+      <div class="d-snap-kpi-card">
+        <div class="d-snap-kpi-lbl">Výdaje</div>
+        <div class="d-snap-kpi-val down">−${fmt(expense)}</div>
+        <div style="font-size:10.5px;color:var(--ink-dim);margin-top:2px;">vs. min. m.${cmp(expense,lastExpense)}</div>
+      </div>
+      <div class="d-snap-kpi-card">
+        <div class="d-snap-kpi-lbl">Úspory · rate</div>
+        <div class="d-snap-kpi-val ${savings>=0?'up':'down'}">${savings>=0?'+':''}${fmt(savings)}</div>
+        <div style="font-size:10.5px;color:var(--ink-dim);margin-top:2px;">${rate}% míra úspor</div>
+      </div>
+    </div>
+
+    <div class="d-snap-section-title">Top výdajové kategorie</div>
+    <div>
+      ${topCats.map(([c,v]) => {
+        const pct = Math.round(v/expense*100);
+        return `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:.5px solid var(--line);">
+          <div class="cat-bubble cat-bubble-sm" style="background:${CAT_COLORS[c]||'#ccc'}22;">${CAT_EMOJI[c]||'📦'}</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;">${c}</div>
+            <div style="height:5px;background:var(--bg-alt);border-radius:99px;margin-top:4px;overflow:hidden;">
+              <div style="width:${pct}%;height:100%;background:${CAT_COLORS[c]||'#ccc'};"></div>
+            </div>
+          </div>
+          <div style="text-align:right;min-width:90px;">
+            <div style="font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;">${fmt(v)}</div>
+            <div style="font-size:10.5px;color:var(--ink-dim);">${pct}%</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div class="d-snap-section-title">Stav účtů</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+      ${Object.keys(DEFAULTS).map(k => `<div style="padding:12px 14px;background:var(--bg-alt);border-radius:12px;">
+        <div style="font-size:10.5px;color:var(--ink-dim);font-weight:700;text-transform:uppercase;letter-spacing:.04em;">${LABELS[k]}</div>
+        <div style="font-size:16px;font-weight:800;letter-spacing:-.01em;margin-top:3px;font-variant-numeric:tabular-nums;">${fmt(b[k]||0)}</div>
+      </div>`).join('')}
+    </div>
+
+    <div class="d-snap-actions">
+      <button class="d-snap-cancel" onclick="closeMonthlySnapshot()">Zavřít</button>
+      <button class="d-snap-print" onclick="window.print()">🖨 Vytisknout / PDF</button>
+    </div>
+  `;
+}
+
+/* ════════════════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+   ════════════════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  const tag = (e.target.tagName||'').toLowerCase();
+  const inField = tag === 'input' || tag === 'textarea' || tag === 'select';
+
+  // ⌘K / Ctrl+K — command palette (always)
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    const o = q('d-cmd-overlay');
+    if (o && o.classList.contains('open')) closeCommandPalette();
+    else openCommandPalette();
+    return;
+  }
+  // Escape — close overlays
+  if (e.key === 'Escape') {
+    closeCommandPalette();
+    closeMonthlySnapshot();
+    return;
+  }
+  if (inField) return;
+  // N — new transaction (desktop only)
+  if (e.key.toLowerCase() === 'n' && window.innerWidth >= 840) {
+    e.preventDefault();
+    openAddSheet();
+  }
+});
 </script>
 
 <script>
