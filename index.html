@@ -591,6 +591,66 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
   .d-bill-row { display:flex; align-items:center; gap:10px; padding:9px 0; }
   .d-bill-row + .d-bill-row { border-top:.5px solid var(--line); }
 
+  /* ── Scope tabs (Vše / Osobní / Petska) ── */
+  .d-scope-tabs {
+    display: inline-flex; gap: 4px; padding: 4px;
+    background: var(--bg-alt); border-radius: 999px;
+    border: .5px solid var(--line);
+    margin-bottom: 14px;
+  }
+  .d-scope-tab {
+    border: none; background: transparent;
+    font-family: inherit; font-size: 12.5px; font-weight: 700;
+    padding: 7px 16px; border-radius: 999px;
+    color: var(--ink-dim); cursor: pointer;
+    transition: all .15s;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .d-scope-tab.active {
+    background: var(--ink); color: var(--surface);
+    box-shadow: 0 2px 8px var(--line);
+  }
+  .d-scope-tab:hover:not(.active) { color: var(--ink); }
+
+  /* ── Expense donut card ── */
+  .d-exp-card { padding: 18px; }
+  .d-exp-card .d-exp-wrap {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 18px; align-items: center;
+    margin-top: 12px;
+  }
+  .d-exp-canvas-wrap {
+    position: relative; height: 180px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .d-exp-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .d-exp-center-lbl { font-size: 9.5px; font-weight: 700; color: var(--ink-dim); text-transform: uppercase; letter-spacing: .1em; }
+  .d-exp-center-val { font-size: 19px; font-weight: 800; letter-spacing: -.02em; color: var(--ink); font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .d-exp-center-sub { font-size: 10px; color: var(--ink-dim); margin-top: 1px; font-weight: 600; }
+  .d-exp-legend {
+    display: flex; flex-direction: column; gap: 6px;
+    max-height: 180px; overflow-y: auto;
+  }
+  .d-exp-legend-row {
+    display: flex; align-items: center; gap: 9px;
+    padding: 5px 0;
+    font-size: 12px;
+  }
+  .d-exp-legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .d-exp-legend-name { flex: 1; min-width: 0; color: var(--ink); font-weight: 600; }
+  .d-exp-legend-pct { color: var(--ink-dim); font-size: 11px; font-weight: 700; min-width: 30px; text-align: right; }
+  .d-exp-legend-val { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 78px; text-align: right; font-size: 12px; }
+
+  @media (max-width: 1180px) {
+    .d-exp-card .d-exp-wrap { grid-template-columns: 1fr; }
+    .d-exp-canvas-wrap { height: 200px; }
+  }
+
   /* ── Net worth hero (light pastel style) ── */
   #d-nw-hero {
     background: var(--surface);
@@ -1477,10 +1537,6 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
       <svg viewBox="0 0 24 24"><path d="M21.21 15.89A9 9 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
       Kategorie
     </button>
-    <button class="d-nav-item" id="dn-goals" onclick="showDesktopPage('goals')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
-      Cíle
-    </button>
     <button class="d-nav-item" id="dn-petska" onclick="showDesktopPage('petska')">
       <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       Petska
@@ -1517,6 +1573,13 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
 
     <!-- ── Overview ── -->
     <div id="dp-overview" class="d-page">
+      <!-- Scope tabs: Vše / Osobní / Petska -->
+      <div class="d-scope-tabs" id="d-scope-tabs">
+        <button class="d-scope-tab active" data-scope="all"      onclick="setScope('all')">Vše</button>
+        <button class="d-scope-tab"        data-scope="personal" onclick="setScope('personal')">👤 Osobní</button>
+        <button class="d-scope-tab"        data-scope="petska"   onclick="setScope('petska')">🐾 Petska</button>
+      </div>
+
       <!-- Subscription detector banner (hidden until detected) -->
       <div id="d-sub-banner-host"></div>
 
@@ -1560,12 +1623,36 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
         <div id="d-cashflow-canvas-wrap"><canvas id="d-cashflow-chart"></canvas></div>
       </div>
 
-      <div class="card card-pad">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
-          <span style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Top kategorie</span>
-          <span style="font-size:11px;color:var(--ink-dim);">tento měsíc</span>
+      <div class="d-two-col">
+        <!-- Expense donut -->
+        <div class="card d-exp-card">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;">
+            <div>
+              <div style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Výdaje · kategorie</div>
+              <div style="font-size:11px;color:var(--ink-dim);margin-top:2px;">Tento měsíc</div>
+            </div>
+          </div>
+          <div class="d-exp-wrap">
+            <div class="d-exp-canvas-wrap">
+              <canvas id="d-exp-chart"></canvas>
+              <div class="d-exp-center">
+                <div class="d-exp-center-lbl">Výdaje</div>
+                <div class="d-exp-center-val" id="d-exp-center-val">—</div>
+                <div class="d-exp-center-sub" id="d-exp-center-sub">—</div>
+              </div>
+            </div>
+            <div class="d-exp-legend" id="d-exp-legend"></div>
+          </div>
         </div>
-        <div id="d-cat-mini"></div>
+
+        <!-- Top kategorie list -->
+        <div class="card card-pad">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+            <span style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Top kategorie</span>
+            <span style="font-size:11px;color:var(--ink-dim);">tento měsíc</span>
+          </div>
+          <div id="d-cat-mini"></div>
+        </div>
       </div>
 
       <!-- Spending heatmap -->
@@ -1633,54 +1720,6 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
       </div>
     </div>
 
-    <!-- ── Goals ── -->
-    <div id="dp-goals" class="d-page" style="display:none;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-        <div>
-          <div style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Spořící cíle</div>
-          <div style="font-size:11px;color:var(--ink-dim);margin-top:2px;">Sleduj postup k vlastním cílům</div>
-        </div>
-        <button class="d-add-btn" onclick="openGoalForm()">+ Nový cíl</button>
-      </div>
-
-      <!-- Form (hidden by default) -->
-      <div class="card card-pad" id="d-goal-form" style="display:none;margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;">Nový cíl</div>
-        <div class="form-grid">
-          <div class="field"><label>Název</label><input type="text" id="d-goal-name" placeholder="Letní dovolená, MacBook…" autocomplete="off"/></div>
-          <div class="field"><label>Cílová částka (Kč)</label><input type="number" id="d-goal-target" placeholder="50000" min="1" inputmode="numeric"/></div>
-        </div>
-        <div class="form-grid">
-          <div class="field"><label>Aktuálně naspořeno (Kč)</label><input type="number" id="d-goal-current" placeholder="0" min="0" inputmode="numeric"/></div>
-          <div class="field"><label>Termín (volitelné)</label><input type="date" id="d-goal-deadline" style="-webkit-appearance:auto;appearance:auto;"/></div>
-        </div>
-        <div class="field" style="margin-top:6px;"><label>Ikona</label>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="d-filter-pill" onclick="setGoalIcon('🎯')">🎯</button>
-            <button class="d-filter-pill" onclick="setGoalIcon('✈️')">✈️</button>
-            <button class="d-filter-pill" onclick="setGoalIcon('🏠')">🏠</button>
-            <button class="d-filter-pill" onclick="setGoalIcon('💻')">💻</button>
-            <button class="d-filter-pill" onclick="setGoalIcon('🚗')">🚗</button>
-            <button class="d-filter-pill" onclick="setGoalIcon('🎓')">🎓</button>
-            <button class="d-filter-pill" onclick="setGoalIcon('💍')">💍</button>
-            <button class="d-filter-pill" onclick="setGoalIcon('🐾')">🐾</button>
-            <button class="d-filter-pill" onclick="setGoalIcon('📈')">📈</button>
-          </div>
-          <input type="hidden" id="d-goal-icon" value="🎯"/>
-        </div>
-        <div class="modal-actions">
-          <button class="btn-sec" onclick="closeGoalForm()">Zrušit</button>
-          <button class="btn-primary" onclick="saveGoal()">Uložit cíl</button>
-        </div>
-      </div>
-
-      <div id="d-goals-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"></div>
-      <div id="d-goals-empty" style="display:none;">
-        <div class="d-goals-empty-icon">🎯</div>
-        <div style="font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px;">Zatím žádné cíle</div>
-        <div>Klikni na <b>+ Nový cíl</b> a začni spořit.</div>
-      </div>
-    </div>
 
     <!-- ── Budgets ── -->
     <div id="dp-budgets" class="d-page" style="display:none;">
@@ -1752,22 +1791,6 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
     <div class="card card-pad">
       <div class="d-rail-title">📅 Nadcházející platby</div>
       <div id="d-upcoming-list"><p style="color:var(--ink-dim);font-size:.78rem;">Načítám…</p></div>
-    </div>
-
-    <!-- AI Finance Bot -->
-    <div id="d-bot">
-      <div class="d-bot-head">
-        <div class="d-bot-avatar">P</div>
-        <div style="flex:1;min-width:0;">
-          <div class="d-bot-title">Petr · finanční bot</div>
-          <div class="d-bot-status">analyzuje data</div>
-        </div>
-      </div>
-      <div class="d-bot-stream" id="d-bot-stream"></div>
-      <div class="d-bot-actions">
-        <button onclick="regenerateBotTips()">🔄 Nové tipy</button>
-        <button onclick="botDeepDive()">🔍 Co dál?</button>
-      </div>
     </div>
   </aside>
 
@@ -2583,18 +2606,42 @@ let dpPetskaChart = null;
 let dpPetskaType  = 'vydaj';
 
 function showDesktopPage(page) {
-  ['overview','activity','budgets','goals','petska'].forEach(p => {
+  ['overview','activity','budgets','petska'].forEach(p => {
     const el = q('dp-' + p); if (el) el.style.display = p === page ? '' : 'none';
     const btn = q('dn-' + p); if (btn) btn.className = 'd-nav-item' + (p === page ? ' active' : '');
   });
   currentDesktopPage = page;
-  const titles = { overview:'Přehled', activity:'Výpis', budgets:'Kategorie', goals:'🎯 Cíle', petska:'🐾 Petska' };
+  const titles = { overview:'Přehled', activity:'Výpis', budgets:'Kategorie', petska:'🐾 Petska' };
   const titleEl = q('d-page-title'); if (titleEl) titleEl.textContent = titles[page] || page;
   if (page === 'overview') renderDesktopOverview();
   if (page === 'budgets') renderDesktopBudgets();
   if (page === 'petska')  renderDesktopPetska();
   if (page === 'activity') renderDesktopActivity();
-  if (page === 'goals')    renderGoals();
+}
+
+/* ════════════════════════════════════════════════════
+   SCOPE FILTER — Vše / Osobní / Petska
+   ════════════════════════════════════════════════════ */
+let currentScope = 'all';
+function setScope(s) {
+  currentScope = s;
+  document.querySelectorAll('.d-scope-tab').forEach(b => b.classList.toggle('active', b.dataset.scope === s));
+  renderDesktopOverview();
+}
+function inScope(tx) {
+  if (currentScope === 'all') return true;
+  if (currentScope === 'petska') return tx.account === 'petska' || tx.to_account === 'petska';
+  return tx.account !== 'petska' && tx.to_account !== 'petska';
+}
+function scopeAccounts() {
+  if (currentScope === 'all') return D_ACCT_ORDER;
+  if (currentScope === 'petska') return ['petska'];
+  return D_ACCT_ORDER.filter(k => k !== 'petska');
+}
+function scopeBalances(b) {
+  const out = {};
+  scopeAccounts().forEach(k => out[k] = b[k] || 0);
+  return out;
 }
 
 function setDPetskaType(t) {
@@ -2635,13 +2682,15 @@ const D_ACCT_COLORS = { bezny:'#9DBFF0', sporak:'#92D9B0', penzijko:'#BFB4F2', p
 
 function renderDesktopOverview() {
   const b = calcBalances();
-  const total = Object.values(b).reduce((a,c) => a+c, 0);
+  const scopedB = scopeBalances(b);
+  const total = Object.values(scopedB).reduce((a,c) => a+c, 0);
 
-  // Net worth delta vs end of last month
+  // Net worth delta vs end of last month (scoped)
   const endOfLastMonth = new Date();
   endOfLastMonth.setDate(0); endOfLastMonth.setHours(23,59,59,999);
   const balLastMonthEnd = calcBalanceAtDate(endOfLastMonth);
-  const totalLast = Object.values(balLastMonthEnd).reduce((a,c) => a+c, 0);
+  const scopedLast = scopeBalances(balLastMonthEnd);
+  const totalLast = Object.values(scopedLast).reduce((a,c) => a+c, 0);
   const delta = total - totalLast;
   const deltaPct = totalLast !== 0 ? (delta / Math.abs(totalLast)) * 100 : 0;
 
@@ -2665,21 +2714,23 @@ function renderDesktopOverview() {
   renderDesktopRecent();
   renderDesktopCashflow();
   renderDesktopHeatmap();
+  renderExpenseDonut();
   renderSubscriptionBanner();
 }
 
 function renderNetWorthDonut(b) {
   const canvas = q('d-nw-donut'); if (!canvas) return;
-  const data = D_ACCT_ORDER.map(k => Math.max(0, b[k]||0));
+  const keys = scopeAccounts();
+  const data = keys.map(k => Math.max(0, b[k]||0));
   if (dNwChart) { dNwChart.destroy(); dNwChart = null; }
   const dark = document.body.classList.contains('dark');
   dNwChart = new Chart(canvas.getContext('2d'), {
     type: 'doughnut',
     data: {
-      labels: D_ACCT_ORDER.map(k => LABELS[k] || k),
+      labels: keys.map(k => LABELS[k] || k),
       datasets: [{
         data,
-        backgroundColor: D_ACCT_ORDER.map(k => D_ACCT_COLORS[k]),
+        backgroundColor: keys.map(k => D_ACCT_COLORS[k]),
         borderColor: dark ? '#2E2632' : '#fff',
         borderWidth: 3,
         hoverOffset: 12,
@@ -2733,10 +2784,80 @@ function renderDesktopSpendingBars() {
   }).join('');
 }
 
+let dExpChart = null;
+function renderExpenseDonut() {
+  const canvas = q('d-exp-chart'); if (!canvas) return;
+  const thisMonth = transactions.filter(isThisMonth).filter(inScope).filter(t => t.type==='vydaj');
+  const cats = {};
+  thisMonth.forEach(t => { const c = t.category || 'Ostatní'; cats[c] = (cats[c]||0) + t.amount; });
+  const sorted = Object.entries(cats).sort((a,b) => b[1]-a[1]);
+  const total = sorted.reduce((s,[,v]) => s+v, 0);
+
+  const valEl = q('d-exp-center-val'), subEl = q('d-exp-center-sub'), legEl = q('d-exp-legend');
+  if (valEl) valEl.textContent = total > 0 ? fmt(total) : '—';
+  if (subEl) subEl.textContent = sorted.length > 0 ? `${sorted.length} kat. · ${thisMonth.length} transakcí` : 'Žádné výdaje';
+
+  if (dExpChart) { dExpChart.destroy(); dExpChart = null; }
+
+  if (!sorted.length) {
+    if (legEl) legEl.innerHTML = '<p style="color:var(--ink-dim);font-size:11.5px;">Žádné výdaje v tomto pohledu.</p>';
+    return;
+  }
+  const dark = document.body.classList.contains('dark');
+  dExpChart = new Chart(canvas.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: sorted.map(([k]) => k),
+      datasets: [{
+        data: sorted.map(([,v]) => v),
+        backgroundColor: sorted.map(([k]) => CAT_COLORS[k]||'#b0bec5'),
+        borderColor: dark ? '#2E2632' : '#fff',
+        borderWidth: 3,
+        hoverOffset: 10,
+        spacing: 2,
+      }]
+    },
+    options: {
+      cutout: '70%',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: dark ? '#1F1A22' : '#2d2420',
+          titleColor: '#F4ECE2',
+          bodyColor: '#F4ECE2',
+          padding: 10,
+          cornerRadius: 10,
+          displayColors: true,
+          boxWidth: 8, boxHeight: 8,
+          callbacks: { label: ctx => ` ${CAT_EMOJI[ctx.label]||''} ${ctx.label}: ${fmt(ctx.raw)}` }
+        }
+      },
+      animation: { animateRotate: true, duration: 600 }
+    }
+  });
+
+  if (legEl) {
+    legEl.innerHTML = sorted.slice(0, 8).map(([cat, val]) => {
+      const pct = Math.round(val/total*100);
+      return `<div class="d-exp-legend-row">
+        <div class="d-exp-legend-dot" style="background:${CAT_COLORS[cat]||'#b0bec5'};"></div>
+        <span class="d-exp-legend-name">${CAT_EMOJI[cat]||''} ${cat}</span>
+        <span class="d-exp-legend-pct">${pct}%</span>
+        <span class="d-exp-legend-val">${fmt(val).replace(' Kč','')}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
 function renderDesktopAccounts() {
   const b = calcBalances();
   const el = q('d-nw-accts'); if (!el) return;
-  el.innerHTML = D_ACCT_ORDER.map(k => {
+  // Adjust grid: petska only = 1 column, personal = 3 col (5 cards in 2 rows), all = 3 col
+  if (currentScope === 'petska') el.style.gridTemplateColumns = 'minmax(220px, 360px)';
+  else                            el.style.gridTemplateColumns = '';
+  el.innerHTML = scopeAccounts().map(k => {
     const series = calcAcctSeries(k, 30);
     const last  = series[series.length-1] || 0;
     const first = series[0] || 0;
@@ -2758,7 +2879,7 @@ function renderDesktopAccounts() {
 function renderDesktopCatMini() {
   const el = q('d-cat-mini'); if (!el) return;
   const cats = {};
-  transactions.filter(isThisMonth).filter(t => t.type==='vydaj').forEach(t => {
+  transactions.filter(isThisMonth).filter(inScope).filter(t => t.type==='vydaj').forEach(t => {
     const c = t.category||'Ostatní'; cats[c]=(cats[c]||0)+t.amount;
   });
   const sorted = Object.entries(cats).sort((a,b) => b[1]-a[1]).slice(0,5);
@@ -2782,8 +2903,8 @@ function renderDesktopCatMini() {
 
 function renderDesktopRecent() {
   const el = q('d-recent'); if (!el) return;
-  const recent = [...transactions].reverse().slice(0,10);
-  if (!recent.length) { el.innerHTML='<p class="empty">Žádné transakce</p>'; return; }
+  const recent = [...transactions].filter(inScope).reverse().slice(0,10);
+  if (!recent.length) { el.innerHTML='<p class="empty" style="padding:20px;">Žádné transakce v tomto pohledu</p>'; return; }
   el.innerHTML = buildTxTable(recent, true);
 }
 
@@ -3006,7 +3127,6 @@ function renderDesktopRail() {
     }).join('');
   }
 
-  renderBotTips();
 }
 
 /* ════════════════════════════════════════════════════
@@ -3041,11 +3161,12 @@ function calcAcctSeries(acct, days) {
 
 function calcTotalSeries(days) {
   const out = [];
+  const keys = scopeAccounts();
   const now = new Date(); now.setHours(23,59,59,999);
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(now); d.setDate(now.getDate() - i);
     const b = calcBalanceAtDate(d);
-    out.push(Object.values(b).reduce((a,c) => a+c, 0));
+    out.push(keys.reduce((s,k) => s + (b[k]||0), 0));
   }
   return out;
 }
@@ -3158,7 +3279,7 @@ function renderDesktopCashflow() {
 function renderDesktopHeatmap() {
   const grid = q('d-heatmap-grid'); if (!grid) return;
   const totalsByDay = {};
-  transactions.filter(t => t.type==='vydaj').forEach(t => {
+  transactions.filter(t => t.type==='vydaj').filter(inScope).forEach(t => {
     const k = t.tx_date || (t.created_at||'').split('T')[0];
     if (!k) return;
     totalsByDay[k] = (totalsByDay[k]||0) + t.amount;
@@ -3705,7 +3826,6 @@ function buildCommandItems(query) {
     { icon:'📊', label:'Přejít na Přehled', sub:'Net worth, cashflow, heatmap', action:() => { closeCommandPalette(); showDesktopPage('overview'); }, kw:'home dashboard prehled' },
     { icon:'📜', label:'Přejít na Výpis', sub:'Všechny transakce s filtry', action:() => { closeCommandPalette(); showDesktopPage('activity'); }, kw:'historie vypis activity' },
     { icon:'🥯', label:'Přejít na Kategorie', sub:'Donut chart + limity', action:() => { closeCommandPalette(); showDesktopPage('budgets'); }, kw:'kategorie budgets' },
-    { icon:'🎯', label:'Přejít na Cíle', sub:'Spořící cíle a progress', action:() => { closeCommandPalette(); showDesktopPage('goals'); }, kw:'cile goals' },
     { icon:'🐾', label:'Přejít na Petska', sub:'Firemní účet', action:() => { closeCommandPalette(); showDesktopPage('petska'); }, kw:'petska firemni' },
     { icon:'📄', label:'Měsíční report', sub:'Snapshot tohoto měsíce', action:() => { closeCommandPalette(); openMonthlySnapshot(); }, kw:'report export snapshot' },
     { icon:'🌙', label:'Přepnout tmavý režim', sub:'Light / Dark', action:() => { closeCommandPalette(); toggleDark(); }, kw:'dark mode tema' },
