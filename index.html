@@ -468,9 +468,8 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
 #d-cmd-overlay,
 #d-snap-overlay { display: none; }
 
-@media (min-width:840px) {
-  body { display:block; }
-  .app, .bottom-nav { display:none !important; }
+/* === Unified responsive layout (was @media (min-width:840px)) === */
+body { display: block; }
 
   #desktop-layout {
     display:flex; height:100vh; overflow:hidden;
@@ -1105,6 +1104,133 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
     transition: all .2s;
   }
   .d-fab:hover { transform: scale(1.06) rotate(90deg); }
+
+/* === Desktop-only: hide mobile bottom nav === */
+@media (min-width: 840px) {
+  .bottom-nav { display: none !important; }
+}
+
+/* === Mobile-responsive overrides (<840px) === */
+@media (max-width: 839px) {
+  html, body {
+    overflow-x: hidden;
+  }
+  body { background: var(--bg); }
+
+  /* Hide sidebar on mobile */
+  #d-sidebar { display: none !important; }
+
+  /* Layout becomes scrollable column */
+  #desktop-layout {
+    display: block;
+    height: auto;
+    overflow: visible;
+    max-width: none;
+    width: 100%;
+  }
+  #d-main {
+    overflow: visible;
+    padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 20px);
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Simpler header */
+  #d-header {
+    padding: 14px 16px 12px;
+    gap: 8px;
+  }
+  #d-page-title { font-size: 19px; min-width: 0; }
+  #d-search-bar { display: none; }
+  .d-add-btn   { display: none; }
+  #d-header > button.topbar-icon-btn { margin-left: auto; }
+
+  /* Page padding */
+  .d-page { padding: 14px 14px 24px; min-width: 0; }
+
+  /* Scope tabs */
+  .d-scope-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  .d-scope-tabs::-webkit-scrollbar { display: none; }
+
+  /* Net worth hero — full vertical stack */
+  #d-nw-hero {
+    padding: 20px 18px;
+    grid-template-columns: 1fr !important;
+    gap: 18px;
+    overflow: hidden;
+  }
+  .d-nw-left { height: 230px; }
+  .d-nw-center-val { font-size: 26px; }
+  .d-nw-title { font-size: 19px; }
+  .d-nw-sub   { font-size: 12px; }
+
+  /* Account cards: single column at all mobile widths (avoids overflow at 360-400) */
+  .d-nw-accts {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 8px;
+  }
+  .d-nw-acct { padding: 11px 14px; }
+  .d-nw-acct-val { font-size: 17px; }
+  .d-nw-acct-top { margin-bottom: 4px; }
+
+  /* Cashflow chart */
+  #d-cashflow-card { height: 240px; padding: 16px; }
+  #d-cashflow-canvas-wrap { height: 170px; }
+
+  /* 2-col / 3-col cards always stack */
+  .d-two-col   { grid-template-columns: 1fr; gap: 12px; }
+  .d-three-col { grid-template-columns: 1fr; gap: 12px; }
+  .d-stat-cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  /* Expense donut */
+  .d-exp-card { padding: 16px; }
+  .d-exp-card .d-exp-wrap { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .d-exp-canvas-wrap { height: 200px; }
+
+  /* Heatmap horizontal scroll */
+  #d-heatmap-card { padding: 14px; }
+
+  /* Tx tables — horizontal scroll containers */
+  .d-page .card > div[id$="-list"],
+  .d-page .card > div[id="d-recent"],
+  .d-page .card > div[id="dp-petska-history"] {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .d-tx-table { font-size: 12.5px; min-width: 540px; }
+  .d-tx-table th, .d-tx-table td { white-space: nowrap; padding: 8px 10px; }
+
+  /* Activity filters: wrap */
+  .d-filter-row { flex-wrap: wrap; gap: 8px; }
+  .d-filter-group {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  .d-filter-group::-webkit-scrollbar { display: none; }
+  .d-filter-pill { white-space: nowrap; flex-shrink: 0; }
+  .d-filter-summary { font-size: 11px; width: 100%; text-align: right; }
+
+  /* Subscription banner */
+  .d-sub-banner { flex-wrap: wrap; gap: 10px; padding: 12px 14px; }
+  .d-sub-actions { flex-basis: 100%; justify-content: flex-end; }
+
+  /* Hide hover popup on mobile */
+  .d-tx-popup { display: none !important; }
+
+  /* Modal snapshot */
+  .d-snap-box { padding: 20px 18px; }
+  .d-snap-h1 { font-size: 22px; }
+  .d-snap-kpi { grid-template-columns: repeat(2, 1fr); }
+
+  /* Make every card fit-to-width */
+  .card { box-sizing: border-box; max-width: 100%; }
 }
 </style>
 </head>
@@ -1257,262 +1383,6 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
     </div>
   </div>
 </div>
-
-<!-- ══ APP ══ -->
-<div class="app">
-
-  <!-- ════ HOME VIEW ════ -->
-  <div id="view-home">
-
-    <div class="topbar">
-      <div class="topbar-avatar">TK</div>
-      <div style="flex:1;min-width:0;">
-        <div class="topbar-sub" id="headerDate"></div>
-        <div class="topbar-name" id="greeting">Dobré ráno</div>
-      </div>
-      <button class="topbar-icon-btn" onclick="toggleDark()" id="darkToggle" title="Tmavý režim">🌙</button>
-    </div>
-
-    <!-- Reminder -->
-    <div class="reminder hidden" id="reminderBanner">
-      <span>🔔</span>
-      <span style="flex:1" id="reminderText"></span>
-      <button class="reminder-x" onclick="dismissReminder()">×</button>
-    </div>
-
-    <!-- Balance hero -->
-    <div class="balance-hero">
-      <div class="balance-hero-top">
-        <div>
-          <div class="balance-label">Celkový majetek</div>
-          <div class="balance-amount" id="totalAll">—</div>
-        </div>
-        <div class="balance-badge">
-          <span>↑</span><span id="bpInc">—</span>
-        </div>
-      </div>
-      <div class="quick-actions">
-        <button class="quick-action" onclick="openAddSheet('vydaj')">
-          <span class="quick-action-icon">↑</span>Výdaj
-        </button>
-        <button class="quick-action" onclick="openAddSheet('prijem')">
-          <span class="quick-action-icon">↓</span>Příjem
-        </button>
-        <button class="quick-action" onclick="openAddSheet('prevod')">
-          <span class="quick-action-icon">⇄</span>Převod
-        </button>
-        <button class="quick-action" onclick="showView('petska')">
-          <span class="quick-action-icon">🐾</span>Petska
-        </button>
-      </div>
-    </div>
-
-    <!-- This month -->
-    <div class="section">
-      <div class="card card-pad">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;">
-          <div style="color:var(--ink);font-size:14px;font-weight:600;">Tento měsíc</div>
-          <div style="color:var(--ink-dim);font-size:11.5px;" id="monthRange"></div>
-        </div>
-        <div class="month-split">
-          <div class="month-half">
-            <div class="month-half-lbl">Výdaje</div>
-            <div class="month-half-val" id="sumExpense">—</div>
-          </div>
-          <div class="month-divider"></div>
-          <div class="month-half">
-            <div class="month-half-lbl">Příjmy</div>
-            <div class="month-half-val inc" id="sumIncome">—</div>
-          </div>
-        </div>
-        <div class="spending-bars" id="spendingBars"></div>
-        <div class="spending-days" id="spendingDays"></div>
-      </div>
-    </div>
-
-    <!-- Account chips -->
-    <div class="section" style="padding-bottom:0;">
-      <div class="sec-hdr"><span class="sec-title">Účty</span></div>
-    </div>
-    <div class="acct-scroll">
-      <div class="acct-chip chip-bezny" onclick="openAcctSettings('bezny')">
-        <div class="acct-chip-top">
-          <div class="acct-chip-icon">🏦</div>
-          <span class="acct-chip-name" id="name-bezny">Běžný</span>
-        </div>
-        <div class="acct-chip-val" id="val-bezny">—</div>
-        <div class="acct-chip-trend" id="trend-bezny"></div>
-      </div>
-      <div class="acct-chip chip-sporak" onclick="openAcctSettings('sporak')">
-        <div class="acct-chip-top">
-          <div class="acct-chip-icon">🐖</div>
-          <span class="acct-chip-name" id="name-sporak">Spořící</span>
-        </div>
-        <div class="acct-chip-val" id="val-sporak">—</div>
-        <div class="acct-chip-trend" id="trend-sporak"></div>
-      </div>
-      <div class="acct-chip chip-penzijko" onclick="openAcctSettings('penzijko')">
-        <div class="acct-chip-top">
-          <div class="acct-chip-icon">👴</div>
-          <span class="acct-chip-name" id="name-penzijko">Penzijko</span>
-        </div>
-        <div class="acct-chip-val" id="val-penzijko">—</div>
-        <div class="acct-chip-trend" id="trend-penzijko"></div>
-      </div>
-      <div class="acct-chip chip-petska" onclick="openAcctSettings('petska')">
-        <div class="acct-chip-top">
-          <div class="acct-chip-icon">🐾</div>
-          <span class="acct-chip-name" id="name-petska">Petska</span>
-        </div>
-        <div class="acct-chip-val" id="val-petska">—</div>
-        <div class="acct-chip-trend" id="trend-petska"></div>
-      </div>
-      <div class="acct-chip chip-investice" onclick="openAcctSettings('investice')">
-        <div class="acct-chip-top">
-          <div class="acct-chip-icon">📈</div>
-          <span class="acct-chip-name" id="name-investice">Investice</span>
-        </div>
-        <div class="acct-chip-val" id="val-investice">—</div>
-        <div class="acct-chip-trend" id="trend-investice"></div>
-      </div>
-      <div class="acct-chip chip-hotovost" onclick="openAcctSettings('hotovost')">
-        <div class="acct-chip-top">
-          <div class="acct-chip-icon">💵</div>
-          <span class="acct-chip-name" id="name-hotovost">Hotovost</span>
-        </div>
-        <div class="acct-chip-val" id="val-hotovost">—</div>
-        <div class="acct-chip-trend" id="trend-hotovost"></div>
-      </div>
-    </div>
-
-    <!-- Recent activity -->
-    <div class="section">
-      <div class="sec-hdr">
-        <span class="sec-title">Poslední transakce</span>
-        <button class="sec-action" onclick="showView('activity')">Zobrazit vše →</button>
-      </div>
-      <div class="card card-pad-sm" id="recentList"><p class="loading">Načítám…</p></div>
-    </div>
-
-    <!-- Upcoming bills -->
-    <div class="section" id="recurringSection" style="display:none;">
-      <div class="sec-hdr"><span class="sec-title">📅 Nadcházející platby</span></div>
-      <div class="card card-pad-sm" id="recurringList"></div>
-    </div>
-
-  </div><!-- /view-home -->
-
-  <!-- ════ ACTIVITY VIEW ════ -->
-  <div id="view-activity" style="display:none">
-    <div class="topbar">
-      <div style="flex:1;min-width:0;">
-        <div class="topbar-sub">Výpis</div>
-        <div class="topbar-name">Transakce</div>
-      </div>
-    </div>
-    <div class="section">
-      <div class="search-bar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-dim);flex-shrink:0;"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="text" id="searchInput" placeholder="Hledat transakce…" oninput="renderHistory()" autocomplete="off"/>
-      </div>
-      <div class="cat-pills" id="catFilterRow"></div>
-      <div id="historyList"><p class="loading">Načítám…</p></div>
-    </div>
-  </div>
-
-  <!-- ════ BUDGETS VIEW ════ -->
-  <div id="view-budgets" style="display:none">
-    <div class="topbar">
-      <div style="flex:1;min-width:0;">
-        <div class="topbar-sub">Přehled</div>
-        <div class="topbar-name">Kategorie</div>
-      </div>
-      <div class="chart-filter">
-        <button class="cf-btn active" id="cf-month" onclick="setChartFilter('month')">Měsíc</button>
-        <button class="cf-btn" id="cf-all"   onclick="setChartFilter('all')">Vše</button>
-      </div>
-    </div>
-    <div class="section">
-      <div class="card card-pad">
-        <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
-        <div class="legend-grid" id="chartLegend"></div>
-      </div>
-    </div>
-    <div class="section" style="padding-top:0;" id="limitsSection" style="display:none;">
-      <div class="sec-hdr"><span class="sec-title">⚠️ Limity kategorií</span></div>
-      <div class="card card-pad" id="limitsList"></div>
-    </div>
-  </div>
-
-  <!-- ════ PETSKA VIEW ════ -->
-  <div id="view-petska" style="display:none">
-    <div class="topbar">
-      <div style="flex:1;min-width:0;">
-        <div class="topbar-sub">Firemní účet</div>
-        <div class="topbar-name">🐾 Petska</div>
-      </div>
-    </div>
-
-    <div class="petska-hero">
-      <div class="petska-tag">🐾 Petska firemní</div>
-      <div class="balance-label" style="opacity:.5;">Zůstatek účtu</div>
-      <div class="balance-amount" id="pVal">—</div>
-      <div class="petska-stats">
-        <div class="petska-stat">
-          <div class="petska-stat-lbl">Příjmy / měsíc</div>
-          <div class="petska-stat-val" id="pInc">—</div>
-        </div>
-        <div class="petska-stat">
-          <div class="petska-stat-lbl">Výdaje / měsíc</div>
-          <div class="petska-stat-val" id="pExp">—</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="card card-pad">
-        <div class="sec-hdr" style="margin-bottom:8px;"><span class="sec-title">Výdaje dle kategorie</span></div>
-        <div class="chart-wrap" style="height:150px;"><canvas id="petskaPieChart"></canvas></div>
-        <div class="legend-grid" id="petskaLegend"></div>
-      </div>
-    </div>
-
-    <div class="section" style="padding-top:0;">
-      <div class="sec-hdr"><span class="sec-title">Přidat platbu</span></div>
-      <div class="card card-pad">
-        <div class="type-tabs" style="grid-template-columns:1fr 1fr;">
-          <div class="type-tab active-vydaj" id="ptab-vydaj"  onclick="setPetskaType('vydaj')">↑ Výdaj</div>
-          <div class="type-tab"              id="ptab-prijem" onclick="setPetskaType('prijem')">↓ Příjem</div>
-        </div>
-        <div class="form-grid">
-          <div class="field"><label>Název</label><input type="text" id="pName" placeholder="Canva, faktura…" autocomplete="off"/></div>
-          <div class="field"><label>Částka (Kč)</label><input type="number" id="pAmount" placeholder="0" min="1" inputmode="decimal"/></div>
-        </div>
-        <div class="form-grid">
-          <div class="field"><label>Kategorie</label>
-            <select id="pCategory">
-              <option value="Petska">🐾 Petska</option>
-              <option value="Vzdělání">📚 Vzdělání</option>
-              <option value="Finance">💰 Finance</option>
-              <option value="HPP">💼 HPP</option>
-              <option value="Ostatní">📦 Ostatní</option>
-            </select>
-          </div>
-          <div class="field"><label>Datum</label><input type="date" id="pDate" style="-webkit-appearance:auto;appearance:auto;"/></div>
-        </div>
-        <button class="btn-primary" id="pAddBtn" onclick="addPetskaTransaction()">+ Přidat do Petska</button>
-        <p class="err" id="pErr"></p>
-      </div>
-    </div>
-
-    <div class="section" style="padding-top:0;">
-      <div class="sec-hdr"><span class="sec-title">Transakce Petska</span></div>
-      <div class="card card-pad-sm" id="petskaHistory"><p class="loading">Načítám…</p></div>
-    </div>
-
-  </div><!-- /view-petska -->
-
-</div><!-- /app -->
 
 <!-- ══ DESKTOP LAYOUT ══ -->
 <div id="desktop-layout">
@@ -1810,23 +1680,23 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
   </div>
 </div>
 
-<!-- ══ Bottom nav ══ -->
+<!-- ══ Bottom nav (mobile only) ══ -->
 <nav class="bottom-nav">
   <div class="bottom-nav-inner">
-    <button class="nav-btn active" id="nb-home" onclick="showView('home')">
+    <button class="nav-btn active" id="nbm-overview" onclick="showDesktopPage('overview')">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
       <span>Přehled</span>
     </button>
-    <button class="nav-btn" id="nb-activity" onclick="showView('activity')">
+    <button class="nav-btn" id="nbm-activity" onclick="showDesktopPage('activity')">
       <svg viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
       <span>Výpis</span>
     </button>
-    <button class="nav-btn-add" onclick="openAddSheet()">+</button>
-    <button class="nav-btn" id="nb-budgets" onclick="showView('budgets')">
+    <button class="nav-btn-add" onclick="openAddSheet()" title="Přidat transakci">+</button>
+    <button class="nav-btn" id="nbm-budgets" onclick="showDesktopPage('budgets')">
       <svg viewBox="0 0 24 24"><path d="M21.21 15.89A9 9 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
       <span>Kategorie</span>
     </button>
-    <button class="nav-btn" id="nb-petska" onclick="showView('petska')">
+    <button class="nav-btn" id="nbm-petska" onclick="showDesktopPage('petska')">
       <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       <span>Petska</span>
     </button>
@@ -2595,7 +2465,8 @@ let dpPetskaType  = 'vydaj';
 function showDesktopPage(page) {
   ['overview','activity','budgets','petska'].forEach(p => {
     const el = q('dp-' + p); if (el) el.style.display = p === page ? '' : 'none';
-    const btn = q('dn-' + p); if (btn) btn.className = 'd-nav-item' + (p === page ? ' active' : '');
+    const dbtn = q('dn-' + p); if (dbtn) dbtn.className = 'd-nav-item' + (p === page ? ' active' : '');
+    const mbtn = q('nbm-' + p); if (mbtn) mbtn.className = 'nav-btn' + (p === page ? ' active' : '');
   });
   currentDesktopPage = page;
   const titles = { overview:'Přehled', activity:'Výpis', budgets:'Kategorie', petska:'🐾 Petska' };
@@ -2604,6 +2475,9 @@ function showDesktopPage(page) {
   if (page === 'budgets') renderDesktopBudgets();
   if (page === 'petska')  renderDesktopPetska();
   if (page === 'activity') renderDesktopActivity();
+  // Scroll main content to top when switching pages
+  const main = q('d-main'); if (main) main.scrollTop = 0;
+  window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 /* ════════════════════════════════════════════════════
