@@ -462,7 +462,11 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
 /* ══════════════════════════════════════════════════════
    DESKTOP LAYOUT (840px+)
    ══════════════════════════════════════════════════════ */
-#desktop-layout { display:none; }
+#desktop-layout,
+#d-fab,
+#d-tx-popup,
+#d-cmd-overlay,
+#d-snap-overlay { display: none; }
 
 @media (min-width:840px) {
   body { display:block; }
@@ -830,6 +834,7 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
 
   /* ── Transaction hover popup ── */
   .d-tx-popup {
+    display: block;
     position: fixed; z-index: 500;
     background: var(--surface); border-radius: 14px;
     box-shadow: 0 12px 40px rgba(0,0,0,.18);
