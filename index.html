@@ -451,6 +451,153 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
 /* ── Empty / loading ── */
 .empty   { text-align: center; color: var(--ink-dim); font-size: .83rem; padding: 2rem 0; }
 .loading { text-align: center; color: var(--ink-dim); font-size: .83rem; padding: 1.5rem 0; }
+
+/* ── Upcoming bills (mobile) ── */
+.upcoming-bill-row { display:flex;align-items:center;gap:12px;padding:10px 0; }
+.upcoming-bill-row + .upcoming-bill-row { border-top:1px solid var(--line); }
+.bill-status { display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-top:3px; }
+.bill-status.paid   { background:rgba(47,133,90,.12);color:var(--green); }
+.bill-status.unpaid { background:rgba(197,48,48,.08);color:var(--red); }
+
+/* ══════════════════════════════════════════════════════
+   DESKTOP LAYOUT (840px+)
+   ══════════════════════════════════════════════════════ */
+#desktop-layout { display:none; }
+
+@media (min-width:840px) {
+  body { display:block; }
+  .app, .bottom-nav { display:none !important; }
+
+  #desktop-layout {
+    display:flex; height:100vh; overflow:hidden;
+    max-width:1500px; margin:0 auto;
+  }
+
+  /* ── Sidebar ── */
+  #d-sidebar {
+    width:220px; flex-shrink:0;
+    background:var(--bg-alt);
+    border-right:.5px solid var(--line);
+    display:flex; flex-direction:column;
+    padding:24px 14px 20px; gap:2px;
+  }
+  #d-logo {
+    font-size:17px; font-weight:800; color:var(--ink);
+    letter-spacing:-.02em; padding:4px 10px; margin-bottom:18px;
+  }
+  .d-nav-item {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:12px;
+    background:none; border:none; cursor:pointer;
+    font-family:inherit; font-size:13.5px; font-weight:600;
+    color:var(--ink-dim); width:100%; text-align:left;
+    transition:all .15s;
+  }
+  .d-nav-item:hover { background:var(--line); color:var(--ink); }
+  .d-nav-item.active { background:var(--primary); color:var(--primary-ink); }
+  .d-nav-item svg { width:17px; height:17px; flex-shrink:0; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+  .d-nav-spacer { flex:1; }
+  .d-user-pill {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:12px;
+    background:var(--surface);
+    box-shadow:0 1px 0 var(--line),0 2px 8px var(--line);
+    border:.5px solid var(--line);
+  }
+  .d-user-avatar {
+    width:30px; height:30px; border-radius:50%;
+    background:var(--primary); color:var(--primary-ink);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:11px; flex-shrink:0;
+  }
+  .d-user-name { font-size:12.5px; font-weight:600; color:var(--ink); }
+  .d-user-sub  { font-size:10.5px; color:var(--ink-dim); }
+
+  /* ── Main ── */
+  #d-main { flex:1; overflow-y:auto; min-width:0; display:flex; flex-direction:column; }
+  #d-header {
+    display:flex; align-items:center; gap:10px;
+    padding:20px 24px 16px; position:sticky; top:0; z-index:10;
+    background:var(--bg); border-bottom:.5px solid var(--line);
+  }
+  body.dark #d-header { background:var(--bg); }
+  #d-page-title {
+    font-size:21px; font-weight:800; color:var(--ink);
+    letter-spacing:-.025em; flex:1;
+  }
+  #d-search-bar {
+    display:flex; align-items:center; gap:8px;
+    padding:8px 13px; background:var(--surface);
+    border-radius:12px; border:.5px solid var(--line);
+    box-shadow:0 1px 0 var(--line);
+  }
+  #d-search-bar input {
+    border:none; background:transparent; color:var(--ink);
+    font-size:13px; outline:none; font-family:inherit; width:140px;
+  }
+  #d-search-bar input::placeholder { color:var(--ink-dim); }
+  .d-add-btn {
+    appearance:none; border:none; cursor:pointer;
+    background:var(--ink); color:var(--surface);
+    border-radius:12px; padding:9px 15px;
+    font-family:inherit; font-size:13px; font-weight:700;
+    transition:opacity .15s; white-space:nowrap;
+  }
+  .d-add-btn:hover { opacity:.85; }
+
+  /* ── Page content ── */
+  .d-page { padding:20px 24px 32px; flex:1; }
+
+  .d-stat-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; }
+  .d-stat-card  { display:flex; flex-direction:column; gap:5px; }
+  .d-stat-icon  { font-size:20px; }
+  .d-stat-lbl   { font-size:11px; color:var(--ink-dim); font-weight:500; }
+  .d-stat-val   { font-size:19px; font-weight:700; color:var(--ink); letter-spacing:-.02em; }
+  .d-stat-green { color:var(--green) !important; }
+  .d-stat-red   { color:var(--red) !important; }
+
+  .d-two-col   { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; }
+  .d-three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px; }
+
+  #d-spend-bars { display:flex; align-items:flex-end; gap:7px; height:90px; padding-bottom:4px; }
+
+  .d-acct-row { display:flex; align-items:center; gap:12px; padding:9px 0; cursor:pointer; transition:opacity .15s; }
+  .d-acct-row + .d-acct-row { border-top:.5px solid var(--line); }
+  .d-acct-row:hover { opacity:.75; }
+
+  .d-tx-table { width:100%; border-collapse:collapse; }
+  .d-tx-table th { font-size:10.5px; font-weight:700; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.05em; padding:6px 10px 8px; text-align:left; border-bottom:.5px solid var(--line); }
+  .d-tx-table td { padding:9px 10px; vertical-align:middle; }
+  .d-tx-table tr + tr td { border-top:.5px solid var(--line); }
+  .d-tx-table tbody tr:hover td { background:rgba(0,0,0,.018); }
+  body.dark .d-tx-table tbody tr:hover td { background:rgba(255,255,255,.04); }
+  .d-tx-name { font-size:13px; font-weight:500; color:var(--ink); }
+  .d-tx-cat  { font-size:12px; color:var(--ink-dim); }
+  .d-tx-acct { font-size:12px; color:var(--ink-dim); }
+  .d-tx-date { font-size:12px; color:var(--ink-dim); white-space:nowrap; }
+  .d-tx-amt  { font-size:13px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; text-align:right; }
+  .d-tx-amt.prijem { color:var(--green); }
+  .d-tx-amt.vydaj  { color:var(--ink); }
+  .d-tx-amt.prevod { color:var(--blue); }
+
+  /* ── Right rail ── */
+  #d-rail {
+    width:274px; flex-shrink:0;
+    border-left:.5px solid var(--line);
+    padding:20px 16px; overflow-y:auto;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .d-rail-title { font-size:13.5px; font-weight:700; color:var(--ink); letter-spacing:-.01em; margin-bottom:12px; }
+  .d-bill-row { display:flex; align-items:center; gap:10px; padding:9px 0; }
+  .d-bill-row + .d-bill-row { border-top:.5px solid var(--line); }
+  .d-insight-card {
+    background:linear-gradient(135deg,var(--primary) 0%,var(--rose) 100%);
+    border-radius:var(--r); padding:18px; color:var(--primary-ink);
+    box-shadow:0 4px 20px rgba(122,63,46,.18);
+  }
+  .d-insight-card h4 { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.65; margin-bottom:8px; }
+  .d-insight-card p  { font-size:16px; font-weight:800; letter-spacing:-.02em; line-height:1.4; }
+}
 </style>
 </head>
 <body>
@@ -739,9 +886,9 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
       <div class="card card-pad-sm" id="recentList"><p class="loading">Načítám…</p></div>
     </div>
 
-    <!-- Recurring -->
+    <!-- Upcoming bills -->
     <div class="section" id="recurringSection" style="display:none;">
-      <div class="sec-hdr"><span class="sec-title">🔄 Fixní výdaje</span></div>
+      <div class="sec-hdr"><span class="sec-title">📅 Nadcházející platby</span></div>
       <div class="card card-pad-sm" id="recurringList"></div>
     </div>
 
@@ -859,6 +1006,186 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
 
 </div><!-- /app -->
 
+<!-- ══ DESKTOP LAYOUT ══ -->
+<div id="desktop-layout">
+
+  <!-- Sidebar -->
+  <aside id="d-sidebar">
+    <div id="d-logo">💸 Finance</div>
+    <button class="d-nav-item active" id="dn-overview" onclick="showDesktopPage('overview')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Přehled
+    </button>
+    <button class="d-nav-item" id="dn-activity" onclick="showDesktopPage('activity')">
+      <svg viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg>
+      Výpis
+    </button>
+    <button class="d-nav-item" id="dn-budgets" onclick="showDesktopPage('budgets')">
+      <svg viewBox="0 0 24 24"><path d="M21.21 15.89A9 9 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+      Kategorie
+    </button>
+    <button class="d-nav-item" id="dn-petska" onclick="showDesktopPage('petska')">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      Petska
+    </button>
+    <div class="d-nav-spacer"></div>
+    <div class="d-user-pill">
+      <div class="d-user-avatar">TK</div>
+      <div>
+        <div class="d-user-name">Tadeáš</div>
+        <div class="d-user-sub">Osobní finance</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main id="d-main">
+    <div id="d-header">
+      <h1 id="d-page-title">Přehled</h1>
+      <div id="d-search-bar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-dim);flex-shrink:0;"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="text" id="d-search-input" placeholder="Hledat…" oninput="renderDesktopActivity()" autocomplete="off"/>
+      </div>
+      <button class="d-add-btn" onclick="openAddSheet()">+ Přidat</button>
+      <button class="topbar-icon-btn" id="d-dark-btn" onclick="toggleDark()" title="Tmavý režim" style="margin-left:2px;">🌙</button>
+    </div>
+
+    <!-- ── Overview ── -->
+    <div id="dp-overview" class="d-page">
+      <div class="d-stat-cards" id="d-stat-cards"></div>
+      <div class="d-two-col">
+        <div class="card card-pad">
+          <div style="font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:14px;">Výdaje posledních 7 dní</div>
+          <div id="d-spend-bars"></div>
+        </div>
+        <div class="card card-pad">
+          <div style="font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:14px;">Tento měsíc</div>
+          <div class="month-split">
+            <div class="month-half"><div class="month-half-lbl">Výdaje</div><div class="month-half-val" id="d-sum-expense">—</div></div>
+            <div class="month-divider"></div>
+            <div class="month-half"><div class="month-half-lbl">Příjmy</div><div class="month-half-val inc" id="d-sum-income">—</div></div>
+          </div>
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:11.5px;color:var(--ink-dim);">Míra úspor</span>
+              <span style="font-size:12px;font-weight:700;color:var(--green);" id="d-savings-rate">—</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="d-savings-fill" style="width:0%;background:var(--green);"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="d-two-col">
+        <div class="card card-pad">
+          <div style="font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:12px;">Účty</div>
+          <div id="d-accounts"></div>
+        </div>
+        <div class="card card-pad">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+            <span style="font-size:13.5px;font-weight:600;color:var(--ink);">Kategorie</span>
+            <span style="font-size:11px;color:var(--ink-dim);">tento měsíc</span>
+          </div>
+          <div id="d-cat-mini"></div>
+        </div>
+      </div>
+      <div class="card" style="overflow:hidden;">
+        <div style="padding:14px 18px 10px;display:flex;justify-content:space-between;align-items:baseline;">
+          <span style="font-size:13.5px;font-weight:600;color:var(--ink);">Poslední transakce</span>
+          <button class="sec-action" onclick="showDesktopPage('activity')">Zobrazit vše →</button>
+        </div>
+        <div id="d-recent" style="padding:0 8px 8px;"></div>
+      </div>
+    </div>
+
+    <!-- ── Activity ── -->
+    <div id="dp-activity" class="d-page" style="display:none;">
+      <div class="search-bar" style="margin-bottom:14px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-dim);flex-shrink:0;"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="text" id="d-activity-search" placeholder="Hledat transakce…" oninput="renderDesktopActivity()" autocomplete="off"/>
+      </div>
+      <div class="card" style="overflow:hidden;">
+        <div id="d-activity-list" style="padding:0 8px 8px;"></div>
+      </div>
+    </div>
+
+    <!-- ── Budgets ── -->
+    <div id="dp-budgets" class="d-page" style="display:none;">
+      <div class="d-three-col" id="d-budget-summary"></div>
+      <div class="d-two-col">
+        <div class="card card-pad">
+          <div style="font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:12px;">Výdaje dle kategorie</div>
+          <div style="display:flex;justify-content:center;"><canvas id="d-cat-chart" width="200" height="200" style="max-width:200px;max-height:200px;"></canvas></div>
+          <div class="legend-grid" id="d-cat-legend" style="margin-top:14px;"></div>
+        </div>
+        <div class="card card-pad">
+          <div style="font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:14px;">Limity kategorií</div>
+          <div id="d-limits-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Petska ── -->
+    <div id="dp-petska" class="d-page" style="display:none;">
+      <div class="petska-hero" style="margin:0 0 20px;">
+        <div class="petska-tag">🐾 Petska firemní</div>
+        <div class="balance-label" style="opacity:.5;">Zůstatek účtu</div>
+        <div class="balance-amount" id="dp-petska-val">—</div>
+        <div class="petska-stats">
+          <div class="petska-stat"><div class="petska-stat-lbl">Příjmy / měsíc</div><div class="petska-stat-val" id="dp-petska-inc">—</div></div>
+          <div class="petska-stat"><div class="petska-stat-lbl">Výdaje / měsíc</div><div class="petska-stat-val" id="dp-petska-exp">—</div></div>
+        </div>
+      </div>
+      <div class="d-two-col">
+        <div class="card card-pad">
+          <div style="font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:12px;">Výdaje dle kategorie</div>
+          <div style="display:flex;justify-content:center;"><canvas id="dp-petska-chart" width="180" height="180" style="max-width:180px;max-height:180px;"></canvas></div>
+          <div class="legend-grid" id="dp-petska-legend" style="margin-top:12px;"></div>
+        </div>
+        <div class="card card-pad">
+          <div style="font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:12px;">Přidat platbu</div>
+          <div class="type-tabs" style="grid-template-columns:1fr 1fr;">
+            <div class="type-tab active-vydaj" id="dptab-vydaj" onclick="setDPetskaType('vydaj')">↑ Výdaj</div>
+            <div class="type-tab" id="dptab-prijem" onclick="setDPetskaType('prijem')">↓ Příjem</div>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Název</label><input type="text" id="dp-pName" placeholder="Canva…" autocomplete="off"/></div>
+            <div class="field"><label>Částka (Kč)</label><input type="number" id="dp-pAmount" placeholder="0" min="1" inputmode="decimal"/></div>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Kategorie</label>
+              <select id="dp-pCategory">
+                <option value="Petska">🐾 Petska</option><option value="Vzdělání">📚 Vzdělání</option>
+                <option value="Finance">💰 Finance</option><option value="HPP">💼 HPP</option>
+                <option value="Ostatní">📦 Ostatní</option>
+              </select>
+            </div>
+            <div class="field"><label>Datum</label><input type="date" id="dp-pDate" style="-webkit-appearance:auto;appearance:auto;"/></div>
+          </div>
+          <button class="btn-primary" id="dp-pAddBtn" onclick="addDPetskaTransaction()">+ Přidat do Petska</button>
+          <p class="err" id="dp-pErr"></p>
+        </div>
+      </div>
+      <div class="card" style="overflow:hidden;">
+        <div style="padding:14px 18px 10px;"><span style="font-size:13.5px;font-weight:600;color:var(--ink);">Transakce Petska</span></div>
+        <div id="dp-petska-history" style="padding:0 8px 8px;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Right rail -->
+  <aside id="d-rail">
+    <div class="card card-pad">
+      <div class="d-rail-title">📅 Nadcházející platby</div>
+      <div id="d-upcoming-list"><p style="color:var(--ink-dim);font-size:.78rem;">Načítám…</p></div>
+    </div>
+    <div class="d-insight-card">
+      <h4>Přehled měsíce</h4>
+      <p id="d-insight-text">Načítám…</p>
+    </div>
+  </aside>
+
+</div><!-- /desktop-layout -->
+
 <!-- ══ Bottom nav ══ -->
 <nav class="bottom-nav">
   <div class="bottom-nav-inner">
@@ -948,14 +1275,16 @@ function loadAccountSettings() {
 function toggleDark() {
   const dark = document.body.classList.toggle('dark');
   localStorage.setItem('darkMode', dark ? '1' : '0');
-  const btn = q('darkToggle'); if (btn) btn.textContent = dark ? '☀️' : '🌙';
+  ['darkToggle','d-dark-btn'].forEach(id => { const btn = q(id); if (btn) btn.textContent = dark ? '☀️' : '🌙'; });
   if (pieChart)       renderChart();
   if (petskaPieChart) renderPetskaChart();
+  if (dCatChart)      renderDesktopBudgets();
+  if (dpPetskaChart)  renderDesktopPetska();
 }
 function initDark() {
   if (localStorage.getItem('darkMode') === '1') {
     document.body.classList.add('dark');
-    const btn = q('darkToggle'); if (btn) btn.textContent = '☀️';
+    ['darkToggle','d-dark-btn'].forEach(id => { const btn = q(id); if (btn) btn.textContent = '☀️'; });
   }
 }
 
@@ -1171,22 +1500,28 @@ function renderLimits() {
   }).join('');
 }
 
-/* ── Recurring ── */
+/* ── Recurring / Upcoming bills ── */
 function renderRecurring() {
   const templates = getRecurringTemplates();
   const sec = q('recurringSection'); if (!sec) return;
   if (!templates.length) { sec.style.display = 'none'; return; }
   sec.style.display = '';
-  q('recurringList').innerHTML = templates.map((t,i) => `
-    <div class="rec-item">
+  const thisMonth = transactions.filter(isThisMonth);
+  q('recurringList').innerHTML = templates.map((t,i) => {
+    const paid = thisMonth.some(tx => tx.name === t.name && tx.account === t.account);
+    return `<div class="upcoming-bill-row">
       <div class="cat-bubble cat-bubble-sm" style="background:${CAT_COLORS[t.category]||'#ccc'}22">${CAT_EMOJI[t.category]||'📌'}</div>
       <div style="flex:1;min-width:0;">
         <div class="rec-name">${t.name}</div>
         <div class="rec-sub">${LABELS[t.account]||t.account} · měsíčně</div>
       </div>
-      <span class="rec-amt">−${fmt(t.amount)}</span>
+      <div style="text-align:right;flex-shrink:0;">
+        <span class="rec-amt">−${fmt(t.amount)}</span>
+        <div class="bill-status ${paid?'paid':'unpaid'}">${paid?'✓ zaplaceno':'čeká'}</div>
+      </div>
       <button class="rec-del" onclick="deleteRecurring(${i})">×</button>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 function deleteRecurring(i) {
   const t = getRecurringTemplates(); t.splice(i,1);
@@ -1410,6 +1745,12 @@ function renderAll() {
   renderHistory();
   if (currentView === 'budgets') { renderChart(); renderLimits(); }
   if (currentView === 'petska')  { renderPetskaChart(); renderPetskaHistory(); renderPetskaHero(); }
+  // Desktop
+  renderDesktopOverview();
+  renderDesktopRail();
+  renderDesktopActivity();
+  if (currentDesktopPage === 'budgets') renderDesktopBudgets();
+  if (currentDesktopPage === 'petska')  renderDesktopPetska();
 }
 
 /* ── ADD transaction (wizard) ── */
@@ -1611,13 +1952,370 @@ loadAccountSettings();
     days[now.getDay()] + ' · ' + now.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long' });
 })();
 
-if (q('txDate')) q('txDate').value = new Date().toISOString().split('T')[0];
-if (q('pDate'))  q('pDate').value  = new Date().toISOString().split('T')[0];
+if (q('txDate'))    q('txDate').value    = new Date().toISOString().split('T')[0];
+if (q('pDate'))     q('pDate').value     = new Date().toISOString().split('T')[0];
+if (q('dp-pDate'))  q('dp-pDate').value  = new Date().toISOString().split('T')[0];
 
 if (q('txAmount')) q('txAmount').addEventListener('keydown', e => { if (e.key === 'Enter') wizNext(); });
 if (q('txName'))   q('txName').addEventListener('keydown',   e => { if (e.key === 'Enter') wizNext(); });
 
 loadTransactions();
+
+/* ════════════════════════════════════════════════════
+   DESKTOP FUNCTIONS
+   ════════════════════════════════════════════════════ */
+let currentDesktopPage = 'overview';
+let dCatChart    = null;
+let dpPetskaChart = null;
+let dpPetskaType  = 'vydaj';
+
+function showDesktopPage(page) {
+  ['overview','activity','budgets','petska'].forEach(p => {
+    const el = q('dp-' + p); if (el) el.style.display = p === page ? '' : 'none';
+    const btn = q('dn-' + p); if (btn) btn.className = 'd-nav-item' + (p === page ? ' active' : '');
+  });
+  currentDesktopPage = page;
+  const titles = { overview:'Přehled', activity:'Výpis', budgets:'Kategorie', petska:'🐾 Petska' };
+  const titleEl = q('d-page-title'); if (titleEl) titleEl.textContent = titles[page] || page;
+  if (page === 'budgets') renderDesktopBudgets();
+  if (page === 'petska')  renderDesktopPetska();
+  if (page === 'activity') renderDesktopActivity();
+}
+
+function setDPetskaType(t) {
+  dpPetskaType = t;
+  ['vydaj','prijem'].forEach(x => {
+    const el = q('dptab-' + x); if (el) el.className = 'type-tab' + (x === t ? ' active-' + x : '');
+  });
+}
+
+async function addDPetskaTransaction() {
+  const name     = q('dp-pName').value.trim();
+  const amount   = parseFloat(q('dp-pAmount').value);
+  const category = q('dp-pCategory').value;
+  const txDate   = q('dp-pDate').value;
+  const btn = q('dp-pAddBtn'), errEl = q('dp-pErr');
+  errEl.style.display = 'none';
+  if (!name)             { errEl.textContent='Zadej název.';          errEl.style.display='block'; return; }
+  if (!amount||amount<=0){ errEl.textContent='Zadej kladnou částku.'; errEl.style.display='block'; return; }
+  btn.disabled = true; btn.textContent = 'Ukládám…';
+  const { data, error } = await db.from('transactions').insert([{
+    name, amount, account:'petska', type:dpPetskaType,
+    category, tx_date: txDate || new Date().toISOString().split('T')[0]
+  }]).select();
+  btn.disabled = false; btn.textContent = '+ Přidat do Petska';
+  if (error) { errEl.textContent='Chyba: '+error.message; errEl.style.display='block'; return; }
+  newTxId = data[0].id;
+  transactions.push(data[0]);
+  q('dp-pName').value = ''; q('dp-pAmount').value = '';
+  renderAll();
+  showToast('Přidáno do Petska ✓', 'success');
+  setTimeout(() => { newTxId = null; }, 800);
+}
+
+function renderDesktopOverview() {
+  const b = calcBalances();
+  const total = Object.values(b).reduce((a,c) => a+c, 0);
+  const thisMonth = transactions.filter(isThisMonth);
+  const income  = thisMonth.filter(t => t.type==='prijem').reduce((s,t) => s+t.amount, 0);
+  const expense = thisMonth.filter(t => t.type==='vydaj').reduce((s,t) => s+t.amount, 0);
+
+  const statsEl = q('d-stat-cards');
+  if (statsEl) statsEl.innerHTML = [
+    { label:'Celkový majetek', val:fmt(total),          icon:'💰', cls:'' },
+    { label:'Příjmy / měsíc',  val:'+'+fmt(income),    icon:'↓',  cls:'d-stat-green' },
+    { label:'Výdaje / měsíc',  val:'−'+fmt(expense),   icon:'↑',  cls:expense>income?'d-stat-red':'' },
+    { label:'Petska firemní',  val:fmt(b.petska||0),   icon:'🐾', cls:'' },
+  ].map(c => `<div class="d-stat-card card card-pad">
+    <div class="d-stat-icon">${c.icon}</div>
+    <div class="d-stat-lbl">${c.label}</div>
+    <div class="d-stat-val ${c.cls}">${c.val}</div>
+  </div>`).join('');
+
+  if (q('d-sum-income'))  q('d-sum-income').textContent  = '+'+fmt(income);
+  if (q('d-sum-expense')) q('d-sum-expense').textContent = '−'+fmt(expense);
+  const rate = income > 0 ? Math.max(0, Math.round((income-expense)/income*100)) : 0;
+  if (q('d-savings-rate')) q('d-savings-rate').textContent = rate + '%';
+  if (q('d-savings-fill')) q('d-savings-fill').style.width = Math.min(rate,100) + '%';
+
+  renderDesktopSpendingBars();
+  renderDesktopAccounts();
+  renderDesktopCatMini();
+  renderDesktopRecent();
+}
+
+function renderDesktopSpendingBars() {
+  const now = new Date();
+  const dayNames = ['Ne','Po','Út','St','Čt','Pá','So'];
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now); d.setDate(now.getDate()-i);
+    days.push({ iso:d.toISOString().split('T')[0], label:i===0?'Dnes':dayNames[d.getDay()] });
+  }
+  const totals = days.map(day =>
+    transactions.filter(tx => tx.type==='vydaj' && (tx.tx_date||tx.created_at.split('T')[0])===day.iso)
+      .reduce((s,t) => s+t.amount, 0)
+  );
+  const max = Math.max(...totals, 1);
+  const el = q('d-spend-bars'); if (!el) return;
+  el.innerHTML = totals.map((v,i) => {
+    const h = Math.max(4, Math.round((v/max)*82));
+    return `<div style="display:flex;flex-direction:column;align-items:center;flex:1;gap:6px;">
+      <div style="height:82px;display:flex;align-items:flex-end;width:100%;">
+        <div style="width:100%;height:${h}px;background:var(--primary);opacity:${i===6?1:.5};border-radius:7px;min-height:4px;transition:height .3s;"></div>
+      </div>
+      <span style="font-size:10px;color:var(--ink-dim);font-weight:500;">${days[i].label}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderDesktopAccounts() {
+  const b = calcBalances();
+  const el = q('d-accounts'); if (!el) return;
+  const accts = [
+    {k:'bezny',icon:'🏦'},{k:'sporak',icon:'🐖'},{k:'penzijko',icon:'👴'},
+    {k:'petska',icon:'🐾'},{k:'investice',icon:'📈'},{k:'hotovost',icon:'💵'},
+  ];
+  el.innerHTML = accts.map(({k,icon}) => `
+    <div class="d-acct-row" onclick="openAcctSettings('${k}')">
+      <div class="cat-bubble cat-bubble-sm" style="background:var(--bg-alt);font-size:16px;">${icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:600;color:var(--ink);">${LABELS[k]}</div>
+      </div>
+      <div style="font-size:13.5px;font-weight:700;color:${(b[k]||0)<0?'var(--red)':'var(--ink)'};">${fmt(b[k]||0)}</div>
+    </div>`).join('');
+}
+
+function renderDesktopCatMini() {
+  const el = q('d-cat-mini'); if (!el) return;
+  const cats = {};
+  transactions.filter(isThisMonth).filter(t => t.type==='vydaj').forEach(t => {
+    const c = t.category||'Ostatní'; cats[c]=(cats[c]||0)+t.amount;
+  });
+  const sorted = Object.entries(cats).sort((a,b) => b[1]-a[1]).slice(0,5);
+  if (!sorted.length) { el.innerHTML='<p style="color:var(--ink-dim);font-size:.78rem;padding:8px 0;">Žádné výdaje tento měsíc</p>'; return; }
+  const total = sorted.reduce((s,[,v]) => s+v, 0);
+  el.innerHTML = sorted.map(([cat,val],i) => {
+    const pct = Math.round(val/total*100);
+    const cc = CAT_COLORS[cat]||'#b0bec5';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;${i>0?'border-top:.5px solid var(--line)':''}">
+      <div class="cat-bubble cat-bubble-sm" style="background:${cc}22;font-size:15px;">${CAT_EMOJI[cat]||'📦'}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12.5px;font-weight:500;color:var(--ink);">${cat}</div>
+        <div style="height:4px;background:var(--bg-alt);border-radius:999px;margin-top:4px;overflow:hidden;">
+          <div style="width:${pct}%;height:100%;background:${cc};border-radius:999px;"></div>
+        </div>
+      </div>
+      <div style="font-size:12.5px;font-weight:700;color:var(--ink);white-space:nowrap;">${fmt(val)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDesktopRecent() {
+  const el = q('d-recent'); if (!el) return;
+  const recent = [...transactions].reverse().slice(0,10);
+  if (!recent.length) { el.innerHTML='<p class="empty">Žádné transakce</p>'; return; }
+  el.innerHTML = buildTxTable(recent, true);
+}
+
+function renderDesktopActivity() {
+  const el = q('d-activity-list'); if (!el) return;
+  const siEl = q('d-activity-search');
+  const sq   = (siEl ? siEl.value : '').toLowerCase();
+  const shown = transactions.filter(tx =>
+    !sq || tx.name.toLowerCase().includes(sq) || (tx.category||'').toLowerCase().includes(sq)
+  );
+  const rev = [...shown].reverse().slice(0,200);
+  if (!rev.length) { el.innerHTML='<p class="empty" style="padding:24px;">Žádné záznamy</p>'; return; }
+  el.innerHTML = buildTxTable(rev, true);
+}
+
+function buildTxTable(txns, withDelete) {
+  return `<table class="d-tx-table"><thead><tr>
+    <th style="width:38px;"></th><th>Název</th><th>Kategorie</th><th>Účet</th><th>Datum</th>
+    <th style="text-align:right;">Částka</th><th style="width:56px;"></th>
+  </tr></thead><tbody>${txns.map(tx => {
+    const sign = tx.type==='prijem'?'+':tx.type==='vydaj'?'−':'⇄';
+    const d  = new Date((tx.tx_date||tx.created_at.split('T')[0])+'T12:00:00');
+    const ds = d.toLocaleDateString('cs-CZ',{day:'numeric',month:'short'});
+    const cc = CAT_COLORS[tx.category]||'#b0bec5';
+    const acctLabel = tx.type==='prevod'
+      ? (LABELS[tx.account]||tx.account)+' → '+(LABELS[tx.to_account]||tx.to_account)
+      : (LABELS[tx.account]||tx.account);
+    return `<tr>
+      <td><div class="cat-bubble cat-bubble-sm" style="background:${cc}22;">${CAT_EMOJI[tx.category]||'📦'}</div></td>
+      <td class="d-tx-name">${tx.name}</td>
+      <td class="d-tx-cat">${tx.category||'—'}</td>
+      <td class="d-tx-acct">${acctLabel}</td>
+      <td class="d-tx-date">${ds}</td>
+      <td class="d-tx-amt ${tx.type}">${sign}${fmt(tx.amount)}</td>
+      <td style="white-space:nowrap;">
+        <button class="tx-action-btn edit" onclick="openEdit('${tx.id}')">✎</button>
+        ${withDelete?`<button class="tx-action-btn del" onclick="deleteTx('${tx.id}')">×</button>`:''}
+      </td>
+    </tr>`;
+  }).join('')}</tbody></table>`;
+}
+
+function renderDesktopBudgets() {
+  const thisMonth = transactions.filter(isThisMonth);
+  const income  = thisMonth.filter(t => t.type==='prijem').reduce((s,t) => s+t.amount, 0);
+  const expense = thisMonth.filter(t => t.type==='vydaj').reduce((s,t) => s+t.amount, 0);
+  const savings = income - expense;
+  const summEl = q('d-budget-summary');
+  if (summEl) summEl.innerHTML = [
+    { label:'Výdaje tento měsíc', val:'−'+fmt(expense), icon:'↑', cls:'d-stat-red' },
+    { label:'Příjmy tento měsíc', val:'+'+fmt(income),  icon:'↓', cls:'d-stat-green' },
+    { label:'Uspořeno',           val:fmt(savings),     icon:'🐖', cls:savings>=0?'d-stat-green':'d-stat-red' },
+  ].map(c => `<div class="d-stat-card card card-pad">
+    <div class="d-stat-icon">${c.icon}</div>
+    <div class="d-stat-lbl">${c.label}</div>
+    <div class="d-stat-val ${c.cls}">${c.val}</div>
+  </div>`).join('');
+
+  // Donut
+  const cats = {};
+  thisMonth.filter(t => t.type==='vydaj').forEach(t => { const c=t.category||'Ostatní'; cats[c]=(cats[c]||0)+t.amount; });
+  const sorted = Object.entries(cats).sort((a,b) => b[1]-a[1]);
+  const total  = sorted.reduce((s,[,v]) => s+v, 0);
+  if (dCatChart) { dCatChart.destroy(); dCatChart = null; }
+  const canvas = q('d-cat-chart'), legEl = q('d-cat-legend');
+  if (canvas && sorted.length) {
+    const border = document.body.classList.contains('dark') ? '#2E2632' : '#fff';
+    dCatChart = new Chart(canvas.getContext('2d'), {
+      type:'doughnut',
+      data:{ labels:sorted.map(([k])=>k), datasets:[{ data:sorted.map(([,v])=>v), backgroundColor:sorted.map(([k])=>CAT_COLORS[k]||'#ccc'), borderWidth:2, borderColor:border, hoverOffset:8 }] },
+      options:{ cutout:'64%', animation:{ animateRotate:true, duration:600 }, plugins:{ legend:{display:false}, tooltip:{enabled:true,callbacks:{label:ctx=>`${ctx.label}: ${fmt(ctx.raw)}`}} } }
+    });
+    if (legEl) legEl.innerHTML = sorted.map(([cat,val]) => `
+      <div class="legend-item">
+        <div class="legend-dot" style="background:${CAT_COLORS[cat]||'#ccc'}"></div>
+        <span>${CAT_EMOJI[cat]||''} ${cat}</span>
+        <span class="legend-pct">${Math.round(val/total*100)}%</span>
+      </div>`).join('');
+  } else if (legEl) legEl.innerHTML = '<p style="font-size:.78rem;color:var(--ink-dim);">Žádné výdaje</p>';
+
+  // Limits
+  const limEl = q('d-limits-list'); if (!limEl) return;
+  const spent = {};
+  thisMonth.filter(t => t.type==='vydaj').forEach(t => { const c=t.category||'Ostatní'; spent[c]=(spent[c]||0)+t.amount; });
+  const warns = Object.entries(CAT_LIMITS).filter(([c]) => spent[c]).map(([c,lim]) => ({c,lim,amt:spent[c]})).sort((a,b)=>(b.amt/b.lim)-(a.amt/a.lim));
+  if (!warns.length) { limEl.innerHTML='<p style="font-size:.78rem;color:var(--ink-dim);">Zatím žádné výdaje v kategoriích s limitem</p>'; return; }
+  limEl.innerHTML = warns.map(v => {
+    const pct = Math.min(100,Math.round(v.amt/v.lim*100));
+    const over = v.amt>v.lim, warn=!over&&v.amt>v.lim*.8;
+    const fc = over?'var(--red)':warn?'#D69E2E':'var(--green)';
+    return `<div class="budget-item">
+      <div class="budget-hdr">
+        <div class="cat-bubble cat-bubble-sm" style="background:${CAT_COLORS[v.c]||'#ccc'}22">${CAT_EMOJI[v.c]||'📦'}</div>
+        <div class="budget-lbl"><div class="budget-name">${v.c}</div><div class="budget-sub">${fmt(v.amt)} / ${fmt(v.lim)}</div></div>
+        <div class="budget-vals${over?' budget-over':''}">${pct}%</div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${fc}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderDesktopPetska() {
+  const b = calcBalances();
+  if (q('dp-petska-val')) q('dp-petska-val').textContent = fmt(b.petska||0);
+  const ptx = transactions.filter(tx => tx.account==='petska' && isThisMonth(tx));
+  const inc = ptx.filter(t => t.type==='prijem').reduce((s,t) => s+t.amount, 0);
+  const exp = ptx.filter(t => t.type==='vydaj').reduce((s,t) => s+t.amount, 0);
+  if (q('dp-petska-inc')) q('dp-petska-inc').textContent = '+'+fmt(inc);
+  if (q('dp-petska-exp')) q('dp-petska-exp').textContent = '−'+fmt(exp);
+
+  // Chart
+  const allPtx = transactions.filter(tx => tx.account==='petska' && tx.type==='vydaj');
+  const cats = {};
+  allPtx.forEach(tx => { const c=tx.category||'Ostatní'; cats[c]=(cats[c]||0)+tx.amount; });
+  const sorted = Object.entries(cats).sort((a,b) => b[1]-a[1]);
+  const total  = sorted.reduce((s,[,v]) => s+v, 0);
+  if (dpPetskaChart) { dpPetskaChart.destroy(); dpPetskaChart = null; }
+  const canvas = q('dp-petska-chart'), legEl = q('dp-petska-legend');
+  if (canvas && sorted.length) {
+    const border = document.body.classList.contains('dark') ? '#2E2632' : '#fff';
+    dpPetskaChart = new Chart(canvas.getContext('2d'), {
+      type:'doughnut',
+      data:{ labels:sorted.map(([k])=>k), datasets:[{ data:sorted.map(([,v])=>v), backgroundColor:sorted.map(([k])=>CAT_COLORS[k]||'#ccc'), borderWidth:2, borderColor:border, hoverOffset:8 }] },
+      options:{ cutout:'64%', animation:{animateRotate:true,duration:600}, plugins:{legend:{display:false},tooltip:{enabled:true,callbacks:{label:ctx=>`${ctx.label}: ${fmt(ctx.raw)}`}}} }
+    });
+    if (legEl) legEl.innerHTML = sorted.map(([cat,val]) => `
+      <div class="legend-item">
+        <div class="legend-dot" style="background:${CAT_COLORS[cat]||'#ccc'}"></div>
+        <span>${CAT_EMOJI[cat]||''} ${cat}</span>
+        <span class="legend-pct">${Math.round(val/total*100)}%</span>
+      </div>`).join('');
+  } else if (legEl) legEl.innerHTML = '<p style="font-size:.78rem;color:var(--ink-dim);">Žádné výdaje</p>';
+
+  // History
+  const histEl = q('dp-petska-history'); if (!histEl) return;
+  const history = [...transactions.filter(tx => tx.account==='petska')].reverse();
+  if (!history.length) { histEl.innerHTML='<p class="empty">Žádné transakce</p>'; return; }
+  histEl.innerHTML = `<table class="d-tx-table"><thead><tr>
+    <th style="width:38px;"></th><th>Název</th><th>Kategorie</th><th>Datum</th>
+    <th style="text-align:right;">Částka</th><th style="width:56px;"></th>
+  </tr></thead><tbody>${history.map(tx => {
+    const sign = tx.type==='prijem'?'+':'−';
+    const d  = new Date((tx.tx_date||tx.created_at.split('T')[0])+'T12:00:00');
+    const ds = d.toLocaleDateString('cs-CZ',{day:'numeric',month:'short'});
+    const cc = CAT_COLORS[tx.category]||'#b0bec5';
+    return `<tr>
+      <td><div class="cat-bubble cat-bubble-sm" style="background:${cc}22;">${CAT_EMOJI[tx.category]||'📦'}</div></td>
+      <td class="d-tx-name">${tx.name}</td>
+      <td class="d-tx-cat">${tx.category||'—'}</td>
+      <td class="d-tx-date">${ds}</td>
+      <td class="d-tx-amt ${tx.type}">${sign}${fmt(tx.amount)}</td>
+      <td style="white-space:nowrap;">
+        <button class="tx-action-btn edit" onclick="openEdit('${tx.id}')">✎</button>
+        <button class="tx-action-btn del"  onclick="deleteTx('${tx.id}')">×</button>
+      </td>
+    </tr>`;
+  }).join('')}</tbody></table>`;
+}
+
+function renderDesktopRail() {
+  const templates = getRecurringTemplates();
+  const thisMonth = transactions.filter(isThisMonth);
+  const el = q('d-upcoming-list'); if (!el) return;
+
+  if (!templates.length) {
+    el.innerHTML = '<p style="color:var(--ink-dim);font-size:.78rem;padding:6px 0;">Žádné opakující se platby.<br>Přidej transakci jako „opakující se".</p>';
+  } else {
+    el.innerHTML = templates.map((t,i) => {
+      const paid = thisMonth.some(tx => tx.name===t.name && tx.account===t.account);
+      const cc = CAT_COLORS[t.category]||'#b0bec5';
+      return `<div class="d-bill-row">
+        <div class="cat-bubble cat-bubble-sm" style="background:${cc}22;">${CAT_EMOJI[t.category]||'📌'}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;color:var(--ink);">${t.name}</div>
+          <div style="font-size:11px;color:var(--ink-dim);">${LABELS[t.account]||t.account}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:13px;font-weight:700;color:var(--ink);">−${fmt(t.amount)}</div>
+          <div style="font-size:10px;font-weight:700;margin-top:2px;color:${paid?'var(--green)':'var(--red)'};">${paid?'✓ OK':'čeká'}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Insight
+  const income  = thisMonth.filter(t=>t.type==='prijem').reduce((s,t)=>s+t.amount,0);
+  const expense = thisMonth.filter(t=>t.type==='vydaj').reduce((s,t)=>s+t.amount,0);
+  const rate = income>0 ? Math.max(0,Math.round((income-expense)/income*100)) : 0;
+  const catTotals = {};
+  thisMonth.filter(t=>t.type==='vydaj').forEach(t => { const c=t.category||'Ostatní'; catTotals[c]=(catTotals[c]||0)+t.amount; });
+  const bigCat = Object.entries(catTotals).sort((a,b)=>b[1]-a[1])[0];
+  const insEl = q('d-insight-text');
+  if (insEl) {
+    if (income===0) insEl.textContent = 'Přidej příjmy pro výpočet míry úspor.';
+    else {
+      let msg = `Spoříš ${rate}% příjmů.`;
+      if (bigCat) msg += ` Největší výdaj: ${CAT_EMOJI[bigCat[0]]||''} ${bigCat[0]} (${fmt(bigCat[1])}).`;
+      insEl.textContent = msg;
+    }
+  }
+}
 </script>
 
 <script>
