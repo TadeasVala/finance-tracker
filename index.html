@@ -580,16 +580,6 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
   .d-tx-amt.vydaj  { color:var(--ink); }
   .d-tx-amt.prevod { color:var(--blue); }
 
-  /* ── Right rail ── */
-  #d-rail {
-    width:274px; flex-shrink:0;
-    border-left:.5px solid var(--line);
-    padding:20px 16px; overflow-y:auto;
-    display:flex; flex-direction:column; gap:14px;
-  }
-  .d-rail-title { font-size:13.5px; font-weight:700; color:var(--ink); letter-spacing:-.01em; margin-bottom:12px; }
-  .d-bill-row { display:flex; align-items:center; gap:10px; padding:9px 0; }
-  .d-bill-row + .d-bill-row { border-top:.5px solid var(--line); }
 
   /* ── Scope tabs (Vše / Osobní / Petska) ── */
   .d-scope-tabs {
@@ -1786,13 +1776,6 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
 
   </main>
 
-  <!-- Right rail -->
-  <aside id="d-rail">
-    <div class="card card-pad">
-      <div class="d-rail-title">📅 Nadcházející platby</div>
-      <div id="d-upcoming-list"><p style="color:var(--ink-dim);font-size:.78rem;">Načítám…</p></div>
-    </div>
-  </aside>
 
 </div><!-- /desktop-layout -->
 
@@ -2383,7 +2366,6 @@ function renderAll() {
   if (currentView === 'petska')  { renderPetskaChart(); renderPetskaHistory(); renderPetskaHero(); }
   // Desktop
   renderDesktopOverview();
-  renderDesktopRail();
   renderDesktopActivity();
   if (currentDesktopPage === 'budgets') renderDesktopBudgets();
   if (currentDesktopPage === 'petska')  renderDesktopPetska();
@@ -3102,32 +3084,6 @@ function renderDesktopPetska() {
   }).join('')}</tbody></table>`;
 }
 
-function renderDesktopRail() {
-  const templates = getRecurringTemplates();
-  const thisMonth = transactions.filter(isThisMonth);
-  const el = q('d-upcoming-list'); if (!el) return;
-
-  if (!templates.length) {
-    el.innerHTML = '<p style="color:var(--ink-dim);font-size:.78rem;padding:6px 0;">Žádné opakující se platby.<br>Přidej transakci jako „opakující se".</p>';
-  } else {
-    el.innerHTML = templates.map((t,i) => {
-      const paid = thisMonth.some(tx => tx.name===t.name && tx.account===t.account);
-      const cc = CAT_COLORS[t.category]||'#b0bec5';
-      return `<div class="d-bill-row">
-        <div class="cat-bubble cat-bubble-sm" style="background:${cc}22;">${CAT_EMOJI[t.category]||'📌'}</div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;color:var(--ink);">${t.name}</div>
-          <div style="font-size:11px;color:var(--ink-dim);">${LABELS[t.account]||t.account}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0;">
-          <div style="font-size:13px;font-weight:700;color:var(--ink);">−${fmt(t.amount)}</div>
-          <div style="font-size:10px;font-weight:700;margin-top:2px;color:${paid?'var(--green)':'var(--red)'};">${paid?'✓ OK':'čeká'}</div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-}
 
 /* ════════════════════════════════════════════════════
    DESKTOP HELPERS — balance over time, sparklines
