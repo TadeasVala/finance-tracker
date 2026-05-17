@@ -591,39 +591,119 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
   .d-bill-row { display:flex; align-items:center; gap:10px; padding:9px 0; }
   .d-bill-row + .d-bill-row { border-top:.5px solid var(--line); }
 
-  /* ── Net worth hero ── */
+  /* ── Net worth hero (light pastel style) ── */
   #d-nw-hero {
-    background: linear-gradient(135deg, #2d2420 0%, #4a3a2c 60%, #6b4938 100%);
+    background: var(--surface);
     border-radius: var(--r);
-    padding: 22px 24px;
-    color: #F4ECE2;
+    border: .5px solid var(--line);
+    padding: 26px 30px;
     margin-bottom: 14px;
+    box-shadow: 0 1px 0 var(--line), 0 6px 24px var(--line);
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    gap: 28px;
+    align-items: center;
     position: relative; overflow: hidden;
-    box-shadow: 0 8px 28px rgba(0,0,0,.12);
   }
   #d-nw-hero::before {
-    content:''; position:absolute; inset:0;
-    background: radial-gradient(600px 220px at 100% 0%, rgba(255,181,167,.22), transparent 60%);
+    content:''; position:absolute; top:-50px; right:-30px;
+    width:180px; height:180px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,181,167,.18), transparent 70%);
     pointer-events:none;
   }
-  body.dark #d-nw-hero { background: linear-gradient(135deg, #15131a 0%, #1f1a22 60%, #2a2230 100%); }
-  .d-nw-top { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; }
-  .d-nw-lbl { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; opacity:.55; }
-  .d-nw-val { font-size:38px; font-weight:800; letter-spacing:-.03em; margin-top:4px; font-variant-numeric:tabular-nums; }
-  .d-nw-delta {
-    display:inline-flex; align-items:center; gap:5px;
-    background: rgba(255,255,255,.08); border-radius:999px;
-    padding:5px 11px; font-size:12.5px; font-weight:700;
-    margin-top:9px;
+  body.dark #d-nw-hero::before { background: radial-gradient(circle, rgba(255,181,167,.08), transparent 70%); }
+
+  .d-nw-left {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    height: 280px;
   }
-  .d-nw-delta.up   { color: #88e6a3; }
-  .d-nw-delta.down { color: #ffb4a8; }
-  .d-nw-mini-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:18px; }
-  .d-nw-mini { background: rgba(255,255,255,.06); border-radius:14px; padding:11px 14px; }
-  .d-nw-mini-lbl { font-size:10.5px; font-weight:600; opacity:.55; text-transform:uppercase; letter-spacing:.04em; margin-bottom:3px; }
-  .d-nw-mini-val { font-size:17px; font-weight:800; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
-  .d-nw-mini-val.up   { color: #88e6a3; }
-  .d-nw-mini-val.down { color: #ffb4a8; }
+  .d-nw-left canvas { max-width: 100%; max-height: 100%; }
+  .d-nw-center {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center; pointer-events: none;
+    width: 60%;
+  }
+  .d-nw-center-lbl { font-size: 10px; font-weight: 700; color: var(--ink-dim); text-transform: uppercase; letter-spacing: .1em; }
+  .d-nw-center-val {
+    font-size: 30px; font-weight: 800; letter-spacing: -.025em; color: var(--ink);
+    font-variant-numeric: tabular-nums; margin-top: 2px; line-height: 1.05;
+  }
+  .d-nw-center-delta {
+    font-size: 11.5px; font-weight: 700;
+    margin-top: 6px; display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 999px;
+  }
+  .d-nw-center-delta.up   { color: var(--green); background: rgba(47,133,90,.1); }
+  .d-nw-center-delta.down { color: var(--red);   background: rgba(197,48,48,.08); }
+  .d-nw-center-deco {
+    position: absolute; font-size: 22px;
+    opacity: .85; pointer-events: none;
+  }
+  .d-nw-center-deco.deco-1 { left: 16%; top: 22%; }
+  .d-nw-center-deco.deco-2 { right: 14%; bottom: 18%; }
+
+  .d-nw-right { display: flex; flex-direction: column; gap: 14px; }
+  .d-nw-title { font-size: 22px; font-weight: 800; letter-spacing: -.025em; color: var(--ink); }
+  .d-nw-sub   { font-size: 12.5px; color: var(--ink-dim); margin-top: 2px; }
+  .d-nw-accts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .d-nw-acct {
+    border-radius: 16px; padding: 13px 14px;
+    border: .5px solid transparent;
+    cursor: pointer; transition: transform .15s, box-shadow .15s;
+    position: relative; overflow: hidden;
+  }
+  .d-nw-acct:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+  .d-nw-acct.col-bezny    { background: #DBEAFE; }
+  .d-nw-acct.col-sporak   { background: #D1FAE5; }
+  .d-nw-acct.col-penzijko { background: #EDE9FE; }
+  .d-nw-acct.col-petska   { background: #FEE2E2; }
+  .d-nw-acct.col-investice { background: #CFFAFE; }
+  .d-nw-acct.col-hotovost  { background: #FEF9C3; }
+  body.dark .d-nw-acct.col-bezny    { background: #2b3850; }
+  body.dark .d-nw-acct.col-sporak   { background: #284635; }
+  body.dark .d-nw-acct.col-penzijko { background: #393056; }
+  body.dark .d-nw-acct.col-petska   { background: #4d2828; }
+  body.dark .d-nw-acct.col-investice { background: #224d54; }
+  body.dark .d-nw-acct.col-hotovost  { background: #4d4525; }
+  .d-nw-acct-top {
+    display: flex; align-items: center; gap: 7px; margin-bottom: 7px;
+  }
+  .d-nw-acct-icon {
+    width: 26px; height: 26px; border-radius: 8px;
+    background: rgba(255,255,255,.55);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  body.dark .d-nw-acct-icon { background: rgba(0,0,0,.18); }
+  .d-nw-acct-name {
+    font-size: 10.5px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: .05em;
+    color: rgba(0,0,0,.55);
+  }
+  body.dark .d-nw-acct-name { color: rgba(255,255,255,.65); }
+  .d-nw-acct-val {
+    font-size: 17px; font-weight: 800; letter-spacing: -.02em;
+    color: rgba(0,0,0,.85); font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  body.dark .d-nw-acct-val { color: rgba(255,255,255,.92); }
+  .d-nw-acct-delta {
+    font-size: 10.5px; font-weight: 700; margin-top: 3px;
+    color: rgba(0,0,0,.45); font-variant-numeric: tabular-nums;
+  }
+  body.dark .d-nw-acct-delta { color: rgba(255,255,255,.5); }
+  .d-nw-acct-delta.up   { color: #15803d; }
+  .d-nw-acct-delta.down { color: #b91c1c; }
+  body.dark .d-nw-acct-delta.up   { color: #86efac; }
+  body.dark .d-nw-acct-delta.down { color: #fca5a5; }
+
+  /* Responsive — stack on narrower desktop */
+  @media (max-width: 1180px) {
+    #d-nw-hero { grid-template-columns: 1fr; gap: 22px; }
+    .d-nw-accts { grid-template-columns: repeat(2, 1fr); }
+  }
 
   /* ── Cashflow chart card ── */
   #d-cashflow-card { height: 280px; padding: 18px 18px 12px; position: relative; }
@@ -1440,32 +1520,27 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
       <!-- Subscription detector banner (hidden until detected) -->
       <div id="d-sub-banner-host"></div>
 
-      <!-- Net worth hero -->
+      <!-- Net worth hero with donut + account cards -->
       <div id="d-nw-hero">
-        <div class="d-nw-top">
-          <div>
-            <div class="d-nw-lbl">Net worth · Celkový majetek</div>
-            <div class="d-nw-val" id="d-nw-val">—</div>
-            <div class="d-nw-delta" id="d-nw-delta"><span id="d-nw-delta-arrow">↑</span> <span id="d-nw-delta-val">—</span> <span style="opacity:.55;font-weight:500;">vs. minulý měsíc</span></div>
-          </div>
-          <div style="text-align:right;">
-            <div class="d-nw-lbl">Petska firemní</div>
-            <div style="font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums;" id="d-nw-petska">—</div>
+        <div class="d-nw-left">
+          <canvas id="d-nw-donut"></canvas>
+          <span class="d-nw-center-deco deco-1">💗</span>
+          <span class="d-nw-center-deco deco-2">🐾</span>
+          <div class="d-nw-center">
+            <div class="d-nw-center-lbl">Net worth</div>
+            <div class="d-nw-center-val" id="d-nw-val">—</div>
+            <div class="d-nw-center-delta" id="d-nw-delta">
+              <span id="d-nw-delta-arrow">↑</span>
+              <span id="d-nw-delta-val">—</span>
+            </div>
           </div>
         </div>
-        <div class="d-nw-mini-stats">
-          <div class="d-nw-mini">
-            <div class="d-nw-mini-lbl">Příjmy / měsíc</div>
-            <div class="d-nw-mini-val up" id="d-nw-inc">—</div>
+        <div class="d-nw-right">
+          <div>
+            <div class="d-nw-title">Tvůj majetek a účty</div>
+            <div class="d-nw-sub">Zůstatky napříč všemi účty · 30denní trend</div>
           </div>
-          <div class="d-nw-mini">
-            <div class="d-nw-mini-lbl">Výdaje / měsíc</div>
-            <div class="d-nw-mini-val down" id="d-nw-exp">—</div>
-          </div>
-          <div class="d-nw-mini">
-            <div class="d-nw-mini-lbl">Míra úspor</div>
-            <div class="d-nw-mini-val" id="d-nw-rate">—</div>
-          </div>
+          <div class="d-nw-accts" id="d-nw-accts"></div>
         </div>
       </div>
 
@@ -1485,18 +1560,12 @@ body.dark .petska-hero { background: linear-gradient(135deg, #1a1510, #2a2018); 
         <div id="d-cashflow-canvas-wrap"><canvas id="d-cashflow-chart"></canvas></div>
       </div>
 
-      <div class="d-two-col">
-        <div class="card card-pad">
-          <div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:12px;letter-spacing:-.01em;">Účty</div>
-          <div id="d-accounts"></div>
+      <div class="card card-pad">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+          <span style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Top kategorie</span>
+          <span style="font-size:11px;color:var(--ink-dim);">tento měsíc</span>
         </div>
-        <div class="card card-pad">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
-            <span style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Top kategorie</span>
-            <span style="font-size:11px;color:var(--ink-dim);">tento měsíc</span>
-          </div>
-          <div id="d-cat-mini"></div>
-        </div>
+        <div id="d-cat-mini"></div>
       </div>
 
       <!-- Spending heatmap -->
@@ -2559,13 +2628,14 @@ async function addDPetskaTransaction() {
   setTimeout(() => { newTxId = null; }, 800);
 }
 
+let dNwChart = null;
+const D_ACCT_ORDER = ['bezny','sporak','penzijko','petska','investice','hotovost'];
+const D_ACCT_ICONS  = { bezny:'🏦', sporak:'🐖', penzijko:'👴', petska:'🐾', investice:'📈', hotovost:'💵' };
+const D_ACCT_COLORS = { bezny:'#9DBFF0', sporak:'#92D9B0', penzijko:'#BFB4F2', petska:'#F5A8A8', investice:'#8AD8E0', hotovost:'#F0DB78' };
+
 function renderDesktopOverview() {
   const b = calcBalances();
   const total = Object.values(b).reduce((a,c) => a+c, 0);
-  const thisMonth = transactions.filter(isThisMonth);
-  const lastMonthTx = transactions.filter(isLastMonth);
-  const income  = thisMonth.filter(t => t.type==='prijem').reduce((s,t) => s+t.amount, 0);
-  const expense = thisMonth.filter(t => t.type==='vydaj').reduce((s,t) => s+t.amount, 0);
 
   // Net worth delta vs end of last month
   const endOfLastMonth = new Date();
@@ -2575,33 +2645,67 @@ function renderDesktopOverview() {
   const delta = total - totalLast;
   const deltaPct = totalLast !== 0 ? (delta / Math.abs(totalLast)) * 100 : 0;
 
-  if (q('d-nw-val'))         q('d-nw-val').textContent         = fmt(total);
-  if (q('d-nw-petska'))      q('d-nw-petska').textContent      = fmt(b.petska||0);
-  if (q('d-nw-inc'))         q('d-nw-inc').textContent         = '+' + fmt(income);
-  if (q('d-nw-exp'))         q('d-nw-exp').textContent         = '−' + fmt(expense);
-  const rate = income > 0 ? Math.max(0, Math.round((income-expense)/income*100)) : 0;
-  if (q('d-nw-rate'))        q('d-nw-rate').textContent        = rate + '%';
-  const rateEl = q('d-nw-rate');
-  if (rateEl) rateEl.className = 'd-nw-mini-val ' + (rate >= 20 ? 'up' : rate >= 0 ? '' : 'down');
+  if (q('d-nw-val')) q('d-nw-val').textContent = fmt(total);
 
   const deltaEl = q('d-nw-delta'), arrowEl = q('d-nw-delta-arrow'), valEl = q('d-nw-delta-val');
   if (deltaEl) {
     if (totalLast === 0) {
-      deltaEl.style.display = 'none';
+      deltaEl.style.visibility = 'hidden';
     } else {
-      deltaEl.style.display = '';
-      deltaEl.className = 'd-nw-delta ' + (delta >= 0 ? 'up' : 'down');
+      deltaEl.style.visibility = '';
+      deltaEl.className = 'd-nw-center-delta ' + (delta >= 0 ? 'up' : 'down');
       arrowEl.textContent = delta >= 0 ? '↑' : '↓';
-      valEl.textContent = fmt(Math.abs(delta)) + ' (' + (delta>=0?'+':'') + deltaPct.toFixed(1) + '%)';
+      valEl.textContent = (delta>=0?'+':'−') + fmt(Math.abs(delta)).replace(' Kč','') + ' (' + (delta>=0?'+':'') + deltaPct.toFixed(1) + '%)';
     }
   }
 
+  renderNetWorthDonut(b);
   renderDesktopAccounts();
   renderDesktopCatMini();
   renderDesktopRecent();
   renderDesktopCashflow();
   renderDesktopHeatmap();
   renderSubscriptionBanner();
+}
+
+function renderNetWorthDonut(b) {
+  const canvas = q('d-nw-donut'); if (!canvas) return;
+  const data = D_ACCT_ORDER.map(k => Math.max(0, b[k]||0));
+  if (dNwChart) { dNwChart.destroy(); dNwChart = null; }
+  const dark = document.body.classList.contains('dark');
+  dNwChart = new Chart(canvas.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: D_ACCT_ORDER.map(k => LABELS[k] || k),
+      datasets: [{
+        data,
+        backgroundColor: D_ACCT_ORDER.map(k => D_ACCT_COLORS[k]),
+        borderColor: dark ? '#2E2632' : '#fff',
+        borderWidth: 3,
+        hoverOffset: 12,
+        spacing: 2,
+      }]
+    },
+    options: {
+      cutout: '74%',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: dark ? '#1F1A22' : '#2d2420',
+          titleColor: '#F4ECE2',
+          bodyColor: '#F4ECE2',
+          padding: 10,
+          cornerRadius: 10,
+          displayColors: true,
+          boxWidth: 8, boxHeight: 8,
+          callbacks: { label: ctx => ` ${ctx.label}: ${fmt(ctx.raw)}` }
+        }
+      },
+      animation: { animateRotate: true, duration: 700 }
+    }
+  });
 }
 
 function renderDesktopSpendingBars() {
@@ -2631,31 +2735,22 @@ function renderDesktopSpendingBars() {
 
 function renderDesktopAccounts() {
   const b = calcBalances();
-  const el = q('d-accounts'); if (!el) return;
-  const accts = [
-    {k:'bezny',icon:'🏦'},{k:'sporak',icon:'🐖'},{k:'penzijko',icon:'👴'},
-    {k:'petska',icon:'🐾'},{k:'investice',icon:'📈'},{k:'hotovost',icon:'💵'},
-  ];
-  el.innerHTML = accts.map(({k,icon}) => {
+  const el = q('d-nw-accts'); if (!el) return;
+  el.innerHTML = D_ACCT_ORDER.map(k => {
     const series = calcAcctSeries(k, 30);
     const last  = series[series.length-1] || 0;
     const first = series[0] || 0;
     const dlt = last - first;
-    const sparkPath = buildSparkline(series, 64, 22);
-    const sparkColor = dlt >= 0 ? '#2F855A' : '#C53030';
-    return `<div class="d-acct-row" onclick="openAcctSettings('${k}')">
-      <div class="cat-bubble cat-bubble-sm" style="background:var(--bg-alt);font-size:16px;">${icon}</div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;font-weight:600;color:var(--ink);">${LABELS[k]}</div>
-        <div style="font-size:10.5px;color:var(--ink-dim);">30d trend</div>
+    const deltaStr = dlt !== 0
+      ? `<div class="d-nw-acct-delta ${dlt>=0?'up':'down'}">${dlt>=0?'↑':'↓'} ${fmt(Math.abs(dlt)).replace(' Kč','')} <span style="opacity:.5;font-weight:600;">30d</span></div>`
+      : `<div class="d-nw-acct-delta" style="opacity:.4;">— 30d</div>`;
+    return `<div class="d-nw-acct col-${k}" onclick="openAcctSettings('${k}')">
+      <div class="d-nw-acct-top">
+        <div class="d-nw-acct-icon">${D_ACCT_ICONS[k]}</div>
+        <span class="d-nw-acct-name">${LABELS[k]||k}</span>
       </div>
-      <svg class="d-acct-spark" viewBox="0 0 64 22" preserveAspectRatio="none">
-        <path d="${sparkPath}" fill="none" stroke="${sparkColor}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;min-width:90px;">
-        <div style="font-size:13.5px;font-weight:700;color:${(b[k]||0)<0?'var(--red)':'var(--ink)'};font-variant-numeric:tabular-nums;">${fmt(b[k]||0)}</div>
-        <div class="d-acct-delta ${dlt>=0?'up':'down'}" style="margin-top:1px;">${dlt>=0?'+':''}${fmt(dlt).replace(' Kč','')}</div>
-      </div>
+      <div class="d-nw-acct-val">${fmt(b[k]||0)}</div>
+      ${deltaStr}
     </div>`;
   }).join('');
 }
