@@ -305,11 +305,77 @@ select {
 .wiz-dot.done   { background: var(--primary); }
 .wiz-step { animation: wizIn .18s ease; }
 @keyframes wizIn { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
-.wiz-q    { font-size: .67rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-dim); text-align: center; margin-bottom: .6rem; }
+.wiz-q    { font-size: .67rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-dim); text-align: left; margin: 14px 0 8px; }
+.wiz-q.first { margin-top: 2px; }
 #txAmount { font-size: 2.2rem; font-weight: 800; text-align: center; letter-spacing: -.02em; }
 #txName   { font-size: 1.05rem; font-weight: 600; text-align: center; margin-bottom: .85rem; }
 .wiz-unit { text-align: center; font-size: .68rem; color: var(--ink-dim); font-weight: 700; margin: .25rem 0 .85rem; letter-spacing: .06em; }
-.wiz-nav  { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: .75rem; }
+.wiz-nav  { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: 1rem; }
+
+/* ── Wizard pills (clickable account / category / date selectors) ── */
+.wiz-pills {
+  display: grid;
+  gap: 6px;
+}
+.wiz-accounts, .wiz-to-accounts {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.wiz-categories {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.wiz-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 10px; border-radius: 11px;
+  background: var(--bg-alt); border: 1.5px solid transparent;
+  font-family: inherit; font-size: 12.5px; font-weight: 600;
+  color: var(--ink-dim); cursor: pointer;
+  transition: all .12s;
+  text-align: left;
+  min-width: 0; line-height: 1.2;
+}
+.wiz-pill:hover:not(.active) {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 4px var(--line);
+}
+.wiz-pill.active {
+  background: var(--primary);
+  border-color: var(--primary-ink);
+  color: var(--primary-ink);
+  box-shadow: 0 2px 8px rgba(255,181,167,.35);
+}
+.wiz-pill-icon { font-size: 15px; flex-shrink: 0; }
+.wiz-pill-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.wiz-dates {
+  display: flex; gap: 6px; align-items: stretch;
+  flex-wrap: wrap;
+}
+.wiz-dates .wiz-pill { flex: 0 0 auto; }
+.wiz-dates input[type="date"] {
+  flex: 1 1 auto;
+  min-width: 120px;
+  font-size: 13px;
+  padding: 8px 10px;
+  background: var(--bg-alt);
+  border-radius: 11px;
+  border: 1.5px solid transparent;
+}
+.wiz-dates input[type="date"]:focus {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+
+@media (max-width: 420px) {
+  .wiz-accounts, .wiz-to-accounts, .wiz-categories {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .wiz-pill { font-size: 12px; padding: 9px 9px; }
+}
 
 /* ── Type tabs ── */
 .type-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; background: var(--bg-alt); border-radius: var(--r-sm); padding: 4px; margin-bottom: .85rem; }
@@ -1343,34 +1409,60 @@ body { display: block; }
       </div>
       <!-- Step 3 -->
       <div id="wstep-3" style="display:none" class="wiz-step">
-        <p class="wiz-q">Detaily</p>
-        <div class="form-grid">
-          <div class="field"><label>Účet</label>
-            <select id="txAccount">
-              <option value="bezny">Běžný účet</option><option value="sporak">Spořící účet</option>
-              <option value="penzijko">Penzijko</option><option value="petska">Petska firemní</option>
-              <option value="investice">Investice</option><option value="hotovost">Hotovost</option>
-            </select>
-          </div>
-          <div class="field"><label>Datum</label><input type="date" id="txDate" style="-webkit-appearance:auto;appearance:auto;"/></div>
-          <div class="field" id="toAccountField" style="display:none;grid-column:span 2;"><label>Na účet</label>
-            <select id="txToAccount">
-              <option value="sporak">Spořící</option><option value="bezny">Běžný</option>
-              <option value="penzijko">Penzijko</option><option value="petska">Petska</option>
-              <option value="investice">Investice</option><option value="hotovost">Hotovost</option>
-            </select>
-          </div>
-          <div class="field" id="catField" style="grid-column:span 2;"><label>Kategorie</label>
-            <select id="txCategory">
-              <option value="Potraviny">🛒 Potraviny</option><option value="Bydlení">🏠 Bydlení</option>
-              <option value="Doprava">🚌 Doprava</option><option value="Zábava">🎉 Zábava</option>
-              <option value="Zdraví">💊 Zdraví</option><option value="Vzdělání">📚 Vzdělání</option>
-              <option value="HPP">💼 HPP</option><option value="Petska">🐾 Petska</option>
-              <option value="Finance">💰 Finance</option><option value="Hotovost">💵 Hotovost</option>
-              <option value="Ostatní">📦 Ostatní</option>
-            </select>
+        <!-- Účet -->
+        <p class="wiz-q first">Účet</p>
+        <input type="hidden" id="txAccount" value="bezny"/>
+        <div class="wiz-pills wiz-accounts">
+          <button type="button" class="wiz-pill active" data-acct="bezny"     onclick="setTxAccount('bezny')"><span class="wiz-pill-icon">🏦</span><span class="wiz-pill-text">Běžný</span></button>
+          <button type="button" class="wiz-pill"        data-acct="sporak"    onclick="setTxAccount('sporak')"><span class="wiz-pill-icon">🐖</span><span class="wiz-pill-text">Spořící</span></button>
+          <button type="button" class="wiz-pill"        data-acct="penzijko"  onclick="setTxAccount('penzijko')"><span class="wiz-pill-icon">👴</span><span class="wiz-pill-text">Penzijko</span></button>
+          <button type="button" class="wiz-pill"        data-acct="petska"    onclick="setTxAccount('petska')"><span class="wiz-pill-icon">🐾</span><span class="wiz-pill-text">Petska</span></button>
+          <button type="button" class="wiz-pill"        data-acct="investice" onclick="setTxAccount('investice')"><span class="wiz-pill-icon">📈</span><span class="wiz-pill-text">Investice</span></button>
+          <button type="button" class="wiz-pill"        data-acct="hotovost"  onclick="setTxAccount('hotovost')"><span class="wiz-pill-icon">💵</span><span class="wiz-pill-text">Hotovost</span></button>
+        </div>
+
+        <!-- Na účet (jen u převodu) -->
+        <div id="toAccountField" style="display:none;">
+          <p class="wiz-q">Na účet</p>
+          <input type="hidden" id="txToAccount" value="sporak"/>
+          <div class="wiz-pills wiz-to-accounts">
+            <button type="button" class="wiz-pill active" data-acct="sporak"    onclick="setTxToAccount('sporak')"><span class="wiz-pill-icon">🐖</span><span class="wiz-pill-text">Spořící</span></button>
+            <button type="button" class="wiz-pill"        data-acct="bezny"     onclick="setTxToAccount('bezny')"><span class="wiz-pill-icon">🏦</span><span class="wiz-pill-text">Běžný</span></button>
+            <button type="button" class="wiz-pill"        data-acct="penzijko"  onclick="setTxToAccount('penzijko')"><span class="wiz-pill-icon">👴</span><span class="wiz-pill-text">Penzijko</span></button>
+            <button type="button" class="wiz-pill"        data-acct="petska"    onclick="setTxToAccount('petska')"><span class="wiz-pill-icon">🐾</span><span class="wiz-pill-text">Petska</span></button>
+            <button type="button" class="wiz-pill"        data-acct="investice" onclick="setTxToAccount('investice')"><span class="wiz-pill-icon">📈</span><span class="wiz-pill-text">Investice</span></button>
+            <button type="button" class="wiz-pill"        data-acct="hotovost"  onclick="setTxToAccount('hotovost')"><span class="wiz-pill-icon">💵</span><span class="wiz-pill-text">Hotovost</span></button>
           </div>
         </div>
+
+        <!-- Kategorie (skryto u převodu) -->
+        <div id="catField">
+          <p class="wiz-q">Kategorie</p>
+          <input type="hidden" id="txCategory" value="Potraviny"/>
+          <div class="wiz-pills wiz-categories">
+            <button type="button" class="wiz-pill active" data-cat="Potraviny" onclick="setTxCategory('Potraviny')"><span class="wiz-pill-icon">🛒</span><span class="wiz-pill-text">Potraviny</span></button>
+            <button type="button" class="wiz-pill"        data-cat="Bydlení"   onclick="setTxCategory('Bydlení')"><span class="wiz-pill-icon">🏠</span><span class="wiz-pill-text">Bydlení</span></button>
+            <button type="button" class="wiz-pill"        data-cat="Doprava"   onclick="setTxCategory('Doprava')"><span class="wiz-pill-icon">🚌</span><span class="wiz-pill-text">Doprava</span></button>
+            <button type="button" class="wiz-pill"        data-cat="Zábava"    onclick="setTxCategory('Zábava')"><span class="wiz-pill-icon">🎉</span><span class="wiz-pill-text">Zábava</span></button>
+            <button type="button" class="wiz-pill"        data-cat="Zdraví"    onclick="setTxCategory('Zdraví')"><span class="wiz-pill-icon">💊</span><span class="wiz-pill-text">Zdraví</span></button>
+            <button type="button" class="wiz-pill"        data-cat="Vzdělání"  onclick="setTxCategory('Vzdělání')"><span class="wiz-pill-icon">📚</span><span class="wiz-pill-text">Vzdělání</span></button>
+            <button type="button" class="wiz-pill"        data-cat="HPP"       onclick="setTxCategory('HPP')"><span class="wiz-pill-icon">💼</span><span class="wiz-pill-text">HPP</span></button>
+            <button type="button" class="wiz-pill"        data-cat="Petska"    onclick="setTxCategory('Petska')"><span class="wiz-pill-icon">🐾</span><span class="wiz-pill-text">Petska</span></button>
+            <button type="button" class="wiz-pill"        data-cat="Finance"   onclick="setTxCategory('Finance')"><span class="wiz-pill-icon">💰</span><span class="wiz-pill-text">Finance</span></button>
+            <button type="button" class="wiz-pill"        data-cat="Hotovost"  onclick="setTxCategory('Hotovost')"><span class="wiz-pill-icon">💵</span><span class="wiz-pill-text">Hotovost</span></button>
+            <button type="button" class="wiz-pill"        data-cat="Ostatní"   onclick="setTxCategory('Ostatní')"><span class="wiz-pill-icon">📦</span><span class="wiz-pill-text">Ostatní</span></button>
+          </div>
+        </div>
+
+        <!-- Datum -->
+        <p class="wiz-q">Datum</p>
+        <div class="wiz-dates">
+          <button type="button" class="wiz-pill active" data-day="0"  onclick="setTxDate(0)">Dnes</button>
+          <button type="button" class="wiz-pill"        data-day="-1" onclick="setTxDate(-1)">Včera</button>
+          <button type="button" class="wiz-pill"        data-day="-2" onclick="setTxDate(-2)">Předevčírem</button>
+          <input type="date" id="txDate" oninput="onTxDateChange()" style="-webkit-appearance:auto;appearance:auto;"/>
+        </div>
+
         <label class="recurring-row" id="recurringRow">
           <input type="checkbox" id="txRecurring"/> 🔄 Opakující se (měsíčně)
         </label>
@@ -1510,14 +1602,35 @@ body { display: block; }
           </div>
         </div>
 
-        <!-- Top kategorie list -->
-        <div class="card card-pad">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
-            <span style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Top kategorie</span>
-            <span style="font-size:11px;color:var(--ink-dim);">tento měsíc</span>
+        <!-- Subscriptions donut -->
+        <div class="card d-exp-card">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;">
+            <div>
+              <div style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">🔁 Předplatná</div>
+              <div style="font-size:11px;color:var(--ink-dim);margin-top:2px;">Pravidelné měsíční výdaje</div>
+            </div>
           </div>
-          <div id="d-cat-mini"></div>
+          <div class="d-exp-wrap">
+            <div class="d-exp-canvas-wrap">
+              <canvas id="d-sub-chart"></canvas>
+              <div class="d-exp-center">
+                <div class="d-exp-center-lbl">/ měsíc</div>
+                <div class="d-exp-center-val" id="d-sub-center-val">—</div>
+                <div class="d-exp-center-sub" id="d-sub-center-sub">—</div>
+              </div>
+            </div>
+            <div class="d-exp-legend" id="d-sub-legend"></div>
+          </div>
         </div>
+      </div>
+
+      <!-- Top kategorie list (full width below) -->
+      <div class="card card-pad">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+          <span style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">Top kategorie</span>
+          <span style="font-size:11px;color:var(--ink-dim);">tento měsíc</span>
+        </div>
+        <div id="d-cat-mini"></div>
       </div>
 
       <!-- Spending heatmap -->
@@ -1798,8 +1911,41 @@ function showView(name) {
 function openAddSheet(type) {
   if (type) setType(type);
   setWizStep(1);
+  resetWizardPills();
   q('addSheet').classList.add('open');
   setTimeout(() => q('txAmount').focus(), 80);
+}
+
+/* ── Wizard pill selectors ── */
+function setTxAccount(k) {
+  const inp = q('txAccount'); if (inp) inp.value = k;
+  document.querySelectorAll('.wiz-accounts .wiz-pill').forEach(b => b.classList.toggle('active', b.dataset.acct === k));
+}
+function setTxToAccount(k) {
+  const inp = q('txToAccount'); if (inp) inp.value = k;
+  document.querySelectorAll('.wiz-to-accounts .wiz-pill').forEach(b => b.classList.toggle('active', b.dataset.acct === k));
+}
+function setTxCategory(c) {
+  const inp = q('txCategory'); if (inp) inp.value = c;
+  document.querySelectorAll('.wiz-categories .wiz-pill').forEach(b => b.classList.toggle('active', b.dataset.cat === c));
+}
+function setTxDate(daysAgo) {
+  const d = new Date();
+  d.setDate(d.getDate() + daysAgo);
+  const iso = d.toISOString().split('T')[0];
+  const inp = q('txDate'); if (inp) inp.value = iso;
+  document.querySelectorAll('.wiz-dates .wiz-pill').forEach(b => b.classList.toggle('active', b.dataset.day === String(daysAgo)));
+}
+function onTxDateChange() {
+  // Clear pill highlights when user picks a custom date via the date input
+  document.querySelectorAll('.wiz-dates .wiz-pill').forEach(b => b.classList.remove('active'));
+}
+function resetWizardPills() {
+  setTxAccount('bezny');
+  setTxToAccount('sporak');
+  setTxCategory('Potraviny');
+  setTxDate(0);
+  const r = q('txRecurring'); if (r) r.checked = false;
 }
 function closeAddSheet() { q('addSheet').classList.remove('open'); }
 function sheetOverlayClick(e) { if (e.target === q('addSheet')) closeAddSheet(); }
@@ -2576,6 +2722,7 @@ function renderDesktopOverview() {
   renderDesktopCashflow();
   renderDesktopHeatmap();
   renderExpenseDonut();
+  renderSubscriptionsDonut();
   renderSubscriptionBanner();
 }
 
@@ -2643,6 +2790,125 @@ function renderDesktopSpendingBars() {
       <span style="font-size:10px;color:var(--ink-dim);font-weight:500;">${days[i].label}</span>
     </div>`;
   }).join('');
+}
+
+let dSubChart = null;
+function renderSubscriptionsDonut() {
+  const canvas = q('d-sub-chart'); if (!canvas) return;
+  const all = getRecurringTemplates();
+  // Respect scope filter (Vše / Osobní / Petska)
+  const templates = all.filter(t => {
+    if (currentScope === 'all') return true;
+    if (currentScope === 'petska') return t.account === 'petska';
+    return t.account !== 'petska';
+  }).filter(t => t.type !== 'prijem'); // only expense-side subscriptions
+  const sorted = [...templates].sort((a,b) => b.amount - a.amount);
+  const total = sorted.reduce((s,t) => s + t.amount, 0);
+
+  const valEl = q('d-sub-center-val'), subEl = q('d-sub-center-sub'), legEl = q('d-sub-legend');
+  if (valEl) valEl.textContent = total > 0 ? fmt(total) : '—';
+  if (subEl) subEl.textContent = sorted.length > 0 ? `${sorted.length} pravid. ${sorted.length===1?'platba':sorted.length<5?'platby':'plateb'}` : 'Žádná';
+
+  if (dSubChart) { dSubChart.destroy(); dSubChart = null; }
+
+  if (!sorted.length) {
+    if (legEl) legEl.innerHTML = '<p style="color:var(--ink-dim);font-size:11.5px;line-height:1.5;">Žádné opakující se platby v tomto pohledu.<br>Při přidávání transakce zaškrtni <b>"🔄 Opakující se (měsíčně)"</b> a platba se objeví tady.</p>';
+    return;
+  }
+
+  // Generate slightly varied shades for same-category items
+  const usedHues = {};
+  const segColors = sorted.map(t => {
+    const base = CAT_COLORS[t.category] || '#b0bec5';
+    const cnt = (usedHues[base] || 0);
+    usedHues[base] = cnt + 1;
+    if (cnt === 0) return base;
+    // Vary saturation/lightness for repeats
+    return shiftColor(base, cnt * 15);
+  });
+
+  const dark = document.body.classList.contains('dark');
+  dSubChart = new Chart(canvas.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: sorted.map(t => t.name),
+      datasets: [{
+        data: sorted.map(t => t.amount),
+        backgroundColor: segColors,
+        borderColor: dark ? '#2E2632' : '#fff',
+        borderWidth: 3,
+        hoverOffset: 10,
+        spacing: 2,
+      }]
+    },
+    options: {
+      cutout: '70%',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: dark ? '#1F1A22' : '#2d2420',
+          titleColor: '#F4ECE2',
+          bodyColor: '#F4ECE2',
+          padding: 10,
+          cornerRadius: 10,
+          displayColors: true,
+          boxWidth: 8, boxHeight: 8,
+          callbacks: { label: ctx => ` ${ctx.label}: ${fmt(ctx.raw)} / měs` }
+        }
+      },
+      animation: { animateRotate: true, duration: 600 }
+    }
+  });
+
+  if (legEl) {
+    legEl.innerHTML = sorted.slice(0, 8).map((t, i) => {
+      const pct = Math.round(t.amount/total*100);
+      return `<div class="d-exp-legend-row">
+        <div class="d-exp-legend-dot" style="background:${segColors[i]};"></div>
+        <span class="d-exp-legend-name">${CAT_EMOJI[t.category]||''} ${t.name}</span>
+        <span class="d-exp-legend-pct">${pct}%</span>
+        <span class="d-exp-legend-val">${fmt(t.amount).replace(' Kč','')}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+function shiftColor(hex, deg) {
+  // Simple hue shift via HSL conversion
+  const r = parseInt(hex.slice(1,3),16)/255;
+  const g = parseInt(hex.slice(3,5),16)/255;
+  const b = parseInt(hex.slice(5,7),16)/255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  const l = (max+min)/2;
+  let h, s;
+  if (max === min) { h = s = 0; }
+  else {
+    const d = max-min;
+    s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+    switch(max) {
+      case r: h = (g-b)/d + (g<b?6:0); break;
+      case g: h = (b-r)/d + 2; break;
+      case b: h = (r-g)/d + 4; break;
+    }
+    h /= 6;
+  }
+  h = (h + deg/360) % 1; if (h < 0) h += 1;
+  // HSL → RGB
+  const hue2rgb = (p,q,t) => {
+    if (t<0) t+=1; if (t>1) t-=1;
+    if (t<1/6) return p+(q-p)*6*t;
+    if (t<1/2) return q;
+    if (t<2/3) return p+(q-p)*(2/3-t)*6;
+    return p;
+  };
+  const q2 = l < 0.5 ? l*(1+s) : l+s-l*s;
+  const p2 = 2*l - q2;
+  const R = Math.round(hue2rgb(p2,q2,h+1/3)*255);
+  const G = Math.round(hue2rgb(p2,q2,h)*255);
+  const B = Math.round(hue2rgb(p2,q2,h-1/3)*255);
+  return '#' + [R,G,B].map(v => v.toString(16).padStart(2,'0')).join('');
 }
 
 let dExpChart = null;
