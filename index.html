@@ -370,9 +370,9 @@ select {
   background: var(--surface);
 }
 
-@media (max-width: 420px) {
+@media (max-width: 500px) {
   .wiz-accounts, .wiz-to-accounts, .wiz-categories {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
   .wiz-pill { font-size: 12px; padding: 9px 9px; }
 }
@@ -1159,6 +1159,95 @@ body { display: block; }
   .d-tx-table th { padding: 4px 10px 6px; }
   .d-tx-table .d-tx-name { font-size: 12.5px; }
 
+  /* ── Subscription management modal ── */
+  .d-sub-mgmt-overlay {
+    position: fixed; inset: 0;
+    background: rgba(20,15,25,.7);
+    backdrop-filter: blur(8px);
+    z-index: 998;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 40px 20px;
+  }
+  .d-sub-mgmt-overlay.open { display: flex; animation: cmdFade .2s ease; }
+  .d-sub-mgmt-box {
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh; overflow-y: auto;
+    background: var(--surface);
+    border-radius: 22px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.4);
+    padding: 28px 30px;
+    position: relative;
+    box-sizing: border-box;
+  }
+  .d-sub-mgmt-section { margin-top: 22px; }
+  .d-sub-mgmt-section:first-of-type { margin-top: 18px; }
+  .d-sub-mgmt-title {
+    font-size: 12.5px; font-weight: 800;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 10px;
+  }
+  .d-sub-mgmt-title .count { color: var(--ink-dim); font-weight: 600; margin-left: 4px; }
+  .d-sub-mgmt-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-alt);
+    border-radius: 12px;
+    margin-bottom: 6px;
+  }
+  .d-sub-mgmt-row .meta { flex: 1; min-width: 0; }
+  .d-sub-mgmt-row .name {
+    font-weight: 700; color: var(--ink); font-size: 13.5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .d-sub-mgmt-row .sub {
+    font-size: 11.5px; color: var(--ink-dim);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .d-sub-mgmt-row .amt {
+    font-weight: 800; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .d-sub-mgmt-row button {
+    background: none; border: none; cursor: pointer;
+    font-size: 16px; color: var(--ink-sub);
+    padding: 4px 9px; border-radius: 8px;
+    transition: all .12s; flex-shrink: 0; font-family: inherit; font-weight: 700;
+  }
+  .d-sub-mgmt-row .del:hover { color: var(--red); background: rgba(197,48,48,.08); }
+  .d-sub-mgmt-row .add { color: var(--green); }
+  .d-sub-mgmt-row .add:hover { background: rgba(47,133,90,.12); }
+  .d-sub-mgmt-row .known-tag {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 5px;
+    background: rgba(255,181,167,.25); color: var(--primary-ink);
+    margin-left: 6px; flex-shrink: 0;
+  }
+  body.dark .d-sub-mgmt-row .known-tag { background: rgba(255,181,167,.15); color: var(--rose); }
+  .d-sub-mgmt-empty {
+    text-align: center;
+    padding: 14px 8px;
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+  .d-sub-mgmt-card-btn {
+    background: none; border: .5px solid var(--line);
+    font-family: inherit; font-size: 11.5px; font-weight: 700;
+    padding: 6px 12px; border-radius: 999px;
+    color: var(--ink-dim); cursor: pointer;
+    transition: all .15s;
+  }
+  .d-sub-mgmt-card-btn:hover {
+    color: var(--ink); background: var(--bg-alt);
+  }
+  @media (max-width: 600px) {
+    .d-sub-mgmt-box { padding: 22px 18px; }
+  }
+
   /* ── Floating add button (desktop) ── */
   .d-fab {
     position: fixed; bottom: 26px; right: 26px; z-index: 90;
@@ -1604,11 +1693,12 @@ body { display: block; }
 
         <!-- Subscriptions donut -->
         <div class="card d-exp-card">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
             <div>
               <div style="font-size:13.5px;font-weight:700;color:var(--ink);letter-spacing:-.01em;">🔁 Předplatná</div>
               <div style="font-size:11px;color:var(--ink-dim);margin-top:2px;">Pravidelné měsíční výdaje</div>
             </div>
+            <button class="d-sub-mgmt-card-btn" onclick="openSubMgmt()">+ Spravovat</button>
           </div>
           <div class="d-exp-wrap">
             <div class="d-exp-canvas-wrap">
@@ -1790,6 +1880,60 @@ body { display: block; }
   <div class="d-snap-box" id="d-snap-box">
     <button class="d-snap-close" onclick="closeMonthlySnapshot()">×</button>
     <div id="d-snap-content"><!-- generated --></div>
+  </div>
+</div>
+
+<!-- Subscription management overlay -->
+<div class="d-sub-mgmt-overlay" id="d-sub-mgmt-overlay" onclick="if(event.target.id==='d-sub-mgmt-overlay')closeSubMgmt()">
+  <div class="d-sub-mgmt-box">
+    <button class="d-snap-close" onclick="closeSubMgmt()">×</button>
+    <div class="d-snap-h1" style="font-size:22px;">🔁 Spravovat předplatná</div>
+    <div class="d-snap-h2">Pravidelné měsíční platby a předplatná</div>
+
+    <!-- Manual add -->
+    <div class="d-sub-mgmt-section">
+      <div class="d-sub-mgmt-title">+ Přidat předplatné</div>
+      <div class="form-grid">
+        <div class="field"><label>Název</label><input type="text" id="sm-name" placeholder="Spotify, Netflix…" autocomplete="off"/></div>
+        <div class="field"><label>Částka (Kč/měs)</label><input type="number" id="sm-amount" placeholder="0" min="1" inputmode="decimal"/></div>
+      </div>
+      <p class="wiz-q first" style="margin-top:8px;">Účet</p>
+      <input type="hidden" id="sm-account" value="bezny"/>
+      <div class="wiz-pills wiz-accounts" id="sm-account-pills">
+        <button type="button" class="wiz-pill active" data-acct="bezny"     onclick="setSmAccount('bezny')"><span class="wiz-pill-icon">🏦</span><span class="wiz-pill-text">Běžný</span></button>
+        <button type="button" class="wiz-pill"        data-acct="sporak"    onclick="setSmAccount('sporak')"><span class="wiz-pill-icon">🐖</span><span class="wiz-pill-text">Spořící</span></button>
+        <button type="button" class="wiz-pill"        data-acct="penzijko"  onclick="setSmAccount('penzijko')"><span class="wiz-pill-icon">👴</span><span class="wiz-pill-text">Penzijko</span></button>
+        <button type="button" class="wiz-pill"        data-acct="petska"    onclick="setSmAccount('petska')"><span class="wiz-pill-icon">🐾</span><span class="wiz-pill-text">Petska</span></button>
+        <button type="button" class="wiz-pill"        data-acct="investice" onclick="setSmAccount('investice')"><span class="wiz-pill-icon">📈</span><span class="wiz-pill-text">Investice</span></button>
+        <button type="button" class="wiz-pill"        data-acct="hotovost"  onclick="setSmAccount('hotovost')"><span class="wiz-pill-icon">💵</span><span class="wiz-pill-text">Hotovost</span></button>
+      </div>
+      <p class="wiz-q">Kategorie</p>
+      <input type="hidden" id="sm-category" value="Ostatní"/>
+      <div class="wiz-pills wiz-categories" id="sm-category-pills">
+        <button type="button" class="wiz-pill" data-cat="Potraviny" onclick="setSmCategory('Potraviny')"><span class="wiz-pill-icon">🛒</span><span class="wiz-pill-text">Potraviny</span></button>
+        <button type="button" class="wiz-pill" data-cat="Bydlení"   onclick="setSmCategory('Bydlení')"><span class="wiz-pill-icon">🏠</span><span class="wiz-pill-text">Bydlení</span></button>
+        <button type="button" class="wiz-pill" data-cat="Doprava"   onclick="setSmCategory('Doprava')"><span class="wiz-pill-icon">🚌</span><span class="wiz-pill-text">Doprava</span></button>
+        <button type="button" class="wiz-pill" data-cat="Zábava"    onclick="setSmCategory('Zábava')"><span class="wiz-pill-icon">🎉</span><span class="wiz-pill-text">Zábava</span></button>
+        <button type="button" class="wiz-pill" data-cat="Zdraví"    onclick="setSmCategory('Zdraví')"><span class="wiz-pill-icon">💊</span><span class="wiz-pill-text">Zdraví</span></button>
+        <button type="button" class="wiz-pill" data-cat="Vzdělání"  onclick="setSmCategory('Vzdělání')"><span class="wiz-pill-icon">📚</span><span class="wiz-pill-text">Vzdělání</span></button>
+        <button type="button" class="wiz-pill" data-cat="Petska"    onclick="setSmCategory('Petska')"><span class="wiz-pill-icon">🐾</span><span class="wiz-pill-text">Petska</span></button>
+        <button type="button" class="wiz-pill" data-cat="Finance"   onclick="setSmCategory('Finance')"><span class="wiz-pill-icon">💰</span><span class="wiz-pill-text">Finance</span></button>
+        <button type="button" class="wiz-pill active" data-cat="Ostatní" onclick="setSmCategory('Ostatní')"><span class="wiz-pill-icon">📦</span><span class="wiz-pill-text">Ostatní</span></button>
+      </div>
+      <button class="btn-primary" onclick="addSubManual()" style="margin-top:12px;">+ Přidat předplatné</button>
+    </div>
+
+    <!-- Active subscriptions -->
+    <div class="d-sub-mgmt-section">
+      <div class="d-sub-mgmt-title">Aktivní <span class="count" id="sm-active-count">(0)</span></div>
+      <div id="sm-active-list"></div>
+    </div>
+
+    <!-- Suggestions -->
+    <div class="d-sub-mgmt-section">
+      <div class="d-sub-mgmt-title">💡 Návrhy z transakcí <span class="count" id="sm-sugg-count">(0)</span></div>
+      <div id="sm-sugg-list"></div>
+    </div>
   </div>
 </div>
 
@@ -2791,6 +2935,174 @@ function renderDesktopSpendingBars() {
     </div>`;
   }).join('');
 }
+
+/* ════════════════════════════════════════════════════
+   SUBSCRIPTIONS MANAGEMENT MODAL
+   ════════════════════════════════════════════════════ */
+const KNOWN_SUB_KEYWORDS = [
+  'spotify','netflix','hbo','disney','apple music','apple tv','apple+','prime',
+  'youtube premium','youtube music','canva','figma','notion','adobe','microsoft',
+  'google workspace','google one','dropbox','github','openai','chatgpt','claude',
+  'anthropic','perplexity','grammarly','linear','vercel','o2','t-mobile','tmobile',
+  'vodafone','nájem','rent','aktin','iherb','wifi','internet','pojištění','gym',
+  'fitness','newsletter','substack','medium'
+];
+
+function detectSubscriptionsLenient() {
+  const templates = getRecurringTemplates();
+  const tracked = new Set(templates.map(t => (t.name.toLowerCase().trim()+'|'+t.account)));
+
+  const groups = {};
+  transactions.filter(t => t.type === 'vydaj').forEach(t => {
+    const k = (t.name.toLowerCase().trim()+'|'+t.account);
+    if (tracked.has(k)) return;
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(t);
+  });
+
+  const candidates = [];
+  Object.entries(groups).forEach(([k, items]) => {
+    const nameLower = items[0].name.toLowerCase();
+    const matchesKeyword = KNOWN_SUB_KEYWORDS.some(kw => nameLower.includes(kw));
+    // Either: 2+ occurrences (any timeframe) OR 1+ occurrence matching known keyword
+    if (items.length >= 2 || matchesKeyword) {
+      const amts = items.map(i => i.amount);
+      const avg = amts.reduce((s,a)=>s+a,0) / amts.length;
+      candidates.push({
+        name: items[0].name,
+        account: items[0].account,
+        category: items[0].category || 'Ostatní',
+        amount: Math.round(avg),
+        count: items.length,
+        matchedKeyword: matchesKeyword,
+      });
+    }
+  });
+  return candidates.sort((a,b) => b.amount - a.amount);
+}
+
+function openSubMgmt() {
+  const o = q('d-sub-mgmt-overlay'); if (!o) return;
+  o.classList.add('open');
+  q('sm-name').value = '';
+  q('sm-amount').value = '';
+  setSmAccount('bezny');
+  setSmCategory('Ostatní');
+  renderSubMgmt();
+  setTimeout(() => q('sm-name').focus(), 60);
+}
+function closeSubMgmt() {
+  const o = q('d-sub-mgmt-overlay'); if (o) o.classList.remove('open');
+}
+function setSmAccount(k) {
+  const inp = q('sm-account'); if (inp) inp.value = k;
+  document.querySelectorAll('#sm-account-pills .wiz-pill').forEach(b => b.classList.toggle('active', b.dataset.acct === k));
+}
+function setSmCategory(c) {
+  const inp = q('sm-category'); if (inp) inp.value = c;
+  document.querySelectorAll('#sm-category-pills .wiz-pill').forEach(b => b.classList.toggle('active', b.dataset.cat === c));
+}
+
+function addSubManual() {
+  const name = q('sm-name').value.trim();
+  const amount = parseFloat(q('sm-amount').value);
+  const account = q('sm-account').value;
+  const category = q('sm-category').value;
+  if (!name) { showToast('Zadej název', 'error'); return; }
+  if (!amount || amount <= 0) { showToast('Zadej kladnou částku', 'error'); return; }
+  const t = getRecurringTemplates();
+  if (t.some(x => x.name.toLowerCase() === name.toLowerCase() && x.account === account)) {
+    showToast('Tato platba už je v seznamu', 'error');
+    return;
+  }
+  t.push({ name, amount: Math.round(amount), account, category, type: 'vydaj' });
+  saveRecurringTemplates(t);
+  q('sm-name').value = '';
+  q('sm-amount').value = '';
+  renderSubMgmt();
+  renderAll();
+  showToast('Předplatné přidáno ✓', 'success');
+}
+
+function removeSubTemplate(idx) {
+  const t = getRecurringTemplates();
+  t.splice(idx, 1);
+  saveRecurringTemplates(t);
+  renderSubMgmt();
+  renderAll();
+  showToast('Odebráno');
+}
+
+function addSubFromSuggestion(name, amount, account, category) {
+  const t = getRecurringTemplates();
+  if (t.some(x => x.name.toLowerCase() === name.toLowerCase() && x.account === account)) {
+    showToast('Už je v seznamu', 'error');
+    return;
+  }
+  t.push({ name, amount, account, category, type: 'vydaj' });
+  saveRecurringTemplates(t);
+  renderSubMgmt();
+  renderAll();
+  showToast('Přidáno ✓', 'success');
+}
+
+function renderSubMgmt() {
+  const templates = getRecurringTemplates();
+
+  // Active list
+  const activeEl = q('sm-active-list');
+  const activeCount = q('sm-active-count');
+  if (activeCount) activeCount.textContent = `(${templates.length})`;
+  if (activeEl) {
+    if (!templates.length) {
+      activeEl.innerHTML = '<div class="d-sub-mgmt-empty">Zatím žádné. Přidej výše nebo z návrhů.</div>';
+    } else {
+      activeEl.innerHTML = templates.map((t, i) => {
+        const cc = CAT_COLORS[t.category] || '#b0bec5';
+        return `<div class="d-sub-mgmt-row">
+          <div class="cat-bubble cat-bubble-sm" style="background:${cc}22;flex-shrink:0;">${CAT_EMOJI[t.category]||'📌'}</div>
+          <div class="meta">
+            <div class="name">${t.name}</div>
+            <div class="sub">${LABELS[t.account]||t.account} · ${t.category||'—'}</div>
+          </div>
+          <div class="amt">${fmt(t.amount)}</div>
+          <button class="del" onclick="removeSubTemplate(${i})" title="Odebrat">×</button>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Suggestions
+  const sugg = detectSubscriptionsLenient();
+  const suggEl = q('sm-sugg-list');
+  const suggCount = q('sm-sugg-count');
+  if (suggCount) suggCount.textContent = `(${sugg.length})`;
+  if (suggEl) {
+    if (!sugg.length) {
+      suggEl.innerHTML = '<div class="d-sub-mgmt-empty">Žádné návrhy. Všechny pravidelné platby jsou už označené, nebo zatím nejsou v transakcích.</div>';
+    } else {
+      suggEl.innerHTML = sugg.slice(0, 25).map(s => {
+        const cc = CAT_COLORS[s.category] || '#b0bec5';
+        const safeName = s.name.replace(/'/g, "\\'");
+        const knownTag = s.matchedKeyword ? '<span class="known-tag">💡 známá služba</span>' : '';
+        return `<div class="d-sub-mgmt-row">
+          <div class="cat-bubble cat-bubble-sm" style="background:${cc}22;flex-shrink:0;">${CAT_EMOJI[s.category]||'📌'}</div>
+          <div class="meta">
+            <div class="name">${s.name}${knownTag}</div>
+            <div class="sub">${LABELS[s.account]||s.account} · ${s.category||'—'} · ${s.count}× v historii</div>
+          </div>
+          <div class="amt">${fmt(s.amount)}</div>
+          <button class="add" onclick="addSubFromSuggestion('${safeName}', ${s.amount}, '${s.account}', '${s.category||'Ostatní'}')" title="Přidat">+</button>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+/* Hook Escape key to close modal */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeSubMgmt();
+});
 
 let dSubChart = null;
 function renderSubscriptionsDonut() {
